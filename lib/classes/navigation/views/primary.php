@@ -33,7 +33,7 @@ class primary extends view {
      * Initialise the primary navigation node
      */
     public function initialise(): void {
-        global $CFG;
+        global $CFG, $USER;
 
         if (during_initial_install() || $this->initialised) {
             return;
@@ -56,14 +56,13 @@ class primary extends view {
                 }
             }
 
-            // Add the dashboard link.
-            $showmyhomenode = !empty($CFG->enabledashboard) && (empty($this->page->theme->removedprimarynavitems) ||
-                !in_array('myhome', $this->page->theme->removedprimarynavitems));
-            if ($showmyhomenode) {
-                $this->add(get_string('myhome'), new \moodle_url('/my/'),
-                    self::TYPE_SETTING, null, 'myhome', new \pix_icon('i/dashboard', ''));
-            }
+          
+            $context = get_context_instance (CONTEXT_SYSTEM);
+            $roles = get_user_roles($context, $USER->id, false);
+            $role = key($roles);
+            $roleid = $roles[$role]->roleid;
 
+            if($roleid == 3 || $roleid == 5){
             // Add the mycourses link.
             $showcoursesnode = empty($this->page->theme->removedprimarynavitems) ||
                 !in_array('courses', $this->page->theme->removedprimarynavitems);
@@ -71,10 +70,13 @@ class primary extends view {
                 $this->add(get_string('mycourses'), new \moodle_url('/my/courses.php'), self::TYPE_ROOTNODE, null, 'mycourses');
             }
         }
+    }
 
+        if($USER->username == "developer"){
         $showsiteadminnode = empty($this->page->theme->removedprimarynavitems) ||
             !in_array('siteadminnode', $this->page->theme->removedprimarynavitems);
-
+        }
+        
         if ($showsiteadminnode && $node = $this->get_site_admin_node()) {
             // We don't need everything from the node just the initial link.
             $this->add($node->text, $node->action(), self::TYPE_SITE_ADMIN, null, 'siteadminnode', $node->icon);

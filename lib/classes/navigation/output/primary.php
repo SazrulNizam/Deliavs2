@@ -111,8 +111,62 @@ class primary implements renderable, templatable {
      * @return array
      */
     protected function get_custom_menu(renderer_base $output): array {
-        global $CFG;
+        global $CFG, $COURSE, $DB, $USER;
+        $coursecontext = \context_course::instance($COURSE->id);
+        $systemcontext = \context_system::instance();
 
+       
+
+        if (isloggedin()){
+
+            // if (has_capability('moodle/course:create', $coursecontext)){
+            //     $CFG->custommenuitems = "Manage Course | /course/management.php";
+            // }
+            
+            // $CFG->custommenuitems .= "
+            // User Table | /course/newpage.php";
+
+          
+
+            // if (has_capability('moodle/user:create',  $coursecontext)){
+            //     $CFG->custommenuitems .= "
+            // Add User | /user/editadvanced.php?id=-1";
+            // }
+
+            //superadmin navigation
+
+            $context = get_context_instance (CONTEXT_SYSTEM);
+            $roles = get_user_roles($context, $USER->id, false);
+            $role = key($roles);
+            $roleid = $roles[$role]->roleid;
+
+            if($roleid == 1){
+
+                $CFG->custommenuitems .= "
+                Dashboard | /superadmin/dashboard.php";
+
+                $CFG->custommenuitems .= "
+                Report | /superadmin/report.php";
+
+                $CFG->custommenuitems .= "
+                Financial Report | /superadmin/financialreport.php";
+
+                $CFG->custommenuitems .= "
+                Report Card | /superadmin/reportcard.php";
+
+                $CFG->custommenuitems .= "
+                Calendar | /superadmin/calendar.php";
+
+                if (has_capability('moodle/course:create', $coursecontext)){
+                    $CFG->custommenuitems .= "
+                    Manage Course | /course/management.php";
+                }
+
+            }
+
+        
+            
+        }
         // Early return if a custom menu does not exists.
         if (empty($CFG->custommenuitems)) {
             return [];
