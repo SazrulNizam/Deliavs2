@@ -56,6 +56,16 @@ class primary extends view {
                 }
             }
 
+            
+            // // Add the dashboard link.
+            // $showmyhomenode = !empty($CFG->enabledashboard) && (empty($this->page->theme->removedprimarynavitems) ||
+            //     !in_array('myhome', $this->page->theme->removedprimarynavitems));
+            // if ($showmyhomenode) {
+            //     $this->add(get_string('myhome'), new \moodle_url('/my/'),
+            //         self::TYPE_SETTING, null, 'myhome', new \pix_icon('i/dashboard', ''));
+            // }
+
+
           
             $context = get_context_instance (CONTEXT_SYSTEM);
             $roles = get_user_roles($context, $USER->id, false);
@@ -71,6 +81,8 @@ class primary extends view {
             }
         }
     }
+
+    
 
         if($USER->username == "developer"){
         $showsiteadminnode = empty($this->page->theme->removedprimarynavitems) ||

@@ -78,10 +78,12 @@ $strsearch = new lang_string("search");
 $strsearchresults = new lang_string("searchresults");
 $strnovalidcourses = new lang_string('novalidcourses');
 
-$courseurl = core_course_category::user_top() ? new moodle_url('/index.php') : null;
-$PAGE->navbar->add("Home", $courseurl);
+$courseurl = core_course_category::user_top() ? new moodle_url('/course/index.php') : null;
+$PAGE->navbar->add($strcourses, $courseurl);
 $PAGE->navbar->add($strsearch, new moodle_url('/course/newpage.php'));
-
+if (!empty($search)) {
+    $PAGE->navbar->add(s($search));
+}
 
 if (empty($searchcriteria)) {
     // no search criteria specified, print page with just search form
@@ -104,7 +106,7 @@ if (empty($searchcriteria)) {
     $event->trigger();
 }
 
-$PAGE->set_heading('Dashboard');
+$PAGE->set_heading('Financial Report');
 
 // $PAGE->requires->js(new \moodle_url('https://code.jquery.com/jquery-3.7.1.js'), true);
 // $PAGE->requires->js(new \moodle_url('https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js'), true);
@@ -124,96 +126,37 @@ echo $OUTPUT->header();
 global $CFG, $COURSE, $DB, $USER, $ROLE;
  $con =mysqli_connect("localhost","root","","deliadata");
 
-$query = "SELECT distinct mdl_user.id ,mdl_user.email ,mdl_user.firstname,mdl_user.city, 
-mdl_role_assignments.userid, mdl_role_assignments.roleid 
-FROM mdl_user INNER JOIN mdl_role_assignments ON mdl_user.id = mdl_role_assignments.userid";
-
-//total student query
-$totalstudent = mysqli_query($con,"SELECT COUNT(DISTINCT userid) AS 'total' FROM mdl_role_assignments WHERE roleid= 5");
-$data=mysqli_fetch_assoc($totalstudent);
-
+$query = "select * from mdl_user";
 $result = mysqli_query($con,$query);
+echo $ROLE->name;
 ?>
 
 
 <!DOCTYPE html>
 <html>
    <head>
-   <link rel="stylesheet" href="dashboard.css">
-   
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<!------ Include the above in your HEAD tag ---------->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
  
 </head> 
 <body>
-
-<div class="pb-4 pt-3">
-    <div class="row">
-    <div class="col-md-3">
-      <div class="card-counter primary">
-        <i class="fa fa-users"></i>
-        <span class="count-numbers"><?php echo $data['total']; ?></span>
-        <span class="count-name">Total Student</span>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="card-counter danger">
-        <i class="fa fa-ticket"></i>
-        <span class="count-numbers">599</span>
-        <span class="count-name">Total Course</span>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="card-counter success">
-        <i class="fa fa-database"></i>
-        <span class="count-numbers">6875</span>
-        <span class="count-name">Data</span>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="card-counter info">
-        <i class="fa fa-users"></i>
-        <span class="count-numbers">35</span>
-        <span class="count-name">Users</span>
-      </div>
-    </div>
-  </div>
-</div>
-<hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
-
 <table id="example" class="table table-striped" style="width:100%">
     <thead>
         <tr>
-            <th style="text-align:center;">No.</th>
             <th>First Name</th>
             <th>Email</th>
-            <th>City</th>
-
         </tr>
     </thead>
     <tbody>
         
            <?php 
-           $no = 0;
+          
           while ($row = $result->fetch_assoc()) {
 
-            if($row["roleid"] == 5){
-             
-            $no++;
-          echo  
-          "<tr>
-          <td style='text-align:center;'>" . $no . "</td>
-          <td>" . $row["firstname"] . "</td>
-          <td>" . $row["email"] . "</td>
-          <td>" . $row["city"] . "</td>
-          </tr>";
-            }
+            if( $row["firstname"] != "Guest user" && $row["deleted"] != 1)
+          echo  "<tr><td>" . $row["firstname"] . "</td>
+                 <td>" . $row["email"] . "</td>
+                 </tr>";
+
            }
         
            ?>
@@ -222,7 +165,7 @@ $result = mysqli_query($con,$query);
         
     </tbody>
 </table>
-        
+
 
 </body>
 <script src = "https://code.jquery.com/jquery-3.7.1.js"></script> 

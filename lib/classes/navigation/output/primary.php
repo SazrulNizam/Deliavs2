@@ -164,6 +164,65 @@ class primary implements renderable, templatable {
 
             }
 
+
+            //admin navigation menu
+            if($roleid == 2){
+
+                $CFG->custommenuitems .= "
+                Dashboard | /admindelia/dashboard.php";
+
+                $CFG->custommenuitems .= "
+                Report | /admindelia/report.php";
+
+                $CFG->custommenuitems .= "
+                Financial Report | /admindelia/financialreport.php";
+
+                $CFG->custommenuitems .= "
+                Report Card | /admindelia/reportcard.php";
+
+                $CFG->custommenuitems .= "
+                Calendar | /admindelia/calendar.php";
+
+                if (has_capability('moodle/course:create', $coursecontext)){
+                    $CFG->custommenuitems .= "
+                    Manage Course | /course/management.php";
+                }
+
+                
+            }
+
+            //teacher navigation menu
+            if($roleid == 3){
+
+                $CFG->custommenuitems .= "
+                Dashboard | /teacher/dashboard.php";
+
+                $CFG->custommenuitems .= "
+                Report Card | /teacher/reportcard.php";
+
+                $CFG->custommenuitems .= "
+                Calendar | /teacher/calendar.php";
+
+               
+
+                
+            }
+
+            if($roleid == 5){
+
+                $CFG->custommenuitems .= "
+                Dashboard | /student/dashboard.php";
+
+                $CFG->custommenuitems .= "
+                Report Card | /student/reportcard.php";
+
+                $CFG->custommenuitems .= "
+                Calendar | /student/calendar.php";
+
+               
+
+                
+            }
         
             
         }
