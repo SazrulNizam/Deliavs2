@@ -1,8 +1,0 @@
-{
-    "plugintypes": {
-        "datalynxfield": "mod\/datalynx\/field",
-        "datalynxview": "mod\/datalynx\/view",
-        "datalynxrule": "mod\/datalynx\/rule",
-        "datalynxtool": "mod\/datalynx\/tool"
-    }
-}
