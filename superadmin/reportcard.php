@@ -126,41 +126,73 @@ echo $OUTPUT->header();
 global $CFG, $COURSE, $DB, $USER, $ROLE;
  $con =mysqli_connect("localhost","root","","deliadata");
 
-$query = "select * from mdl_user";
+
+
+//total student query
+$query = "SELECT distinct mdl_user.id ,mdl_user.email ,mdl_user.firstname,mdl_user.city, 
+mdl_role_assignments.userid, mdl_role_assignments.roleid 
+FROM mdl_user INNER JOIN mdl_role_assignments ON mdl_user.id = mdl_role_assignments.userid";
 $result = mysqli_query($con,$query);
-echo $ROLE->name;
+
+
 ?>
 
 
 <!DOCTYPE html>
 <html>
    <head>
+<style>
 
+
+
+#example th {
+        text-align:center;
+        
+    }
+    #example td {
+        text-align:center;
+    }
+    </style>
  
 </head> 
 <body>
 <table id="example" class="table table-striped" style="width:100%">
     <thead>
         <tr>
-            <th>First Name</th>
+            <th style="text-align:center;">No.</th>
             <th>Email</th>
+            <th>First Name</th>
+           
+            <th>Action</th>
+
         </tr>
     </thead>
     <tbody>
         
            <?php 
           
-          while ($row = $result->fetch_assoc()) {
+ 
 
-            if( $row["firstname"] != "Guest user" && $row["deleted"] != 1)
-          echo  "<tr><td>" . $row["firstname"] . "</td>
-                 <td>" . $row["email"] . "</td>
-                 </tr>";
+           while ($row = $result->fetch_assoc()) {
 
-           }
-        
-           ?>
+            if($row["roleid"] == 5){
            
+             
+            $no++;
+          echo  
+          "<tr>
+          <td>" . $no . "</td>
+          <td>" . $row["email"] . "</td>
+          <td>" . $row["firstname"] . "</td>
+
+          <td> <a href='upload/index.php?id=". $row["id"]."'". "class='btn btn-primary'>Upload</button>
+                </td></tr>";
+            
+           }
+           }
+           ?>
+           <!-- <td> <a href='mod/assign/view.php?id=". $row["id"] ."'" . "class='btn btn-primary'>View</button>
+                </td></tr>"; -->
             
         
     </tbody>

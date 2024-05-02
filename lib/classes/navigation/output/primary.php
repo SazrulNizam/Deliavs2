@@ -139,8 +139,13 @@ class primary implements renderable, templatable {
             $roles = get_user_roles($context, $USER->id, false);
             $role = key($roles);
             $roleid = $roles[$role]->roleid;
+            $con =mysqli_connect("localhost","root","","deliadata");
 
-            if($roleid == 1){
+            $querys ="SELECT * FROM mdl_user_info_data WHERE fieldid = 6 AND userid = $USER->id";
+            $result = mysqli_query($con,$querys);
+            $data=mysqli_fetch_assoc($result);
+           
+            if($roleid == 1 ){
 
                 $CFG->custommenuitems .= "
                 Dashboard | /superadmin/dashboard.php";
@@ -192,7 +197,7 @@ class primary implements renderable, templatable {
             }
 
             //teacher navigation menu
-            if($roleid == 3){
+            if($roleid == 3 || $data['data'] == 'Teacher'){
 
                 $CFG->custommenuitems .= "
                 Dashboard | /teacher/dashboard.php";
@@ -208,7 +213,7 @@ class primary implements renderable, templatable {
                 
             }
 
-            if($roleid == 5){
+            if($roleid == 5 || $data['data'] == 'Student'){
 
                 $CFG->custommenuitems .= "
                 Dashboard | /student/dashboard.php";

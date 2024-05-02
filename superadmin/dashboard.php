@@ -24,7 +24,7 @@
 
 require_once("../config.php");
 require_once($CFG->dirroot.'/course/lib.php');
-
+ 
 $q         = optional_param('q', '', PARAM_RAW);       // Global search words.
 $search    = optional_param('search', '', PARAM_RAW);  // search words
 $page      = optional_param('page', 0, PARAM_INT);     // which page to show
@@ -80,7 +80,7 @@ $strnovalidcourses = new lang_string('novalidcourses');
 
 $courseurl = core_course_category::user_top() ? new moodle_url('/index.php') : null;
 $PAGE->navbar->add("Home", $courseurl);
-$PAGE->navbar->add($strsearch, new moodle_url('/course/newpage.php'));
+$PAGE->navbar->add('Dashboard', new moodle_url('/course/newpage.php'));
 
 
 if (empty($searchcriteria)) {
@@ -122,17 +122,9 @@ $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/2.0.3/css/dataT
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/buttons/3.0.1/css/buttons.bootstrap4.css'));
 echo $OUTPUT->header();
 global $CFG, $COURSE, $DB, $USER, $ROLE;
- $con =mysqli_connect("localhost","root","","deliadata");
+include 'connection.php';
 
-$query = "SELECT distinct mdl_user.id ,mdl_user.email ,mdl_user.firstname,mdl_user.city, 
-mdl_role_assignments.userid, mdl_role_assignments.roleid 
-FROM mdl_user INNER JOIN mdl_role_assignments ON mdl_user.id = mdl_role_assignments.userid";
 
-//total student query
-$totalstudent = mysqli_query($con,"SELECT COUNT(DISTINCT userid) AS 'total' FROM mdl_role_assignments WHERE roleid= 5");
-$data=mysqli_fetch_assoc($totalstudent);
-
-$result = mysqli_query($con,$query);
 ?>
 
 
@@ -140,13 +132,41 @@ $result = mysqli_query($con,$query);
 <html>
    <head>
    <link rel="stylesheet" href="dashboard.css">
-   
+   <script src=
+"https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js"></script>  
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
 <!------ Include the above in your HEAD tag ---------->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
+<style>
+    .container {
+        width: 70%;
+        margin: 15px auto;
+    }
  
+    body {
+        text-align: center;
+    }
+ 
+    h2 {
+        text-align: center;
+        font-family: "Verdana", sans-serif;
+        font-size: 30px;
+    }
+
+    #examplee th {
+        text-align:center;
+    }
+
+    #example th {
+        text-align:center;
+    }
+    
+</style>
 </head> 
 <body>
 
@@ -162,31 +182,27 @@ $result = mysqli_query($con,$query);
 
     <div class="col-md-3">
       <div class="card-counter danger">
-        <i class="fa fa-ticket"></i>
-        <span class="count-numbers">599</span>
+        <i class="fa fa-book"></i>
+        <span class="count-numbers"><?php echo $allcourse['allcourse']; ?></span>
         <span class="count-name">Total Course</span>
       </div>
     </div>
 
-    <div class="col-md-3">
-      <div class="card-counter success">
-        <i class="fa fa-database"></i>
-        <span class="count-numbers">6875</span>
-        <span class="count-name">Data</span>
-      </div>
-    </div>
 
-    <div class="col-md-3">
-      <div class="card-counter info">
-        <i class="fa fa-users"></i>
-        <span class="count-numbers">35</span>
-        <span class="count-name">Users</span>
-      </div>
-    </div>
   </div>
 </div>
 <hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
 
+<?php include 'graphstate.php' ?>
+<div class="container">
+        <h2>Student Base on State</h2>
+        <div>
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+
+    <hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
+    <h2>Students</h2>
 <table id="example" class="table table-striped" style="width:100%">
     <thead>
         <tr>
@@ -203,7 +219,7 @@ $result = mysqli_query($con,$query);
            $no = 0;
           while ($row = $result->fetch_assoc()) {
 
-            if($row["roleid"] == 5){
+            if($row["data"] == 'Student'){
              
             $no++;
           echo  
@@ -222,8 +238,44 @@ $result = mysqli_query($con,$query);
         
     </tbody>
 </table>
-        
 
+<hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
+    <h2>Courses</h2>
+<table id="examplee" class="table table-striped" style="width:100%">
+    <thead>
+        <tr>
+            <th>No.</th>
+            <th>Full Name</th>
+            <th>Short Name</th>
+            
+
+        </tr>
+    </thead>
+    <tbody>
+        
+           <?php 
+           $no = 0;
+          while ($row2 = $results->fetch_assoc()) {         
+             
+            $no++;
+          echo  
+          "<tr>
+          <td style='text-align:center;'>" . $no . "</td>
+          <td>" . $row2["fullname"] . "</td>
+          <td>" . $row2["shortname"] . "</td>
+         
+          </tr>";
+            
+           }
+        
+           ?>
+           
+            
+        
+    </tbody>
+</table>
+        
+<?php $data = 1; ?>
 </body>
 <script src = "https://code.jquery.com/jquery-3.7.1.js"></script> 
 <script src = "https://cdn.datatables.net/2.0.3/js/dataTables.js"></script> 
@@ -241,10 +293,80 @@ $result = mysqli_query($con,$query);
 $('#example').DataTable({
     layout: {
         topStart: {
-            buttons: ['copy', 'excel', 'pdf', ]
+            buttons: [
+            {
+            extend: 'csv',
+            filename: 'Student data'
+            },
+          {
+            extend: 'excel',
+            filename: 'Student data'
+            },
+          {
+            extend: 'pdf',
+            filename: 'Student data'
+            }
+        ]
         }
     }
 });
+
+$('#examplee').DataTable({
+    layout: {
+        topStart: {
+            buttons: [
+            {
+            extend: 'csv',
+            filename: 'Course report'
+            },
+          {
+            extend: 'excel',
+            filename: 'Course report'
+            },
+          {
+            extend: 'pdf',
+            filename: 'Course report'
+            }
+        ]
+        }
+    }
+});
+
+    let ctx = document.getElementById("myChart").getContext("2d");
+    let myChart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: [
+                "Johor",
+                "Kedah",
+                "Kelantan",
+                "Melaka",
+                "N.Sembilan",
+                "Pahang",
+                "Penang",
+                "Perak",
+                "Perlis",
+                "Sabah",
+                "Sarawak",
+                "Selangor",
+                "Terengganu",
+            ],
+            datasets: [
+                {
+                    label: "Students",
+                    data: [<?php echo $johor ?>, <?php echo $kedah ?>, <?php echo $kelantan ?>, <?php echo $melaka ?>, <?php echo $sembilan ?>, 
+                    <?php echo $pahang ?>, <?php echo $penang ?>, <?php echo $perak ?>, <?php echo $perlis ?>, <?php echo $sabah ?>, 
+                    <?php echo $sarawak ?>, <?php echo $selangor ?>, <?php echo $terengganu ?>],
+                    backgroundColor: "rgba(153,205,1,0.6)",
+                },
+             
+            ],
+        },
+    });
+
+ 
+
+
 </script>
   <?php
   

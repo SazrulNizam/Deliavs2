@@ -34,8 +34,13 @@ require_once("{$CFG->libdir}/adminlib.php");
 
 $reportid = required_param('id', PARAM_INT);
 
-admin_externalpage_setup('customreports', null, ['id' => $reportid], new moodle_url('/reportbuilder/view.php'));
-navigation_node::override_active_url(new moodle_url('/reportbuilder/index.php'));
+// admin_externalpage_setup('customreports', null, ['id' => $reportid], new moodle_url('/reportbuilder/view.php'));
+// navigation_node::override_active_url(new moodle_url('/reportbuilder/index.php'));
+$strsearch = new lang_string("search");
+
+$courseurl = core_course_category::user_top() ? new moodle_url('/index.php') : null;
+$PAGE->navbar->add("Home", $courseurl);
+$PAGE->navbar->add($strsearch, new moodle_url('/course/newpage.php'));
 
 $report = manager::get_report_from_id($reportid);
 permission::require_can_view_report($report->get_report_persistent());

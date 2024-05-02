@@ -124,11 +124,9 @@ $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/2.0.3/css/dataT
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/buttons/3.0.1/css/buttons.bootstrap4.css'));
 echo $OUTPUT->header();
 global $CFG, $COURSE, $DB, $USER, $ROLE;
- $con =mysqli_connect("localhost","root","","deliadata");
+include 'connection.php';
 
-$query = "select * from mdl_user";
-$result = mysqli_query($con,$query);
-echo $ROLE->name;
+
 ?>
 
 
@@ -139,25 +137,66 @@ echo $ROLE->name;
  
 </head> 
 <body>
+    <title>Report</title>
+<h2>Students</h2>
 <table id="example" class="table table-striped" style="width:100%">
     <thead>
         <tr>
-            <th>First Name</th>
+            <th style="text-align:center;">State of Nadi</th>
+            <th>Phase of Nadi</th>
+            <th>Name of Nadi</th>
+            <th>Email of Nadi</th>
+            <th> Name</th>
+            <th>IC number</th>
             <th>Email</th>
+            <th>Age</th>
+            <th>Phone Number</th>
+            <th>Parents Name</th>
+            <th>Email of Parents</th>
+            <th>Parents P.Number</th>
+            <th>Course Enroled</th>
+
         </tr>
     </thead>
     <tbody>
         
            <?php 
+          while ($row = $datareport->fetch_assoc()) {
+
+            if($row["data"] == 'Student'){
+
+                $datauserid = $row["userid"];
+                include 'reportconnection.php';
           
-          while ($row = $result->fetch_assoc()) {
+          echo  
+          "<tr>
+          <td> " .$dstate["data"] . "</td>
+          <td>" . $nphase["data"] . "</td>
+          <td>" . $nnadi["data"] . "</td>
+          <td>" . $nemail["data"] . "</td>
+          <td>" . $uname["firstname"] . "</td>
+          <td>" . $icnumber["data"] . "</td>
+          <td>" . $uemail["email"] . "</td>
+          <td>" . $uage["data"] . "</td>
+          <td>" . $pnum["data"] . "</td>
+          <td>" . $pname["data"] . "</td>
+          <td>" . $pemail["data"] . "</td>
+          <td>" . $ppnum["data"] . "</td>
+          <td><ul>";
 
-            if( $row["firstname"] != "Guest user" && $row["deleted"] != 1)
-          echo  "<tr><td>" . $row["firstname"] . "</td>
-                 <td>" . $row["email"] . "</td>
-                 </tr>";
+          while ($rows = $enrolreport->fetch_assoc()) {
 
-           }
+            if($rows["userid"] == $row["userid"]){                
+
+                        echo "<li>". $rows["fullname"]. "</li>";
+
+            }
+        }
+          echo "</ul></td></tr>";
+           
+             }
+            }
+           
         
            ?>
            
@@ -184,7 +223,20 @@ echo $ROLE->name;
 $('#example').DataTable({
     layout: {
         topStart: {
-            buttons: ['copy', 'excel', 'pdf', ]
+            buttons: [
+            {
+            extend: 'csv',
+            filename: 'Student report'
+            },
+          {
+            extend: 'excel',
+            filename: 'Student report'
+            },
+          {
+            extend: 'pdf',
+            filename: 'Student report'
+            }
+        ]
         }
     }
 });

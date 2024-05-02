@@ -1,0 +1,75 @@
+#page-report-coursemanager #courseInput {
+    width: 100%;
+    padding: 10px 20px 10px 20px;
+    border: 1px solid #ddd;
+    margin-bottom: 12px;
+}
+#page-report-coursemanager #filtercontainer {
+    margin-bottom: 12px;
+}
+
+#page-report-coursemanager .filterrow {
+    display: none;
+}
+
+#page-report-coursemanager .show_course {
+    display: table-row;
+}
+
+#page-report-coursemanager #no-visit-student.tablefilter:checked ~ div table tbody tr.no-visit-student,
+#page-report-coursemanager#heavy-course.tablefilter:checked ~ div table tbody tr.heavy-course,
+#page-report-coursemanager #no-visit-teacher.tablefilter:checked ~ div table tbody tr.no-visit-teacher,
+#page-report-coursemanager #no-content.tablefilter:checked ~ div table tbody tr.no-content,
+#page-report-coursemanager #no-student.tablefilter:checked ~ div table tbody tr.no-student,
+#page-report-coursemanager #orphan-submissions.tablefilter:checked ~ div table tbody tr.orphan-submissions,
+#page-report-coursemanager #ok.tablefilter:checked ~ div table tbody tr.ok,
+#page-report-coursemanager #filterrow.tablefilter:checked ~ div table tbody tr.filterrow,
+#page-report-coursemanager #no-visit-student.tablefilter:checked ~ table tbody tr.no-visit-student,
+#page-report-coursemanager #heavy-course.tablefilter:checked ~ table tbody tr.heavy-course,
+#page-report-coursemanager #no-visit-teacher.tablefilter:checked ~ table tbody tr.no-visit-teacher,
+#page-report-coursemanager #no-content.tablefilter:checked ~ table tbody tr.no-content,
+#page-report-coursemanager #no-student.tablefilter:checked ~ table tbody tr.no-student,
+#page-report-coursemanager #orphan-submissions.tablefilter:checked ~ table tbody tr.orphan-submissions,
+#page-report-coursemanager #ok.tablefilter:checked ~ table tbody tr.ok,
+#page-report-coursemanager #filterrow.tablefilter:checked ~ table tbody tr.filterrow {
+    display: table-row;
+}
+
+#page-report-coursemanager .tablefilter + label {
+    cursor: pointer;
+}
+
+#page-report-coursemanager .table-responsive {
+    overflow-x: unset;
+}
+
+#page-report-coursemanager .tablefilter:checked + label {
+    background-color: #ddd;
+}
+
+#page-report-coursemanager .browse_courses tbody tr,
+.tablefilter {
+    display: none;
+}
+.report_coursemanager-reportbutton {
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 3px;
+}
+ul#coursemanagerbuttons li {
+    display: inline;
+}
+#coursemanager_popover {
+    min-width: 150px;
+}
+#coursemanager_collapse_report {
+    margin-bottom: 8px;
+}
+#coursemanager_reports_zone li {
+    margin-bottom: 12px;
+}

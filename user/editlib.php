@@ -301,11 +301,11 @@ function useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions
     $mform->setDefault('maildisplay', core_user::get_property_default('maildisplay'));
     $mform->addHelpButton('maildisplay', 'emaildisplay');
 
-    if (get_config('tool_moodlenet', 'enablemoodlenet')) {
-        $mform->addElement('text', 'moodlenetprofile', get_string('moodlenetprofile', 'user'), 'maxlength="255" size="30"');
-        $mform->setType('moodlenetprofile', PARAM_NOTAGS);
-        $mform->addHelpButton('moodlenetprofile', 'moodlenetprofile', 'user');
-    }
+    // if (get_config('tool_moodlenet', 'enablemoodlenet')) {
+    //     $mform->addElement('text', 'moodlenetprofile', get_string('moodlenetprofile', 'user'), 'maxlength="255" size="30"');
+    //     $mform->setType('moodlenetprofile', PARAM_NOTAGS);
+    //     $mform->addHelpButton('moodlenetprofile', 'moodlenetprofile', 'user');
+    // }
 
     $mform->addElement('text', 'city', get_string('city'), 'maxlength="120" size="21"');
     $mform->setType('city', PARAM_TEXT);
@@ -331,13 +331,13 @@ function useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions
         $mform->addElement('select', 'timezone', get_string('timezone'), $choices);
     }
 
-    if ($user->id < 0) {
-        $purpose = user_edit_map_field_purpose($user->id, 'lang');
-        $translations = get_string_manager()->get_list_of_translations();
-        $mform->addElement('select', 'lang', get_string('preferredlanguage'), $translations, $purpose);
-        $lang = empty($user->lang) ? $CFG->lang : $user->lang;
-        $mform->setDefault('lang', $lang);
-    }
+    // if ($user->id < 0) {
+    //     $purpose = user_edit_map_field_purpose($user->id, 'lang');
+    //     $translations = get_string_manager()->get_list_of_translations();
+    //     $mform->addElement('select', 'lang', get_string('preferredlanguage'), $translations, $purpose);
+    //     $lang = empty($user->lang) ? $CFG->lang : $user->lang;
+    //     $mform->setDefault('lang', $lang);
+    // }
 
     if (!empty($CFG->allowuserthemes)) {
         $choices = array();
@@ -376,46 +376,46 @@ function useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions
 
     }
 
-    // Display user name fields that are not currenlty enabled here if there are any.
-    $disabledusernamefields = useredit_get_disabled_name_fields($enabledusernamefields);
-    if (count($disabledusernamefields) > 0) {
-        $mform->addElement('header', 'moodle_additional_names', get_string('additionalnames'));
-        foreach ($disabledusernamefields as $allname) {
-            $purpose = user_edit_map_field_purpose($user->id, $allname);
-            $mform->addElement('text', $allname, get_string($allname), 'maxlength="100" size="30"' . $purpose);
-            $mform->setType($allname, PARAM_NOTAGS);
-        }
-    }
+    // // Display user name fields that are not currenlty enabled here if there are any.
+    // $disabledusernamefields = useredit_get_disabled_name_fields($enabledusernamefields);
+    // if (count($disabledusernamefields) > 0) {
+    //     $mform->addElement('header', 'moodle_additional_names', get_string('additionalnames'));
+    //     foreach ($disabledusernamefields as $allname) {
+    //         $purpose = user_edit_map_field_purpose($user->id, $allname);
+    //         $mform->addElement('text', $allname, get_string($allname), 'maxlength="100" size="30"' . $purpose);
+    //         $mform->setType($allname, PARAM_NOTAGS);
+    //     }
+    // }
 
-    if (core_tag_tag::is_enabled('core', 'user') and empty($USER->newadminuser)) {
-        $mform->addElement('header', 'moodle_interests', get_string('interests'));
-        $mform->addElement('tags', 'interests', get_string('interestslist'),
-            array('itemtype' => 'user', 'component' => 'core'));
-        $mform->addHelpButton('interests', 'interestslist');
-    }
+    // if (core_tag_tag::is_enabled('core', 'user') and empty($USER->newadminuser)) {
+    //     $mform->addElement('header', 'moodle_interests', get_string('interests'));
+    //     $mform->addElement('tags', 'interests', get_string('interestslist'),
+    //         array('itemtype' => 'user', 'component' => 'core'));
+    //     $mform->addHelpButton('interests', 'interestslist');
+    // }
 
-    // Moodle optional fields.
-    $mform->addElement('header', 'moodle_optional', get_string('optional', 'form'));
+    // // Moodle optional fields.
+    // $mform->addElement('header', 'moodle_optional', get_string('optional', 'form'));
 
-    $mform->addElement('text', 'idnumber', get_string('idnumber'), 'maxlength="255" size="25"');
-    $mform->setType('idnumber', core_user::get_property_type('idnumber'));
+    // $mform->addElement('text', 'idnumber', get_string('idnumber'), 'maxlength="255" size="25"');
+    // $mform->setType('idnumber', core_user::get_property_type('idnumber'));
 
-    $mform->addElement('text', 'institution', get_string('institution'), 'maxlength="255" size="25"');
-    $mform->setType('institution', core_user::get_property_type('institution'));
+    // $mform->addElement('text', 'institution', get_string('institution'), 'maxlength="255" size="25"');
+    // $mform->setType('institution', core_user::get_property_type('institution'));
 
-    $mform->addElement('text', 'department', get_string('department'), 'maxlength="255" size="25"');
-    $mform->setType('department', core_user::get_property_type('department'));
+    // $mform->addElement('text', 'department', get_string('department'), 'maxlength="255" size="25"');
+    // $mform->setType('department', core_user::get_property_type('department'));
 
-    $mform->addElement('text', 'phone1', get_string('phone1'), 'maxlength="20" size="25"');
-    $mform->setType('phone1', core_user::get_property_type('phone1'));
-    $mform->setForceLtr('phone1');
+    // $mform->addElement('text', 'phone1', get_string('phone1'), 'maxlength="20" size="25"');
+    // $mform->setType('phone1', core_user::get_property_type('phone1'));
+    // $mform->setForceLtr('phone1');
 
-    $mform->addElement('text', 'phone2', get_string('phone2'), 'maxlength="20" size="25"');
-    $mform->setType('phone2', core_user::get_property_type('phone2'));
-    $mform->setForceLtr('phone2');
+    // $mform->addElement('text', 'phone2', get_string('phone2'), 'maxlength="20" size="25"');
+    // $mform->setType('phone2', core_user::get_property_type('phone2'));
+    // $mform->setForceLtr('phone2');
 
-    $mform->addElement('text', 'address', get_string('address'), 'maxlength="255" size="25"');
-    $mform->setType('address', core_user::get_property_type('address'));
+    // $mform->addElement('text', 'address', get_string('address'), 'maxlength="255" size="25"');
+    // $mform->setType('address', core_user::get_property_type('address'));
 }
 
 /**

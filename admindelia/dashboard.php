@@ -78,12 +78,10 @@ $strsearch = new lang_string("search");
 $strsearchresults = new lang_string("searchresults");
 $strnovalidcourses = new lang_string('novalidcourses');
 
-$courseurl = core_course_category::user_top() ? new moodle_url('/course/index.php') : null;
-$PAGE->navbar->add($strcourses, $courseurl);
+$courseurl = core_course_category::user_top() ? new moodle_url('/index.php') : null;
+$PAGE->navbar->add("Home", $courseurl);
 $PAGE->navbar->add($strsearch, new moodle_url('/course/newpage.php'));
-if (!empty($search)) {
-    $PAGE->navbar->add(s($search));
-}
+
 
 if (empty($searchcriteria)) {
     // no search criteria specified, print page with just search form
@@ -124,39 +122,74 @@ $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/2.0.3/css/dataT
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/buttons/3.0.1/css/buttons.bootstrap4.css'));
 echo $OUTPUT->header();
 global $CFG, $COURSE, $DB, $USER, $ROLE;
- $con =mysqli_connect("localhost","root","","deliadata");
-
-$query = "select * from mdl_user";
-$result = mysqli_query($con,$query);
-echo $ROLE->name;
+include 'connection.php';
 ?>
 
 
 <!DOCTYPE html>
 <html>
    <head>
+   <link rel="stylesheet" href="dashboard.css">
+   
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
  
 </head> 
 <body>
+
+<div class="pb-4 pt-3">
+    <div class="row">
+    <div class="col-md-3">
+      <div class="card-counter primary">
+        <i class="fa fa-users"></i>
+        <span class="count-numbers"><?php echo $data['total']; ?></span>
+        <span class="count-name">Total Student</span>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card-counter danger">
+        <i class="fa fa-book"></i>
+        <span class="count-numbers"><?php echo $allcourse['allcourse']; ?></span>
+        <span class="count-name">Total Course</span>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+<hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
+
 <table id="example" class="table table-striped" style="width:100%">
     <thead>
         <tr>
+            <th style="text-align:center;">No.</th>
             <th>First Name</th>
             <th>Email</th>
+            <th>City</th>
+
         </tr>
     </thead>
     <tbody>
         
            <?php 
-          
+           $no = 0;
           while ($row = $result->fetch_assoc()) {
 
-            if( $row["firstname"] != "Guest user" && $row["deleted"] != 1)
-          echo  "<tr><td>" . $row["firstname"] . "</td>
-                 <td>" . $row["email"] . "</td>
-                 </tr>";
-
+            if($row["roleid"] == 5){
+             
+            $no++;
+          echo  
+          "<tr>
+          <td style='text-align:center;'>" . $no . "</td>
+          <td>" . $row["firstname"] . "</td>
+          <td>" . $row["email"] . "</td>
+          <td>" . $row["city"] . "</td>
+          </tr>";
+            }
            }
         
            ?>
@@ -165,7 +198,7 @@ echo $ROLE->name;
         
     </tbody>
 </table>
-
+        
 
 </body>
 <script src = "https://code.jquery.com/jquery-3.7.1.js"></script> 
