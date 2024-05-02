@@ -30,7 +30,6 @@ if ($mform->is_cancelled()) {
 <!DOCTYPE HTML>
 <html>
 <head>
-<link href="https://canvasjs.com/assets/css/jquery-ui.1.11.2.min.css" rel="stylesheet" />
 <style>
   .ui-tabs-anchor {
     outline: none;
@@ -124,3 +123,8 @@ $("#tabs").tabs({
 <script src="https://cdn.canvasjs.com/jquery.canvasjs.min.js"></script>
 </body>
 </html>
+<?php
+  
+  echo $OUTPUT->footer();
+
+  ?>

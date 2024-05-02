@@ -140,9 +140,13 @@ include 'connection.php';
 
 
 <!------ Include the above in your HEAD tag ---------->
+<link href="https://canvasjs.com/assets/css/jquery-ui.1.11.2.min.css" rel="stylesheet" />
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
 <style>
+      .ui-tabs-anchor {
+    outline: none;
+  }
     .container {
         width: 70%;
         margin: 15px auto;
@@ -194,12 +198,28 @@ include 'connection.php';
 <hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
 
 <?php include 'graphstate.php' ?>
+<div id="tabs" >
+<ul>
+<li ><a href="#tabs-1" style="font-size: 12px">January</a></li>
+<li ><a href="#tabs-2"  style="font-size: 12px">February</a></li>
+<li ><a href="#tabs-3"  style="font-size: 12px">March</a></li>
+<li ><a href="#tabs-4"  style="font-size: 12px">April</a></li>
+<li ><a href="#tabs-5"  style="font-size: 12px">May</a></li>
+<li ><a href="#tabs-6"  style="font-size: 12px">Jun</a></li>
+<li ><a href="#tabs-7"  style="font-size: 12px">July</a></li>
+<li ><a href="#tabs-8"  style="font-size: 12px">August</a></li>
+<li ><a href="#tabs-9"  style="font-size: 12px">September</a></li>
+<li ><a href="#tabs-10"  style="font-size: 12px">October</a></li>
+<li ><a href="#tabs-11"  style="font-size: 12px">November</a></li>
+<li ><a href="#tabs-12"  style="font-size: 12px">December</a></li>
+
+</ul>
 <div class="container">
-        <h2>Student Base on State</h2>
-        <div>
-            <canvas id="myChart"></canvas>
-        </div>
-    </div>
+    
+        
+<?php include "chart.php"?>       
+</div>
+</div>
 
     <hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
     <h2>Students</h2>
@@ -288,6 +308,8 @@ include 'connection.php';
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.print.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://canvasjs.com/assets/script/jquery-ui.1.11.2.min.js"></script>
+<script src="https://cdn.canvasjs.com/jquery.canvasjs.min.js"></script>
 <script>
 
 $('#example').DataTable({
@@ -364,8 +386,50 @@ $('#examplee').DataTable({
         },
     });
 
- 
+    let ctx2 = document.getElementById("myChart2").getContext("2d");
+    let myChart2 = new Chart(ctx2, {
+        type: "line",
+        data: {
+            labels: [
+                "Johor",
+                "Kedah",
+                "Kelantan",
+                "Melaka",
+                "N.Sembilan",
+                "Pahang",
+                "Penang",
+                "Perak",
+                "Perlis",
+                "Sabah",
+                "Sarawak",
+                "Selangor",
+                "Terengganu",
+            ],
+            datasets: [
+                {
+                    label: "Students",
+                    data: [<?php echo $johor ?>, 10, <?php echo $kelantan ?>, <?php echo $melaka ?>, <?php echo $sembilan ?>, 
+                    <?php echo $pahang ?>, <?php echo $penang ?>, <?php echo $perak ?>, <?php echo $perlis ?>, <?php echo $sabah ?>, 
+                    <?php echo $sarawak ?>, <?php echo $selangor ?>, <?php echo $terengganu ?>],
+                    backgroundColor: "rgba(153,205,1,0.6)",
+                },
+             
+            ],
+        },
+    });
 
+ 
+    $("#tabs").tabs({
+	create: function (event, ui) {
+		//Render Charts after tabs have been created.
+		$("#myChart").CanvasJSChart(myChart);
+		$("#myChart2").CanvasJSChart(myChart2);
+	},
+	activate: function (event, ui) {
+		//Updates the chart to its container size if it has changed.
+		ui.newPanel.children().first().CanvasJSChart().render();
+	}
+});
 
 </script>
   <?php

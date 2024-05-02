@@ -211,6 +211,8 @@ while ($row = $state->fetch_assoc()) {
     $terengganu++;
   }
 }
+
+//February Chart
 ?>
 
 
