@@ -197,7 +197,9 @@ include 'connection.php';
 </div>
 <hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
 
-<?php include 'graphstate.php' ?>
+<?php include 'graphstate.php' 
+
+?>
 <div id="tabs" >
 <ul>
 <li ><a href="#tabs-1" style="font-size: 12px">January</a></li>
@@ -235,7 +237,9 @@ include 'connection.php';
     </thead>
     <tbody>
         
+    
            <?php 
+
            $no = 0;
           while ($row = $result->fetch_assoc()) {
 

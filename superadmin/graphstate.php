@@ -187,12 +187,18 @@ $selangor = 0;
 while ($row = $state->fetch_assoc()) {
 
     $id = $row['userid'];
-    $state1 = "SELECT * FROM mdl_user_info_data WHERE userid = $id AND data='Selangor' ";
+    $state1 = "SELECT * FROM mdl_user_info_data INNER JOIN mdl_user ON  mdl_user_info_data.userid = mdl_user.id
+     WHERE mdl_user_info_data.userid = $id AND mdl_user_info_data.data='Selangor' ";
     $Selangor = mysqli_query($con,$state1);
   
     while ($rows = $Selangor->fetch_assoc()){
 
-    $selangor++;
+    $January = date("m", $rows["timecreated"]);
+
+    if ($Januaryselangor == 01){
+
+      $selangor++;
+    }
   }
 }
 
