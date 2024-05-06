@@ -50,7 +50,7 @@ if ($hassiteconfig && moodle_needs_upgrading()) {
     redirect(new moodle_url('/admin/index.php'));
 }
 
-$strmymoodle = get_string('myhome');
+$strmymoodle = "Calendar";
 
 if (empty($CFG->enabledashboard)) {
     // Dashboard is disabled, so the /my page shouldn't be displayed.

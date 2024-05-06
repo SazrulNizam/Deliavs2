@@ -11,6 +11,11 @@ $result = mysqli_query($con,$query);
 $querys = "SELECT * FROM mdl_course WHERE category !=0";
 $results = mysqli_query($con,$querys);
 
+$studentcourse = "SELECT * FROM mdl_user_info_data INNER JOIN mdl_user_enrolments ON mdl_user_info_data.userid
+= mdl_user_enrolments.userid INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = mdl_enrol.id WHERE mdl_user_info_data.data='Student' ";
+$stcourse = mysqli_query($con,$studentcourse);
+
+
 
 //total student query
 $totalstudent = mysqli_query($con,"SELECT COUNT(DISTINCT userid) AS 'total' FROM mdl_user_info_data WHERE fieldid = 6 AND data='Student'");

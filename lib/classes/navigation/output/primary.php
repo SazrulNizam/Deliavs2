@@ -160,13 +160,15 @@ class primary implements renderable, templatable {
                 Report Card | /superadmin/reportcard.php";
 
                 $CFG->custommenuitems .= "
-                Calendar | /superadmin/calendar.php";
+                Calendar | /my/";
 
                 if (has_capability('moodle/course:create', $coursecontext)){
                     $CFG->custommenuitems .= "
                     Manage Course | /course/management.php";
                 }
 
+                $CFG->custommenuitems .= "
+                Create User | /user/editadvanced.php?id=-1";
             }
 
 
@@ -186,7 +188,7 @@ class primary implements renderable, templatable {
                 Report Card | /admindelia/reportcard.php";
 
                 $CFG->custommenuitems .= "
-                Calendar | /admindelia/calendar.php";
+                Calendar | /my/";
 
                 if (has_capability('moodle/course:create', $coursecontext)){
                     $CFG->custommenuitems .= "
@@ -206,7 +208,7 @@ class primary implements renderable, templatable {
                 Report Card | /teacher/reportcard.php";
 
                 $CFG->custommenuitems .= "
-                Calendar | /teacher/calendar.php";
+                Calendar | /my/";
 
                
 
@@ -222,7 +224,7 @@ class primary implements renderable, templatable {
                 Report Card | /student/reportcard.php";
 
                 $CFG->custommenuitems .= "
-                Calendar | /student/calendar.php";
+                Calendar | /my/";
 
                
 

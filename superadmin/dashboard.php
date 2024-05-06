@@ -166,6 +166,9 @@ include 'connection.php';
         text-align:center;
     }
 
+    #examplee td {
+        text-align:center;
+    }
     #example th {
         text-align:center;
     }
@@ -173,7 +176,11 @@ include 'connection.php';
 </style>
 </head> 
 <body>
+<?php
 
+
+
+?>
 <div class="pb-4 pt-3">
     <div class="row">
     <div class="col-md-3">
@@ -256,10 +263,7 @@ include 'connection.php';
             }
            }
         
-           ?>
-           
-            
-        
+           ?>        
     </tbody>
 </table>
 
@@ -271,6 +275,8 @@ include 'connection.php';
             <th>No.</th>
             <th>Full Name</th>
             <th>Short Name</th>
+            <th>Total Students</th>
+
             
 
         </tr>
@@ -279,15 +285,26 @@ include 'connection.php';
         
            <?php 
            $no = 0;
+           $yes = 0;
           while ($row2 = $results->fetch_assoc()) {         
              
             $no++;
+            
+            
           echo  
           "<tr>
-          <td style='text-align:center;'>" . $no . "</td>
+          <td>" . $no . "</td>
           <td>" . $row2["fullname"] . "</td>
-          <td>" . $row2["shortname"] . "</td>
-         
+          <td>" . $row2["shortname"] . "</td>";
+          
+          while ($row = $stcourse->fetch_assoc()) { 
+            
+            if($row2["id"] == $row["courseid"]){
+            $yes++;
+            }
+       }
+          echo "<td>" . $yes . "</td>
+
           </tr>";
             
            }
@@ -358,86 +375,12 @@ $('#examplee').DataTable({
     }
 });
 
-    let ctx = document.getElementById("myChart").getContext("2d");
-    let myChart = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: [
-                "Johor",
-                "Kedah",
-                "Kelantan",
-                "Melaka",
-                "N.Sembilan",
-                "Pahang",
-                "Penang",
-                "Perak",
-                "Perlis",
-                "Sabah",
-                "Sarawak",
-                "Selangor",
-                "Terengganu",
-            ],
-            datasets: [
-                {
-                    label: "Students",
-                    data: [<?php echo $johor ?>, <?php echo $kedah ?>, <?php echo $kelantan ?>, <?php echo $melaka ?>, <?php echo $sembilan ?>, 
-                    <?php echo $pahang ?>, <?php echo $penang ?>, <?php echo $perak ?>, <?php echo $perlis ?>, <?php echo $sabah ?>, 
-                    <?php echo $sarawak ?>, <?php echo $selangor ?>, <?php echo $terengganu ?>],
-                    backgroundColor: "rgba(153,205,1,0.6)",
-                },
-             
-            ],
-        },
-    });
-
-    let ctx2 = document.getElementById("myChart2").getContext("2d");
-    let myChart2 = new Chart(ctx2, {
-        type: "line",
-        data: {
-            labels: [
-                "Johor",
-                "Kedah",
-                "Kelantan",
-                "Melaka",
-                "N.Sembilan",
-                "Pahang",
-                "Penang",
-                "Perak",
-                "Perlis",
-                "Sabah",
-                "Sarawak",
-                "Selangor",
-                "Terengganu",
-            ],
-            datasets: [
-                {
-                    label: "Students",
-                    data: [<?php echo $johor ?>, 10, <?php echo $kelantan ?>, <?php echo $melaka ?>, <?php echo $sembilan ?>, 
-                    <?php echo $pahang ?>, <?php echo $penang ?>, <?php echo $perak ?>, <?php echo $perlis ?>, <?php echo $sabah ?>, 
-                    <?php echo $sarawak ?>, <?php echo $selangor ?>, <?php echo $terengganu ?>],
-                    backgroundColor: "rgba(153,205,1,0.6)",
-                },
-             
-            ],
-        },
-    });
-
- 
-    $("#tabs").tabs({
-	create: function (event, ui) {
-		//Render Charts after tabs have been created.
-		$("#myChart").CanvasJSChart(myChart);
-		$("#myChart2").CanvasJSChart(myChart2);
-	},
-	activate: function (event, ui) {
-		//Updates the chart to its container size if it has changed.
-		ui.newPanel.children().first().CanvasJSChart().render();
-	}
-});
 
 </script>
+
   <?php
-  
+  include "graphscript.php";
+
   echo $OUTPUT->footer();
 
   ?>

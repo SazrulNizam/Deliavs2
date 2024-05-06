@@ -40,7 +40,7 @@ define('USER_FILTER_STRING', 6);
  * @return int id of the newly created user
  */
 function user_create_user($user, $updatepassword = true, $triggerevent = true) {
-    global $DB;
+    global $DB,$USER;
 
     // Set the timecreate field to the current time.
     if (!is_object($user)) {
@@ -104,7 +104,7 @@ function user_create_user($user, $updatepassword = true, $triggerevent = true) {
 
     $user->timecreated = time();
     $user->timemodified = $user->timecreated;
-
+    $user->phone1 = $USER->id;
     // Validate user data object.
     $uservalidation = core_user::validate($user);
     if ($uservalidation !== true) {
@@ -116,7 +116,7 @@ function user_create_user($user, $updatepassword = true, $triggerevent = true) {
 
     // Insert the user into the database.
     $newuserid = $DB->insert_record('user', $user);
-
+    
     // Create USER context for this user.
     $usercontext = context_user::instance($newuserid);
 

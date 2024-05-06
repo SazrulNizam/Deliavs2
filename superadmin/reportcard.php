@@ -129,9 +129,13 @@ global $CFG, $COURSE, $DB, $USER, $ROLE;
 
 
 //total student query
-$query = "SELECT distinct mdl_user.id ,mdl_user.email ,mdl_user.firstname,mdl_user.city, 
-mdl_role_assignments.userid, mdl_role_assignments.roleid 
-FROM mdl_user INNER JOIN mdl_role_assignments ON mdl_user.id = mdl_role_assignments.userid";
+// $query = "SELECT distinct mdl_user.id ,mdl_user.email ,mdl_user.firstname,mdl_user.city, 
+// mdl_role_assignments.userid, mdl_role_assignments.roleid 
+// FROM mdl_user INNER JOIN mdl_role_assignments ON mdl_user.id = mdl_role_assignments.userid";
+// $result = mysqli_query($con,$query);
+
+$query = "SELECT *
+FROM mdl_user INNER JOIN mdl_user_info_data ON mdl_user.id = mdl_user_info_data.userid";
 $result = mysqli_query($con,$query);
 
 
@@ -175,7 +179,7 @@ $result = mysqli_query($con,$query);
 
            while ($row = $result->fetch_assoc()) {
 
-            if($row["roleid"] == 5){
+            if($row["data"] == 'Student'){
            
              
             $no++;
@@ -185,7 +189,7 @@ $result = mysqli_query($con,$query);
           <td>" . $row["email"] . "</td>
           <td>" . $row["firstname"] . "</td>
 
-          <td> <a href='upload/index.php?id=". $row["id"]."'". "class='btn btn-primary'>Upload</button>
+          <td> <a href='upload/index.php?id=". $row["userid"]."'". "class='btn btn-primary'>Upload</button>
                 </td></tr>";
             
            }

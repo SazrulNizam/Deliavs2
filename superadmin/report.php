@@ -133,7 +133,16 @@ include 'connection.php';
 <!DOCTYPE html>
 <html>
    <head>
+<style>
+   #example th {
+        text-align:center;
+    }
 
+    #example td {
+        text-align:center;
+    }
+
+</style>
  
 </head> 
 <body>
