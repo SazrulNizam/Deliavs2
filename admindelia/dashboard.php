@@ -24,7 +24,7 @@
 
 require_once("../config.php");
 require_once($CFG->dirroot.'/course/lib.php');
-
+ 
 $q         = optional_param('q', '', PARAM_RAW);       // Global search words.
 $search    = optional_param('search', '', PARAM_RAW);  // search words
 $page      = optional_param('page', 0, PARAM_INT);     // which page to show
@@ -80,7 +80,7 @@ $strnovalidcourses = new lang_string('novalidcourses');
 
 $courseurl = core_course_category::user_top() ? new moodle_url('/index.php') : null;
 $PAGE->navbar->add("Home", $courseurl);
-$PAGE->navbar->add($strsearch, new moodle_url('/course/newpage.php'));
+$PAGE->navbar->add('Dashboard', new moodle_url('/course/newpage.php'));
 
 
 if (empty($searchcriteria)) {
@@ -123,6 +123,8 @@ $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/buttons/3.0.1/c
 echo $OUTPUT->header();
 global $CFG, $COURSE, $DB, $USER, $ROLE;
 include 'connection.php';
+
+
 ?>
 
 
@@ -130,16 +132,55 @@ include 'connection.php';
 <html>
    <head>
    <link rel="stylesheet" href="dashboard.css">
-   
+   <script src=
+"https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js"></script>  
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
 <!------ Include the above in your HEAD tag ---------->
+<link href="https://canvasjs.com/assets/css/jquery-ui.1.11.2.min.css" rel="stylesheet" />
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
+<style>
+      .ui-tabs-anchor {
+    outline: none;
+  }
+    .container {
+        width: 70%;
+        margin: 15px auto;
+    }
  
+    body {
+        text-align: center;
+    }
+ 
+    h2 {
+        text-align: center;
+        font-family: "Verdana", sans-serif;
+        font-size: 30px;
+    }
+
+    #examplee th {
+        text-align:center;
+    }
+
+    #examplee td {
+        text-align:center;
+    }
+    #example th {
+        text-align:center;
+    }
+    
+</style>
 </head> 
 <body>
+<?php
 
+
+
+?>
 <div class="pb-4 pt-3">
     <div class="row">
     <div class="col-md-3">
@@ -163,6 +204,34 @@ include 'connection.php';
 </div>
 <hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
 
+<?php include 'graphstate.php' 
+
+?>
+<div id="tabs" >
+<ul>
+<li ><a href="#tabs-1" style="font-size: 12px">January</a></li>
+<li ><a href="#tabs-2"  style="font-size: 12px">February</a></li>
+<li ><a href="#tabs-3"  style="font-size: 12px">March</a></li>
+<li ><a href="#tabs-4"  style="font-size: 12px">April</a></li>
+<li ><a href="#tabs-5"  style="font-size: 12px">May</a></li>
+<li ><a href="#tabs-6"  style="font-size: 12px">Jun</a></li>
+<li ><a href="#tabs-7"  style="font-size: 12px">July</a></li>
+<li ><a href="#tabs-8"  style="font-size: 12px">August</a></li>
+<li ><a href="#tabs-9"  style="font-size: 12px">September</a></li>
+<li ><a href="#tabs-10"  style="font-size: 12px">October</a></li>
+<li ><a href="#tabs-11"  style="font-size: 12px">November</a></li>
+<li ><a href="#tabs-12"  style="font-size: 12px">December</a></li>
+
+</ul>
+<div class="container">
+    
+        
+<?php include "chart.php"?>       
+</div>
+</div>
+
+    <hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
+    <h2>Students By <?php echo $USER->firstname ?></h2>
 <table id="example" class="table table-striped" style="width:100%">
     <thead>
         <tr>
@@ -175,11 +244,13 @@ include 'connection.php';
     </thead>
     <tbody>
         
+    
            <?php 
+
            $no = 0;
           while ($row = $result->fetch_assoc()) {
 
-            if($row["roleid"] == 5){
+            if($row["data"] == 'Student'){
              
             $no++;
           echo  
@@ -192,14 +263,16 @@ include 'connection.php';
             }
            }
         
-           ?>
-           
-            
+           ?>        
+    </tbody>
+</table>
+
+
         
     </tbody>
 </table>
         
-
+<?php $data = 1; ?>
 </body>
 <script src = "https://code.jquery.com/jquery-3.7.1.js"></script> 
 <script src = "https://cdn.datatables.net/2.0.3/js/dataTables.js"></script> 
@@ -212,18 +285,58 @@ include 'connection.php';
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.print.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://canvasjs.com/assets/script/jquery-ui.1.11.2.min.js"></script>
+<script src="https://cdn.canvasjs.com/jquery.canvasjs.min.js"></script>
 <script>
 
 $('#example').DataTable({
     layout: {
         topStart: {
-            buttons: ['copy', 'excel', 'pdf', ]
+            buttons: [
+            {
+            extend: 'csv',
+            filename: 'Student data'
+            },
+          {
+            extend: 'excel',
+            filename: 'Student data'
+            },
+          {
+            extend: 'pdf',
+            filename: 'Student data'
+            }
+        ]
         }
     }
 });
+
+$('#examplee').DataTable({
+    layout: {
+        topStart: {
+            buttons: [
+            {
+            extend: 'csv',
+            filename: 'Course report'
+            },
+          {
+            extend: 'excel',
+            filename: 'Course report'
+            },
+          {
+            extend: 'pdf',
+            filename: 'Course report'
+            }
+        ]
+        }
+    }
+});
+
+
 </script>
+
   <?php
-  
+  include "graphscript.php";
+
   echo $OUTPUT->footer();
 
   ?>
