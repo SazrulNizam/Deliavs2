@@ -243,7 +243,7 @@ include 'connection.php';
                     if ($row["courseid"] == $row2["id"]) {
 
                         $query3 = "SELECT *
-                        FROM mdl_user INNER JOIN mdl_user_info_data ON mdl_user.id = mdl_user_info_data.userid WHERE data='Student'";
+                        FROM mdl_user INNER JOIN mdl_user_info_data ON mdl_user.id = mdl_user_info_data.userid WHERE data='Student' AND phone1=$USER->id";
                         $result3 = mysqli_query($con, $query3);
                         while ($row3 = $result3->fetch_assoc()) {
 
