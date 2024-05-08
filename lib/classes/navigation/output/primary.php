@@ -226,8 +226,6 @@ class primary implements renderable, templatable {
                 $CFG->custommenuitems .= "
                 Calendar | /my/";
 
-               
-
                 
             }
         

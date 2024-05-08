@@ -4,16 +4,20 @@ $con =mysqli_connect("localhost","root","","deliadata");
 
 //student
 $query = "SELECT *
-FROM mdl_user INNER JOIN mdl_user_info_data ON mdl_user.id = mdl_user_info_data.userid";
+FROM mdl_user INNER JOIN mdl_user_info_data ON mdl_user.id = mdl_user_info_data.userid WHERE data='Student'";
 $result = mysqli_query($con,$query);
 
 //course
 $querys = "SELECT * FROM mdl_course WHERE category !=0";
 $results = mysqli_query($con,$querys);
 
-$studentcourse = "SELECT * FROM mdl_user_info_data INNER JOIN mdl_user_enrolments ON mdl_user_info_data.userid
-= mdl_user_enrolments.userid INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = mdl_enrol.id WHERE mdl_user_info_data.data='Student' ";
-$stcourse = mysqli_query($con,$studentcourse);
+
+
+
+
+// $studentcourse = "SELECT * FROM mdl_user_info_data INNER JOIN mdl_user_enrolments ON mdl_user_info_data.userid
+// = mdl_user_enrolments.userid INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = mdl_enrol.id WHERE mdl_user_info_data.data='Student' ";
+// $stcourse = mysqli_query($con,$studentcourse);
 
 
 
@@ -41,9 +45,9 @@ $datareport = mysqli_query($con,$report);
 $userinfo = "SELECT * FROM mdl_user_info_data";
 $datauserinfo = mysqli_query($con,$userinfo);
 
-$enrol = "SELECT *
-FROM mdl_user_enrolments INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = mdl_enrol.id INNER JOIN mdl_course ON mdl_enrol.courseid = mdl_course.id";
-$enrolreport = mysqli_query($con,$enrol);
+// $enrol = "SELECT *
+// FROM mdl_user_enrolments INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = mdl_enrol.id INNER JOIN mdl_course ON mdl_enrol.courseid = mdl_course.id";
+// $enrolreport = mysqli_query($con,$enrol);
 
 
 //Student State Graph

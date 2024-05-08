@@ -1,4 +1,3 @@
-
 <?php
 // This file is part of Moodle - http://moodle.org/
 //
@@ -22,16 +21,16 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once("../config.php");
-require_once($CFG->dirroot.'/course/lib.php');
- 
-$q         = optional_param('q', '', PARAM_RAW);       // Global search words.
-$search    = optional_param('search', '', PARAM_RAW);  // search words
-$page      = optional_param('page', 0, PARAM_INT);     // which page to show
-$perpage   = optional_param('perpage', '', PARAM_RAW); // how many per page, may be integer or 'all'
+require_once ("../config.php");
+require_once ($CFG->dirroot . '/course/lib.php');
+
+$q = optional_param('q', '', PARAM_RAW);       // Global search words.
+$search = optional_param('search', '', PARAM_RAW);  // search words
+$page = optional_param('page', 0, PARAM_INT);     // which page to show
+$perpage = optional_param('perpage', '', PARAM_RAW); // how many per page, may be integer or 'all'
 $blocklist = optional_param('blocklist', 0, PARAM_INT);
-$modulelist= optional_param('modulelist', '', PARAM_PLUGIN);
-$tagid     = optional_param('tagid', '', PARAM_INT);   // searches for courses tagged with this tag id
+$modulelist = optional_param('modulelist', '', PARAM_PLUGIN);
+$tagid = optional_param('tagid', '', PARAM_INT);   // searches for courses tagged with this tag id
 
 // Use global search.
 if ($q) {
@@ -55,7 +54,7 @@ foreach (array('search', 'blocklist', 'modulelist', 'tagid') as $param) {
     }
 }
 $urlparams = array();
-if ($perpage !== 'all' && !($perpage = (int)$perpage)) {
+if ($perpage !== 'all' && !($perpage = (int) $perpage)) {
     // default number of courses per page
     $perpage = $CFG->coursesperpage;
 } else {
@@ -130,200 +129,213 @@ include 'connection.php';
 
 <!DOCTYPE html>
 <html>
-   <head>
-   <link rel="stylesheet" href="dashboard.css">
-   <script src=
-"https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js"></script>  
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<head>
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 
-<!------ Include the above in your HEAD tag ---------->
-<link href="https://canvasjs.com/assets/css/jquery-ui.1.11.2.min.css" rel="stylesheet" />
+    <!------ Include the above in your HEAD tag ---------->
+    <link href="https://canvasjs.com/assets/css/jquery-ui.1.11.2.min.css" rel="stylesheet" />
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
-<style>
-      .ui-tabs-anchor {
-    outline: none;
-  }
-    .container {
-        width: 70%;
-        margin: 15px auto;
-    }
- 
-    body {
-        text-align: center;
-    }
- 
-    h2 {
-        text-align: center;
-        font-family: "Verdana", sans-serif;
-        font-size: 30px;
-    }
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
+    <style>
+        .ui-tabs-anchor {
+            outline: none;
+        }
 
-    #examplee th {
-        text-align:center;
-    }
+        .container {
+            width: 70%;
+            margin: 15px auto;
+        }
 
-    #examplee td {
-        text-align:center;
-    }
-    #example th {
-        text-align:center;
-    }
-    
-</style>
-</head> 
+        body {
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+            font-family: "Verdana", sans-serif;
+            font-size: 30px;
+        }
+
+        #examplee th {
+            text-align: center;
+        }
+
+        #examplee td {
+            text-align: center;
+        }
+
+        #example th {
+            text-align: center;
+        }
+    </style>
+</head>
+
 <body>
-<?php
+    <?php
 
 
 
-?>
-<div class="pb-4 pt-3">
-    <div class="row">
-    <div class="col-md-3">
-      <div class="card-counter primary">
-        <i class="fa fa-users"></i>
-        <span class="count-numbers"><?php echo $data['total']; ?></span>
-        <span class="count-name">Total Student</span>
-      </div>
+    ?>
+    <div class="pb-4 pt-3">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card-counter primary">
+                    <i class="fa fa-users"></i>
+                    <span class="count-numbers"><?php echo $data['total']; ?></span>
+                    <span class="count-name">Total Student</span>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card-counter danger">
+                    <i class="fa fa-book"></i>
+                    <span class="count-numbers"><?php echo $allcourse['allcourse']; ?></span>
+                    <span class="count-name">Total Course</span>
+                </div>
+            </div>
+
+
+        </div>
     </div>
+    <hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
 
-    <div class="col-md-3">
-      <div class="card-counter danger">
-        <i class="fa fa-book"></i>
-        <span class="count-numbers"><?php echo $allcourse['allcourse']; ?></span>
-        <span class="count-name">Total Course</span>
-      </div>
+    <?php include 'graphstate.php'
+
+        ?>
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-1" style="font-size: 12px">January</a></li>
+            <li><a href="#tabs-2" style="font-size: 12px">February</a></li>
+            <li><a href="#tabs-3" style="font-size: 12px">March</a></li>
+            <li><a href="#tabs-4" style="font-size: 12px">April</a></li>
+            <li><a href="#tabs-5" style="font-size: 12px">May</a></li>
+            <li><a href="#tabs-6" style="font-size: 12px">Jun</a></li>
+            <li><a href="#tabs-7" style="font-size: 12px">July</a></li>
+            <li><a href="#tabs-8" style="font-size: 12px">August</a></li>
+            <li><a href="#tabs-9" style="font-size: 12px">September</a></li>
+            <li><a href="#tabs-10" style="font-size: 12px">October</a></li>
+            <li><a href="#tabs-11" style="font-size: 12px">November</a></li>
+            <li><a href="#tabs-12" style="font-size: 12px">December</a></li>
+
+        </ul>
+        <div class="container">
+
+
+            <?php include "chart.php" ?>
+        </div>
     </div>
-
-
-  </div>
-</div>
-<hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
-
-<?php include 'graphstate.php' 
-
-?>
-<div id="tabs" >
-<ul>
-<li ><a href="#tabs-1" style="font-size: 12px">January</a></li>
-<li ><a href="#tabs-2"  style="font-size: 12px">February</a></li>
-<li ><a href="#tabs-3"  style="font-size: 12px">March</a></li>
-<li ><a href="#tabs-4"  style="font-size: 12px">April</a></li>
-<li ><a href="#tabs-5"  style="font-size: 12px">May</a></li>
-<li ><a href="#tabs-6"  style="font-size: 12px">Jun</a></li>
-<li ><a href="#tabs-7"  style="font-size: 12px">July</a></li>
-<li ><a href="#tabs-8"  style="font-size: 12px">August</a></li>
-<li ><a href="#tabs-9"  style="font-size: 12px">September</a></li>
-<li ><a href="#tabs-10"  style="font-size: 12px">October</a></li>
-<li ><a href="#tabs-11"  style="font-size: 12px">November</a></li>
-<li ><a href="#tabs-12"  style="font-size: 12px">December</a></li>
-
-</ul>
-<div class="container">
-    
-        
-<?php include "chart.php"?>       
-</div>
-</div>
 
     <hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
     <h2>Students</h2>
-<table id="example" class="table table-striped" style="width:100%">
-    <thead>
-        <tr>
-            <th style="text-align:center;">No.</th>
-            <th>First Name</th>
-            <th>Email</th>
-            <th>City</th>
+    <table id="example" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th style="text-align:center;">No.</th>
+                <th>First Name</th>
+                <th>Email</th>
+                <th>City</th>
 
-        </tr>
-    </thead>
-    <tbody>
-        
-    
-           <?php 
+            </tr>
+        </thead>
+        <tbody>
 
-           $no = 0;
-          while ($row = $result->fetch_assoc()) {
 
-            if($row["data"] == 'Student'){
-             
-            $no++;
-          echo  
-          "<tr>
+            <?php
+
+            $no = 0;
+            while ($row = $result->fetch_assoc()) {
+
+                if ($row["data"] == 'Student') {
+
+                    $no++;
+                    echo
+                        "<tr>
           <td style='text-align:center;'>" . $no . "</td>
           <td>" . $row["firstname"] . "</td>
           <td>" . $row["email"] . "</td>
           <td>" . $row["city"] . "</td>
           </tr>";
+                }
             }
-           }
-        
-           ?>        
-    </tbody>
-</table>
 
-<hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
+            ?>
+        </tbody>
+    </table>
+
+    <hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
     <h2>Courses</h2>
-<table id="examplee" class="table table-striped" style="width:100%">
-    <thead>
-        <tr>
-            <th>No.</th>
-            <th>Full Name</th>
-            <th>Short Name</th>
-            <th>Total Students</th>
+    <table id="examplee" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Full Name</th>
+                <th>Short Name</th>
+                <th>Total Students</th>
 
-            
 
-        </tr>
-    </thead>
-    <tbody>
-        
-           <?php 
-           $no = 0;
-           $yes = 0;
-          while ($row2 = $results->fetch_assoc()) {         
-             
-            $no++;
-            
-            
-          echo  
-          "<tr>
+
+            </tr>
+        </thead>
+        <tbody>
+
+            <?php
+            $no = 0;
+            while ($row2 = $results->fetch_assoc()) {
+                $yes = 0;
+
+                $no++;
+
+
+                echo
+                    "<tr>
           <td>" . $no . "</td>
           <td>" . $row2["fullname"] . "</td>
           <td>" . $row2["shortname"] . "</td>";
-          
-          while ($row = $stcourse->fetch_assoc()) { 
-            
-            if($row2["id"] == $row["courseid"]){
-            $yes++;
-            }
-       }
-          echo "<td>" . $yes . "</td>
+
+                $studentcourse = "SELECT *
+                FROM mdl_user_enrolments INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = mdl_enrol.id ";
+                $stcourses = mysqli_query($con, $studentcourse);
+                while ($row = $stcourses->fetch_assoc()) {
+                    if ($row["courseid"] == $row2["id"]) {
+
+                        $query3 = "SELECT *
+                        FROM mdl_user INNER JOIN mdl_user_info_data ON mdl_user.id = mdl_user_info_data.userid WHERE data='Student'";
+                        $result3 = mysqli_query($con, $query3);
+                        while ($row3 = $result3->fetch_assoc()) {
+
+                            if ($row3["userid"] == $row["userid"]) {
+                                $yes++;
+
+                            }
+                        }
+                    }
+                }
+                echo "<td>" . $yes . "</td>
 
           </tr>";
-            
-           }
-        
-           ?>
-           
-            
-        
-    </tbody>
-</table>
-        
-<?php $data = 1; ?>
+
+            }
+
+            ?>
+
+
+
+        </tbody>
+    </table>
+
 </body>
-<script src = "https://code.jquery.com/jquery-3.7.1.js"></script> 
-<script src = "https://cdn.datatables.net/2.0.3/js/dataTables.js"></script> 
-<script src = "https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script> 
-<script src = "https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.js"></script> 
-<script src = "https://cdn.datatables.net/buttons/3.0.1/js/buttons.bootstrap4.js"></script> 
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script> 
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.bootstrap4.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
@@ -333,57 +345,57 @@ include 'connection.php';
 <script src="https://cdn.canvasjs.com/jquery.canvasjs.min.js"></script>
 <script>
 
-$('#example').DataTable({
-    layout: {
-        topStart: {
-            buttons: [
-            {
-            extend: 'csv',
-            filename: 'Student data'
-            },
-          {
-            extend: 'excel',
-            filename: 'Student data'
-            },
-          {
-            extend: 'pdf',
-            filename: 'Student data'
+    $('#example').DataTable({
+        layout: {
+            topStart: {
+                buttons: [
+                    {
+                        extend: 'csv',
+                        filename: 'Student data'
+                    },
+                    {
+                        extend: 'excel',
+                        filename: 'Student data'
+                    },
+                    {
+                        extend: 'pdf',
+                        filename: 'Student data'
+                    }
+                ]
             }
-        ]
         }
-    }
-});
+    });
 
-$('#examplee').DataTable({
-    layout: {
-        topStart: {
-            buttons: [
-            {
-            extend: 'csv',
-            filename: 'Course report'
-            },
-          {
-            extend: 'excel',
-            filename: 'Course report'
-            },
-          {
-            extend: 'pdf',
-            filename: 'Course report'
+    $('#examplee').DataTable({
+        layout: {
+            topStart: {
+                buttons: [
+                    {
+                        extend: 'csv',
+                        filename: 'Course report'
+                    },
+                    {
+                        extend: 'excel',
+                        filename: 'Course report'
+                    },
+                    {
+                        extend: 'pdf',
+                        filename: 'Course report'
+                    }
+                ]
             }
-        ]
         }
-    }
-});
+    });
 
 
 </script>
 
-  <?php
-  include "graphscript.php";
+<?php
+include "graphscript.php";
 
-  echo $OUTPUT->footer();
+echo $OUTPUT->footer();
 
-  ?>
+?>
 
 
 </html>

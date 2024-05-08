@@ -1,4 +1,3 @@
-
 <?php
 // This file is part of Moodle - http://moodle.org/
 //
@@ -23,15 +22,15 @@
  */
 
 require_once("../config.php");
-require_once($CFG->dirroot.'/course/lib.php');
+require_once($CFG->dirroot . '/course/lib.php');
 
-$q         = optional_param('q', '', PARAM_RAW);       // Global search words.
-$search    = optional_param('search', '', PARAM_RAW);  // search words
-$page      = optional_param('page', 0, PARAM_INT);     // which page to show
-$perpage   = optional_param('perpage', '', PARAM_RAW); // how many per page, may be integer or 'all'
+$q = optional_param('q', '', PARAM_RAW);       // Global search words.
+$search = optional_param('search', '', PARAM_RAW);  // search words
+$page = optional_param('page', 0, PARAM_INT);     // which page to show
+$perpage = optional_param('perpage', '', PARAM_RAW); // how many per page, may be integer or 'all'
 $blocklist = optional_param('blocklist', 0, PARAM_INT);
-$modulelist= optional_param('modulelist', '', PARAM_PLUGIN);
-$tagid     = optional_param('tagid', '', PARAM_INT);   // searches for courses tagged with this tag id
+$modulelist = optional_param('modulelist', '', PARAM_PLUGIN);
+$tagid = optional_param('tagid', '', PARAM_INT);   // searches for courses tagged with this tag id
 
 // Use global search.
 if ($q) {
@@ -55,7 +54,7 @@ foreach (array('search', 'blocklist', 'modulelist', 'tagid') as $param) {
     }
 }
 $urlparams = array();
-if ($perpage !== 'all' && !($perpage = (int)$perpage)) {
+if ($perpage !== 'all' && !($perpage = (int) $perpage)) {
     // default number of courses per page
     $perpage = $CFG->coursesperpage;
 } else {
@@ -124,76 +123,187 @@ $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/2.0.3/css/dataT
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/buttons/3.0.1/css/buttons.bootstrap4.css'));
 echo $OUTPUT->header();
 global $CFG, $COURSE, $DB, $USER, $ROLE;
- $con =mysqli_connect("localhost","root","","deliadata");
+include 'connection.php';
 
-$query = "select * from mdl_user";
-$result = mysqli_query($con,$query);
-echo $ROLE->name;
+
 ?>
 
 
 <!DOCTYPE html>
 <html>
-   <head>
 
- 
-</head> 
+<head>
+    <style>
+        #example th {
+            text-align: center;
+        }
+
+        #example td {
+            text-align: center;
+        }
+    </style>
+
+</head>
+
 <body>
-<table id="example" class="table table-striped" style="width:100%">
-    <thead>
-        <tr>
-            <th>First Name</th>
-            <th>Email</th>
-        </tr>
-    </thead>
-    <tbody>
-        
-           <?php 
-          
-          while ($row = $result->fetch_assoc()) {
+    <title>Report</title>
+    <h2>Students</h2>
+    <table id="example" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th style="text-align:center;">State of Nadi</th>
+                <th>Phase of Nadi</th>
+                <th>Name of Nadi</th>
+                <th>Email of Nadi</th>
+                <th> Name</th>
+                <th>IC number</th>
+                <th>Email</th>
+                <th>Age</th>
+                <th>Phone Number</th>
+                <th>Parents Name</th>
+                <th>Email of Parents</th>
+                <th>Parents P.Number</th>
+                <th>Course Enroled</th>
 
-            if( $row["firstname"] != "Guest user" && $row["deleted"] != 1)
-          echo  "<tr><td>" . $row["firstname"] . "</td>
-                 <td>" . $row["email"] . "</td>
-                 </tr>";
+            </tr>
+        </thead>
+        <tbody>
 
-           }
-        
-           ?>
-           
-            
-        
-    </tbody>
-</table>
+            <?php
+            while ($row = $datareport->fetch_assoc()) {
+
+                if ($row["data"] == 'Student' && $row["phone1"] == $USER->id) {
+
+                    $datauserid = $row["userid"];
+                    include 'reportconnection.php';
+                    echo
+                    "<tr>
+          <td> " . $dstate["data"] . "</td>
+          <td>" . $nphase["data"] . "</td>
+          <td>" . $nnadi["data"] . "</td>
+          <td>" . $nemail["data"] . "</td>
+          <td>" . $uname["firstname"] . "</td>
+          <td>" . $icnumber["data"] . "</td>
+          <td>" . $uemail["email"] . "</td>
+          <td>" . $uage["data"] . "</td>
+          <td>" . $pnum["data"] . "</td>
+          <td>" . $pname["data"] . "</td>
+          <td>" . $pemail["data"] . "</td>
+          <td>" . $ppnum["data"] . "</td>
+          <td><ul>";
+
+                    while ($rows = $enrolreport->fetch_assoc()) {
+
+                        if ($rows["userid"] == $row["userid"]) {
+
+                            echo "<li>" . $rows["fullname"] . "</li>";
+                        }
+                    }
+                    echo "</ul></td></tr>";
+                }
+            }
+            ?>
+        </tbody>
+    </table>
+    <br><br>
+    <hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
+    <h2>Courses</h2>
+    <table id="examplee" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Full Name</th>
+                <th>Short Name</th>
+                <th>Total Students</th>
 
 
+
+            </tr>
+        </thead>
+        <tbody>
+
+            <?php
+            $no = 0;
+            while ($row2 = $results->fetch_assoc()) {
+                $yes = 0;
+
+                $no++;
+
+
+                echo
+                    "<tr>
+          <td>" . $no . "</td>
+          <td>" . $row2["fullname"] . "</td>
+          <td>" . $row2["shortname"] . "</td>";
+
+                $studentcourse = "SELECT *
+                FROM mdl_user_enrolments INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = mdl_enrol.id ";
+                $stcourses = mysqli_query($con, $studentcourse);
+                while ($row = $stcourses->fetch_assoc()) {
+                    if ($row["courseid"] == $row2["id"]) {
+
+                        $query3 = "SELECT *
+                        FROM mdl_user INNER JOIN mdl_user_info_data ON mdl_user.id = mdl_user_info_data.userid WHERE data='Student'";
+                        $result3 = mysqli_query($con, $query3);
+                        while ($row3 = $result3->fetch_assoc()) {
+
+                            if ($row3["userid"] == $row["userid"]) {
+                                $yes++;
+
+                            }
+                        }
+                    }
+                }
+                echo "<td>" . $yes . "</td>
+
+          </tr>";
+
+            }
+
+            ?>
+
+
+
+        </tbody>
+    </table>
 </body>
-<script src = "https://code.jquery.com/jquery-3.7.1.js"></script> 
-<script src = "https://cdn.datatables.net/2.0.3/js/dataTables.js"></script> 
-<script src = "https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script> 
-<script src = "https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.js"></script> 
-<script src = "https://cdn.datatables.net/buttons/3.0.1/js/buttons.bootstrap4.js"></script> 
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script> 
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.bootstrap4.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.print.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script>
-
-$('#example').DataTable({
-    layout: {
-        topStart: {
-            buttons: ['copy', 'excel', 'pdf', ]
+    $('#example').DataTable({
+        layout: {
+            topStart: {
+                buttons: [{
+                        extend: 'csv',
+                        filename: 'Student report'
+                    },
+                    {
+                        extend: 'excel',
+                        filename: 'Student report'
+                    },
+                    {
+                        extend: 'pdf',
+                        filename: 'Student report'
+                    }
+                ]
+            }
         }
-    }
-});
+    });
 </script>
-  <?php
-  
-  echo $OUTPUT->footer();
+<?php
 
-  ?>
+echo $OUTPUT->footer();
+
+?>
 
 
 </html>

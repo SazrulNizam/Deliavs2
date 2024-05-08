@@ -1,4 +1,3 @@
-
 <?php
 // This file is part of Moodle - http://moodle.org/
 //
@@ -22,16 +21,16 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once("../config.php");
-require_once($CFG->dirroot.'/course/lib.php');
+require_once ("../config.php");
+require_once ($CFG->dirroot . '/course/lib.php');
 
-$q         = optional_param('q', '', PARAM_RAW);       // Global search words.
-$search    = optional_param('search', '', PARAM_RAW);  // search words
-$page      = optional_param('page', 0, PARAM_INT);     // which page to show
-$perpage   = optional_param('perpage', '', PARAM_RAW); // how many per page, may be integer or 'all'
+$q = optional_param('q', '', PARAM_RAW);       // Global search words.
+$search = optional_param('search', '', PARAM_RAW);  // search words
+$page = optional_param('page', 0, PARAM_INT);     // which page to show
+$perpage = optional_param('perpage', '', PARAM_RAW); // how many per page, may be integer or 'all'
 $blocklist = optional_param('blocklist', 0, PARAM_INT);
-$modulelist= optional_param('modulelist', '', PARAM_PLUGIN);
-$tagid     = optional_param('tagid', '', PARAM_INT);   // searches for courses tagged with this tag id
+$modulelist = optional_param('modulelist', '', PARAM_PLUGIN);
+$tagid = optional_param('tagid', '', PARAM_INT);   // searches for courses tagged with this tag id
 
 // Use global search.
 if ($q) {
@@ -55,7 +54,7 @@ foreach (array('search', 'blocklist', 'modulelist', 'tagid') as $param) {
     }
 }
 $urlparams = array();
-if ($perpage !== 'all' && !($perpage = (int)$perpage)) {
+if ($perpage !== 'all' && !($perpage = (int) $perpage)) {
     // default number of courses per page
     $perpage = $CFG->coursesperpage;
 } else {
@@ -132,54 +131,55 @@ include 'connection.php';
 
 <!DOCTYPE html>
 <html>
-   <head>
-<style>
-   #example th {
-        text-align:center;
-    }
 
-    #example td {
-        text-align:center;
-    }
+<head>
+    <style>
+        #example th {
+            text-align: center;
+        }
 
-</style>
- 
-</head> 
+        #example td {
+            text-align: center;
+        }
+    </style>
+
+</head>
+
 <body>
     <title>Report</title>
-<h2>Students</h2>
-<table id="example" class="table table-striped" style="width:100%">
-    <thead>
-        <tr>
-            <th style="text-align:center;">State of Nadi</th>
-            <th>Phase of Nadi</th>
-            <th>Name of Nadi</th>
-            <th>Email of Nadi</th>
-            <th> Name</th>
-            <th>IC number</th>
-            <th>Email</th>
-            <th>Age</th>
-            <th>Phone Number</th>
-            <th>Parents Name</th>
-            <th>Email of Parents</th>
-            <th>Parents P.Number</th>
-            <th>Course Enroled</th>
+    <h2>Students</h2>
+    <table id="example" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th style="text-align:center;">State of Nadi</th>
+                <th>Phase of Nadi</th>
+                <th>Name of Nadi</th>
+                <th>Email of Nadi</th>
+                <th> Name</th>
+                <th>IC number</th>
+                <th>Email</th>
+                <th>Age</th>
+                <th>Phone Number</th>
+                <th>Parents Name</th>
+                <th>Email of Parents</th>
+                <th>Parents P.Number</th>
+                <th>Course Enroled</th>
 
-        </tr>
-    </thead>
-    <tbody>
-        
-           <?php 
-          while ($row = $datareport->fetch_assoc()) {
+            </tr>
+        </thead>
+        <tbody>
 
-            if($row["data"] == 'Student'){
+            <?php
+            while ($row = $datareport->fetch_assoc()) {
 
-                $datauserid = $row["userid"];
-                include 'reportconnection.php';
-          
-          echo  
-          "<tr>
-          <td> " .$dstate["data"] . "</td>
+                if ($row["data"] == 'Student') {
+
+                    $datauserid = $row["userid"];
+                    include 'reportconnection.php';
+
+                    echo
+                        "<tr>
+          <td> " . $dstate["data"] . "</td>
           <td>" . $nphase["data"] . "</td>
           <td>" . $nnadi["data"] . "</td>
           <td>" . $nemail["data"] . "</td>
@@ -193,35 +193,39 @@ include 'connection.php';
           <td>" . $ppnum["data"] . "</td>
           <td><ul>";
 
-          while ($rows = $enrolreport->fetch_assoc()) {
 
-            if($rows["userid"] == $row["userid"]){                
+                    $enrol = "SELECT *
+FROM mdl_user_enrolments INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = mdl_enrol.id INNER JOIN mdl_course ON mdl_enrol.courseid = mdl_course.id";
+                    $enrolreport = mysqli_query($con, $enrol);
+                    while ($rows = $enrolreport->fetch_assoc()) {
 
-                        echo "<li>". $rows["fullname"]. "</li>";
+                        if ($rows["userid"] == $row["userid"]) {
 
+                            echo "<li>" . $rows["fullname"] . "</li>";
+
+                        }
+                    }
+                    echo "</ul></td></tr>";
+
+                }
             }
-        }
-          echo "</ul></td></tr>";
-           
-             }
-            }
-           
-        
-           ?>
-           
-            
-        
-    </tbody>
-</table>
+
+
+            ?>
+
+
+
+        </tbody>
+    </table>
 
 
 </body>
-<script src = "https://code.jquery.com/jquery-3.7.1.js"></script> 
-<script src = "https://cdn.datatables.net/2.0.3/js/dataTables.js"></script> 
-<script src = "https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script> 
-<script src = "https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.js"></script> 
-<script src = "https://cdn.datatables.net/buttons/3.0.1/js/buttons.bootstrap4.js"></script> 
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script> 
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.bootstrap4.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
@@ -229,32 +233,32 @@ include 'connection.php';
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script>
 
-$('#example').DataTable({
-    layout: {
-        topStart: {
-            buttons: [
-            {
-            extend: 'csv',
-            filename: 'Student report'
-            },
-          {
-            extend: 'excel',
-            filename: 'Student report'
-            },
-          {
-            extend: 'pdf',
-            filename: 'Student report'
+    $('#example').DataTable({
+        layout: {
+            topStart: {
+                buttons: [
+                    {
+                        extend: 'csv',
+                        filename: 'Student report'
+                    },
+                    {
+                        extend: 'excel',
+                        filename: 'Student report'
+                    },
+                    {
+                        extend: 'pdf',
+                        filename: 'Student report'
+                    }
+                ]
             }
-        ]
         }
-    }
-});
+    });
 </script>
-  <?php
-  
-  echo $OUTPUT->footer();
+<?php
 
-  ?>
+echo $OUTPUT->footer();
+
+?>
 
 
 </html>

@@ -71,8 +71,13 @@ class primary extends view {
             $roles = get_user_roles($context, $USER->id, false);
             $role = key($roles);
             $roleid = $roles[$role]->roleid;
+            $con =mysqli_connect("localhost","root","","deliadata");
 
-            if($roleid == 3 || $roleid == 5){
+            $querys ="SELECT * FROM mdl_user_info_data WHERE fieldid = 6 AND userid = $USER->id";
+            $result = mysqli_query($con,$querys);
+            $data=mysqli_fetch_assoc($result);
+
+            if($roleid == 3 || $roleid == 5 || $data['data'] == 'Teacher' || $data['data'] == 'Student'){
             // Add the mycourses link.
             $showcoursesnode = empty($this->page->theme->removedprimarynavitems) ||
                 !in_array('courses', $this->page->theme->removedprimarynavitems);
