@@ -122,6 +122,10 @@ $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/buttons/3.0.1/c
 echo $OUTPUT->header();
 global $CFG, $COURSE, $DB, $USER, $ROLE;
 include 'connection.php';
+$test = "SELECT *
+FROM mdl_user_enrolments WHERE userid = 18 AND enrolid= 10";
+$tests = mysqli_query($con,$test);
+$datatest=mysqli_fetch_assoc($tests);
 
 
 ?>
@@ -178,9 +182,10 @@ include 'connection.php';
 
 <body>
     <?php
+$currentyear = date("m");
+$total = $currentyear + 01;
 
-
-
+;
     ?>
     <div class="pb-4 pt-3">
         <div class="row">
@@ -269,7 +274,7 @@ include 'connection.php';
     </table>
 
     <hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
-    <h2>Courses</h2>
+    <h2>Courses This Month</h2>
     <table id="examplee" class="table table-striped" style="width:100%">
         <thead>
             <tr>
@@ -285,6 +290,8 @@ include 'connection.php';
         <tbody>
 
             <?php
+            $month = date("m");
+
             $no = 0;
             while ($row2 = $results->fetch_assoc()) {
                 $yes = 0;
@@ -302,7 +309,8 @@ include 'connection.php';
                 FROM mdl_user_enrolments INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = mdl_enrol.id ";
                 $stcourses = mysqli_query($con, $studentcourse);
                 while ($row = $stcourses->fetch_assoc()) {
-                    if ($row["courseid"] == $row2["id"]) {
+                    $bulan = date('m',$row["timestart"]);
+                    if ($row["courseid"] == $row2["id"] && $bulan == $month) {
 
                         $query3 = "SELECT *
                         FROM mdl_user INNER JOIN mdl_user_info_data ON mdl_user.id = mdl_user_info_data.userid WHERE data='Student'";
@@ -323,12 +331,70 @@ include 'connection.php';
             }
 
             ?>
-
-
-
         </tbody>
     </table>
 
+    <hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
+    <h2>Courses Next Month</h2>
+    <table id="exampleee" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Full Name</th>
+                <th>Short Name</th>
+                <th>Total Students</th>
+
+
+
+            </tr>
+        </thead>
+        <tbody>
+
+            <?php
+            $nothis = 0;
+            $thismonth = date("m");
+            $total = $thismonth + 01;
+
+            while ($row2this = $resultsthis->fetch_assoc()) {
+                $yesthis = 0;
+
+                $nothis++;
+
+
+                echo
+                    "<tr>
+          <td>" . $nothis . "</td>
+          <td>" . $row2this["fullname"] . "</td>
+          <td>" . $row2this["shortname"] . "</td>";
+
+                $studentcoursethis = "SELECT *
+                FROM mdl_user_enrolments INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = mdl_enrol.id ";
+                $stcoursesthis = mysqli_query($con, $studentcoursethis);
+                while ($rowthis = $stcoursesthis->fetch_assoc()) {
+                    $bulan = date('m',$rowthis["timestart"]);
+                    if ($rowthis["courseid"] == $row2this["id"] && $bulan == $total) {
+
+                        $query3this = "SELECT *
+                        FROM mdl_user INNER JOIN mdl_user_info_data ON mdl_user.id = mdl_user_info_data.userid WHERE data='Student'";
+                        $result3this = mysqli_query($con, $query3this);
+                        while ($row3this = $result3this->fetch_assoc()) {
+
+                            if ($row3this["userid"] == $rowthis["userid"]) {
+                                $yesthis++;
+
+                            }
+                        }
+                    }
+                }
+                echo "<td>" . $yesthis . "</td>
+
+          </tr>";
+
+            }
+
+            ?>
+        </tbody>
+    </table>
 </body>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
@@ -367,6 +433,27 @@ include 'connection.php';
     });
 
     $('#examplee').DataTable({
+        layout: {
+            topStart: {
+                buttons: [
+                    {
+                        extend: 'csv',
+                        filename: 'Course report'
+                    },
+                    {
+                        extend: 'excel',
+                        filename: 'Course report'
+                    },
+                    {
+                        extend: 'pdf',
+                        filename: 'Course report'
+                    }
+                ]
+            }
+        }
+    });
+
+    $('#exampleee').DataTable({
         layout: {
             topStart: {
                 buttons: [

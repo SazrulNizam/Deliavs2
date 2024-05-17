@@ -12,7 +12,8 @@ $querys = "SELECT * FROM mdl_course WHERE category !=0";
 $results = mysqli_query($con,$querys);
 
 
-
+$querysthis = "SELECT * FROM mdl_course WHERE category !=0";
+$resultsthis = mysqli_query($con,$querysthis);
 
 
 // $studentcourse = "SELECT * FROM mdl_user_info_data INNER JOIN mdl_user_enrolments ON mdl_user_info_data.userid

@@ -169,6 +169,10 @@ class primary implements renderable, templatable {
 
                 $CFG->custommenuitems .= "
                 Create User | /user/editadvanced.php?id=-1";
+
+                $CFG->custommenuitems .= "
+                Manage Badge | /badges/index.php?type=1";
+
             }
 
 
@@ -190,10 +194,8 @@ class primary implements renderable, templatable {
                 $CFG->custommenuitems .= "
                 Calendar | /my/";
 
-                if (has_capability('moodle/course:create', $coursecontext)){
-                    $CFG->custommenuitems .= "
-                    Manage Course | /course/management.php";
-                }
+                $CFG->custommenuitems .= "
+                Manage Badge | /badges/index.php?type=1";
 
                 
             }
