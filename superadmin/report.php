@@ -146,9 +146,10 @@ include 'connection.php';
 </head>
 
 <body>
+    
     <title>Report</title>
     <h2>Students</h2>
-    <table id="example" class="table table-striped" style="width:100%">
+    <table id="example" class="table table-striped display nowrap"  style="width:100%">
         <thead>
             <tr>
                 <th style="text-align:center;">State of Nadi</th>
@@ -234,6 +235,7 @@ FROM mdl_user_enrolments INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = m
 <script>
 
     $('#example').DataTable({
+        scrollX: true,
         layout: {
             topStart: {
                 buttons: [

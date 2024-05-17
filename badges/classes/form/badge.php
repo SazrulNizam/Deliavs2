@@ -57,9 +57,8 @@ class badge extends moodleform {
         $mform->addRule('name', null, 'required');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
-        $mform->addElement('text', 'version', get_string('version', 'badges'), array('size' => '70'));
+        $mform->addElement('text', 'version', 'Price', array('size' => '70'));
         $mform->setType('version', PARAM_TEXT);
-        $mform->addHelpButton('version', 'version', 'badges');
 
         $languages = get_string_manager()->get_list_of_languages();
         $mform->addElement('select', 'language', get_string('language'), $languages);
@@ -80,19 +79,11 @@ class badge extends moodleform {
             $mform->insertElementBefore($currentimage, 'image');
         }
         $mform->addHelpButton('image', 'badgeimage', 'badges');
-        $mform->addElement('text', 'imageauthorname', get_string('imageauthorname', 'badges'), array('size' => '70'));
-        $mform->setType('imageauthorname', PARAM_TEXT);
-        $mform->addHelpButton('imageauthorname', 'imageauthorname', 'badges');
-        $mform->addElement('text', 'imageauthoremail', get_string('imageauthoremail', 'badges'), array('size' => '70'));
-        $mform->setType('imageauthoremail', PARAM_TEXT);
-        $mform->addHelpButton('imageauthoremail', 'imageauthoremail', 'badges');
-        $mform->addElement('text', 'imageauthorurl', get_string('imageauthorurl', 'badges'), array('size' => '70'));
-        $mform->setType('imageauthorurl', PARAM_URL);
-        $mform->addHelpButton('imageauthorurl', 'imageauthorurl', 'badges');
-        $mform->addElement('text', 'imagecaption', get_string('imagecaption', 'badges'), array('size' => '70'));
+ 
+    
+  
+        $mform->addElement('text', 'imagecaption', 'Total Class', array('size' => '70'));
         $mform->setType('imagecaption', PARAM_TEXT);
-        $mform->addHelpButton('imagecaption', 'imagecaption', 'badges');
-        $mform->addElement('tags', 'tags', get_string('tags', 'badges'), ['itemtype' => 'badge', 'component' => 'core_badges']);
 
         if (badges_open_badges_backpack_api() == OPEN_BADGES_V1) {
             $mform->addElement('header', 'issuerdetails', get_string('issuerdetails', 'badges'));
