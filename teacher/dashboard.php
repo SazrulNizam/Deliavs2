@@ -364,6 +364,13 @@ echo $ROLE->name;
     .details .student table tr td {
       padding: 30px;
     }
+    
+
+      .h2 {
+        font-size: 20px;
+      }
+
+    
 
     /* Responsive Design */
     @media (max-width: 991px) {
@@ -380,21 +387,15 @@ echo $ROLE->name;
     }
 
     @media (max-width: 480px) {
-      .cardBox {
-        grid-template-columns: repeat(1, 1fr);
-      }
-
-      .cardHeader h2 {
-        font-size: 20px;
-      }
 
     }
+      
   </style>
 </head>
 
 <body>
-
-  <div class="container">
+<div class="container">
+ 
 
     <?php
     $con = mysqli_connect("localhost", "root", "", "deliadata");
@@ -407,16 +408,16 @@ echo $ROLE->name;
 
 
     // Query to fetch enrollment data
-    $sql_enrollments = "SELECT course.fullname AS Course,
-COUNT(student_asg.userid) AS Students
-FROM mdl_user AS teacher
-JOIN mdl_role_assignments AS teacher_asg ON teacher.id = teacher_asg.userid
-JOIN mdl_context AS teacher_context ON teacher_asg.contextid = teacher_context.id AND teacher_context.contextlevel = 50
-JOIN mdl_course AS course ON teacher_context.instanceid = course.id
-JOIN mdl_role_assignments AS student_asg ON student_asg.contextid = teacher_context.id
-WHERE teacher.username = ? AND student_asg.roleid = 5
-GROUP BY course.fullname
-ORDER BY Students DESC;";
+            $sql_enrollments = "SELECT c.fullname AS Course,
+                              COUNT(student_asg.userid) AS Students
+                              FROM mdl_user AS u
+                              JOIN mdl_role_assignments AS ra ON u.id = ra.userid
+                              JOIN mdl_context AS teacher_context ON ra.contextid = teacher_context.id AND teacher_context.contextlevel = 50
+                              JOIN mdl_course AS c ON teacher_context.instanceid = c.id
+                              JOIN mdl_role_assignments AS student_asg ON student_asg.contextid = teacher_context.id
+                              WHERE u.username = ? AND student_asg.roleid = 5 AND c.category !=0
+                              GROUP BY c.fullname
+                              ORDER BY Students DESC;";
 
     // Prepare and execute the query
     $stmt_enrollments = mysqli_prepare($con, $sql_enrollments);
@@ -449,12 +450,15 @@ ORDER BY Students DESC;";
 
     // Calculate the total number of students
     $totalStudents = array_sum($data);
-    echo $totalStudents;
+
 
     // Close connection
     mysqli_close($con);
     ?>
     <!-- Dashboard Card-->
+    
+    <h1>Welcome, <?php echo ucfirst(htmlspecialchars($USER->username)); ?></h1>
+  
     <div class="cardBox">
       <div class="card">
         <div class="iconBx">
@@ -536,188 +540,222 @@ ORDER BY Students DESC;";
     </div>
 
     <?php
-    global $CFG, $COURSE, $DB, $USER, $ROLE;
+global $CFG, $COURSE, $DB, $USER, $ROLE;
 
-    // Database connection
-    $conn = mysqli_connect("localhost", "root", "", "deliadata");
+// Database connection
+$conn = mysqli_connect("localhost", "root", "", "deliadata");
 
-    if (!$conn) {
-      die("Connection failed: " . mysqli_connect_error());
-    }
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 
-    // Teacher's username from the session
-    $teacherUsername = $USER->username;
+// Teacher's username from the session
+$teacherUsername = $USER->username;
 
-    // Fetch the courses taught by the specified teacher
-    $sql_courses = "SELECT c.id AS course_id, c.fullname AS course_name 
+// Fetch the courses taught by the specified teacher
+$sql_courses = "SELECT c.id AS course_id, c.fullname AS course_name 
                 FROM mdl_course c
                 JOIN mdl_context ctx ON c.id = ctx.instanceid
                 JOIN mdl_role_assignments ra ON ctx.id = ra.contextid
                 JOIN mdl_user u ON ra.userid = u.id
-                WHERE u.username = ?
-                AND ctx.contextlevel = 50";
+                WHERE u.username = ? AND c.category !=0
+                AND ctx.contextlevel = 50
+                AND ra.roleid = 3"; // Assuming 3 is the role ID for teachers
 
-    $stmt_courses = mysqli_prepare($conn, $sql_courses);
-    if ($stmt_courses === false) {
-      die("SQL prepare error: " . mysqli_error($conn));
-    }
+$stmt_courses = mysqli_prepare($conn, $sql_courses);
+if ($stmt_courses === false) {
+    die("SQL prepare error: " . mysqli_error($conn));
+}
 
-    mysqli_stmt_bind_param($stmt_courses, "s", $teacherUsername);
-    mysqli_stmt_execute($stmt_courses);
-    $result_courses = mysqli_stmt_get_result($stmt_courses);
+mysqli_stmt_bind_param($stmt_courses, "s", $teacherUsername);
+mysqli_stmt_execute($stmt_courses);
+$result_courses = mysqli_stmt_get_result($stmt_courses);
 
-    if ($result_courses === false) {
-      die("SQL execute error: " . mysqli_error($conn));
-    }
+if ($result_courses === false) {
+    die("SQL execute error: " . mysqli_error($conn));
+}
 
-    // Fetch courses into an array
-    $courses = [];
-    while ($course = mysqli_fetch_assoc($result_courses)) {
-      $courses[] = $course;
-    }
+// Fetch courses into an array
+$courses = [];
+$course_ids = [];
+while ($course = mysqli_fetch_assoc($result_courses)) {
+    $courses[] = $course;
+    $course_ids[] = $course['course_id'];
+}
 
-    // Check if a course is selected and handle form submission
-    $students = [];
-    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])) {
-      $courseId = $_POST['course_id'];
-      $format = $_POST['format'] ?? null;
-
-      // Fetch the list of students enrolled in the selected course
-      $sql_students = "SELECT u.id, u.firstname, u.lastname, u.email
+// Fetch all students under the teacher's courses by default
+$students = [];
+if (!empty($course_ids)) {
+    $course_ids_placeholder = implode(',', array_fill(0, count($course_ids), '?'));
+    $sql_students = "SELECT u.id, u.firstname, u.lastname, u.email, 
+                            GROUP_CONCAT(DISTINCT ctx.instanceid) as course_ids,
+                            GROUP_CONCAT(DISTINCT c.fullname SEPARATOR ', ') as courses
                      FROM mdl_user u
                      JOIN mdl_role_assignments ra ON u.id = ra.userid
                      JOIN mdl_context ctx ON ra.contextid = ctx.id
-                     WHERE ctx.instanceid = ?
-                     AND ctx.contextlevel = 50
-                     AND ra.roleid = 5";
+                     JOIN mdl_course c ON ctx.instanceid = c.id
+                     WHERE ctx.instanceid IN ($course_ids_placeholder) 
+                     AND c.newsitems = 5  AND ctx.contextlevel = 50
+                     AND ra.roleid = 5
+                     GROUP BY u.id, u.firstname, u.lastname, u.email";
 
-      $stmt_students = mysqli_prepare($conn, $sql_students);
-      if ($stmt_students === false) {
+    $stmt_students = mysqli_prepare($conn, $sql_students);
+    if ($stmt_students === false) {
         die("SQL prepare error: " . mysqli_error($conn));
-      }
-
-      mysqli_stmt_bind_param($stmt_students, "i", $courseId);
-      mysqli_stmt_execute($stmt_students);
-      $result_students = mysqli_stmt_get_result($stmt_students);
-
-      if ($result_students === false) {
-        die("SQL execute error: " . mysqli_error($conn));
-      }
-
-      while ($student = mysqli_fetch_assoc($result_students)) {
-        $students[] = $student;
-      }
     }
 
-    // Close the database connection
-    mysqli_stmt_close($stmt_courses);
-    mysqli_close($conn);
-    ?>
+    // Bind course IDs as parameters
+    mysqli_stmt_bind_param($stmt_students, str_repeat('i', count($course_ids)), ...$course_ids);
+    mysqli_stmt_execute($stmt_students);
+    $result_students = mysqli_stmt_get_result($stmt_students);
 
-    <!DOCTYPE html>
-    <html>
+    if ($result_students === false) {
+        die("SQL execute error: " . mysqli_error($conn));
+    }
 
-    <head>
-      <title>Select Course</title>
-      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap4.min.css" />
-      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/3.0.1/css/buttons.bootstrap4.min.css" />
-      <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-      <script src="https://cdn.datatables.net/2.0.3/js/jquery.dataTables.min.js"></script>
-      <script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.min.js"></script>
-      <script src="https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.min.js"></script>
-      <script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.bootstrap4.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-      <script src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-      <script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.print.min.js"></script>
-    </head>
+    while ($student = mysqli_fetch_assoc($result_students)) {
+        $students[] = $student;
+    }
+}
 
-    <body>
-      <form method="post">
-        <label for="course">Select a Course:</label>
-        <select name="course_id" id="course">
-          <?php foreach ($courses as $course) : ?>
-            <option value="<?php echo $course['course_id']; ?>"><?php echo htmlspecialchars($course['course_name']); ?></option>
-          <?php endforeach; ?>
-        </select>
-        <button type="submit" class="btn">Generate Student List</button>
-      </form>
+// Check if a course is selected and filter students
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])) {
+    $courseId = $_POST['course_id'];
 
-      <?php if (!empty($students)) :
-        $selected_course_id = $_POST['course_id'];
-        foreach ($courses as $course) {
-          if ($course['course_id'] == $selected_course_id) {
-            $selected_course_name = $course['course_name'];
-            break;
-          }
-        } ?>
+    if (!empty($courseId)) {
+        $students = array_filter($students, function($student) use ($courseId) {
+            return in_array($courseId, explode(',', $student['course_ids']));
+        });
+    }
+}
 
-        <div class="details">
-          <div class="student">
+// Close the database connection
+mysqli_stmt_close($stmt_students);
+mysqli_close($conn);
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student List</title>
+    <!-- Include jQuery and DataTables CSS/JS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.flash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
+</head>
+<body>
+
+    <div class="details">
+        <div class="student">
             <div class="cardHeader">
-              <h2>Student Name List <?php echo htmlspecialchars($selected_course_name); ?> </h2>
-              <a href="#" class="btn">CSV</a>
-              <a href="#" class="btn">PDF</a>
-              <a href="#" class="btn">Excel</a>
+                <form method="post">
+                    <h2 id="courseHeading">Student Name List</h2>
+                    <select name="course_id" id="course">
+                        <option value="">All Courses</option>
+                        <?php foreach ($courses as $course) : ?>
+                            <option value="<?php echo $course['course_id']; ?>" <?php echo (isset($_POST['course_id']) && $_POST['course_id'] == $course['course_id']) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($course['course_name']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <button type="submit" class="btn">Filter</button>
+                </form>
             </div>
-
-
-            <table id=example>
-
-              <thead>
-                <tr>
-                  <td>No</td>
-                  <td>ID</td>
-                  <td>First Name</td>
-                  <td>Last Name</td>
-                </tr>
-              </thead>
-              <tbody>
-                <?php
-                $no = 0;
-                foreach ($students as $student) :
-                  $no++;
-                ?>
-                  <tr>
-                    <td><?php echo $no; ?></td>
-                    <td><?php echo htmlspecialchars($student['id']); ?></td>
-                    <td><?php echo htmlspecialchars($student['firstname']); ?></td>
-                    <td><?php echo htmlspecialchars($student['lastname']); ?></td>
-                  </tr>
-                <?php endforeach; ?>
-              </tbody>
+            <table id="example">
+                <thead>
+                    <tr>
+                        <td>No</td>
+                        <td>Student ID</td>
+                        <td>First Name</td>
+                        <td>Last Name</td>
+                        <td>Courses</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $no = 0;
+                    foreach ($students as $student) :
+                        $no++;
+                    ?>
+                        <tr>
+                            <td><?php echo $no; ?></td>
+                            <td><?php echo htmlspecialchars($student['id']); ?></td>
+                            <td><?php echo htmlspecialchars($student['firstname']); ?></td>
+                            <td><?php echo htmlspecialchars($student['lastname']); ?></td>
+                            <td><?php echo htmlspecialchars($student['courses']); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
             </table>
-          <?php else : ?>
-            <?php if ($_SERVER['REQUEST_METHOD'] == 'POST') : ?>
-              <p>No students found for the selected course.</p>
-            <?php endif; ?>
-          <?php endif; ?>
+        </div>
+    </div>
 
-          <script>
-            $(document).ready(function() {
-              $('#example').DataTable({
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable({
                 dom: 'Bfrtip',
-                buttons: [{
-                    extend: 'csv',
-                    title: 'Student data'
-                  },
-                  {
-                    extend: 'excel',
-                    title: 'Student data'
-                  },
-                  {
-                    extend: 'pdf',
-                    title: 'Student data'
-                  }
+                buttons: [
+                    {
+                        extend: 'csv',
+                        title: 'Student data'
+                    },
+                    {
+                        extend: 'excel',
+                        title: 'Student data'
+                    },
+                    {
+                        extend: 'pdf',
+                        title: 'Student data'
+                    }
                 ]
-              });
             });
-          </script>
+        });
 
-    </body>
+        // Function to update the heading text
+        function updateHeading() {
+            // Get references to the select element and the h2 element
+            var select = document.getElementById("course");
+            var heading = document.getElementById("courseHeading");
 
-    </html>
-    <?php
-    echo $OUTPUT->footer();
-    ?>
+            // Update the h2 text with the selected course name
+            heading.textContent = "Student Name List for " + select.options[select.selectedIndex].text;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Call the updateHeading function on page load
+            updateHeading();
+
+            // Get a reference to the select element
+            var select = document.getElementById("course");
+
+            // Add an event listener to the select element
+            select.addEventListener("change", function() {
+                // Call the updateHeading function when the select element changes
+                updateHeading();
+            });
+        });
+        document.getElementById('event-card').addEventListener('click', function() {
+            var eventElement = document.querySelector('.event');
+            if (eventElement) {
+                var eventDate = eventElement.getAttribute('data-event-date');
+                var calendarUrl = '/calendar.php?date=' + eventDate;
+                window.location.href = calendarUrl;
+            }
+        });
+    </script>
+
+</body>
+</html>
+
+<?php
+echo $OUTPUT->footer();
+?>
