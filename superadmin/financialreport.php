@@ -124,44 +124,62 @@ $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/2.0.3/css/dataT
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/buttons/3.0.1/css/buttons.bootstrap4.css'));
 echo $OUTPUT->header();
 global $CFG, $COURSE, $DB, $USER, $ROLE;
- $con =mysqli_connect("localhost","root","","deliadata");
+include 'connection.php';
 
-$query = "select * from mdl_user";
-$result = mysqli_query($con,$query);
-echo $ROLE->name;
+
 ?>
 
 
 <!DOCTYPE html>
 <html>
    <head>
+    <style>
+        #example td {
+            text-align: center;
+        }
 
+        #example th {
+            text-align: center;
+        }
+    </style>
  
 </head> 
 <body>
+
 <table id="example" class="table table-striped" style="width:100%">
     <thead>
         <tr>
+        <th style="text-align:center;">No.</th>
             <th>First Name</th>
             <th>Email</th>
+            <th>Package Name</th>
+            <th>Price</th>
+
         </tr>
     </thead>
     <tbody>
-        
-           <?php 
-          
-          while ($row = $result->fetch_assoc()) {
+      
 
-            if( $row["firstname"] != "Guest user" && $row["deleted"] != 1)
-          echo  "<tr><td>" . $row["firstname"] . "</td>
-                 <td>" . $row["email"] . "</td>
-                 </tr>";
+        <?php
 
-           }
-        
-           ?>
-           
-            
+$no = 0;
+while ($row = $badge->fetch_assoc()) {
+
+   
+
+        $no++;
+        echo
+            "<tr>
+<td style='text-align:center;'>" . $no . "</td>
+<td>" . $row["firstname"] . "</td>
+<td>" . $row["email"] . "</td>
+<td>" . $row["name"] . "</td>
+<td>" . $row["version"] . "</td
+</tr>";
+    
+}
+
+?>
         
     </tbody>
 </table>

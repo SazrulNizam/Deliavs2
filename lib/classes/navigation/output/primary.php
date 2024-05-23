@@ -171,7 +171,10 @@ class primary implements renderable, templatable {
                 Create User | /user/editadvanced.php?id=-1";
 
                 $CFG->custommenuitems .= "
-                Manage Badge | /badges/index.php?type=1";
+                Manage Package | /badges/index.php?type=1";
+
+                $CFG->custommenuitems .= "
+                Manage Video | /superadmin/video/videolibrary.php";
 
             }
 
@@ -195,7 +198,7 @@ class primary implements renderable, templatable {
                 Calendar | /my/";
 
                 $CFG->custommenuitems .= "
-                Manage Badge | /badges/index.php?type=1";
+                Manage Package | /badges/index.php?type=1";
 
                 
             }

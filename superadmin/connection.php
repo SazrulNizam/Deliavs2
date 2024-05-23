@@ -56,3 +56,10 @@ $datauserinfo = mysqli_query($con,$userinfo);
 // $datastate1 = mysqli_query($con,"SELECT * FROM mdl_user_info_data WHERE fieldid = 6 AND data='Student'");
 // $state= mysqli_fetch_assoc($datastate1);
 
+//Financial Report
+
+$badgequery = "SELECT distinct mdl_badge_issued.userid, mdl_user.firstname , mdl_user.email , mdl_badge.name , mdl_badge.version
+FROM mdl_badge INNER JOIN mdl_badge_issued ON mdl_badge.id = mdl_badge_issued.badgeid INNER JOIN mdl_user_info_data ON mdl_badge_issued.userid = mdl_user_info_data.userid 
+INNER JOIN mdl_user ON mdl_user_info_data.userid = mdl_user.id ";
+$badge = mysqli_query($con,$badgequery);
+
