@@ -122,78 +122,531 @@ $PAGE->set_heading('Report Card');
 // $PAGE->requires->js(new \moodle_url('script.js'));
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap4.css'));
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/buttons/3.0.1/css/buttons.bootstrap4.css'));
-echo $OUTPUT->header();
+echo $OUTPUT->header();?>
+
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="stylesheet" href="vendors/feather/feather.css">
+  <link rel="stylesheet" href="vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="vendors/typicons/typicons.css">
+  <link rel="stylesheet" href="vendors/simple-line-icons/css/simple-line-icons.css">
+  <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <link rel="stylesheet" href="vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+  <link rel="stylesheet" href="js/select.dataTables.min.css">
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="css/vertical-layout-light/style.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="images/favicon.png" />
+  <title>Course Enrollment Charts</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+  <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+  <script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.bootstrap4.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.print.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <!--icons -->
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+  <style>
+    :root {
+      --blue: #2a2185;
+      --white: #fff;
+      --gray: #f5f5f5;
+      --black1: #222;
+      --black2: #999;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .container {
+      position: relative;
+      width: 100%;
+    }
+
+
+    /* Card in Dashboard */
+    .cardBox {
+      position: relative;
+      width: 100%;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-gap: 30px;
+    }
+
+    .cardBox .card {
+      position: relative;
+      background: var(--white);
+      padding: 30px;
+      border-radius: 20px;
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+      box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .cardBox .card .numbers {
+      position: relative;
+      font-weight: 500;
+      font-size: 2.5rem;
+      color: var(--blue);
+    }
+
+    .cardBox .card-calendar .event {
+      position: justify;
+      font-weight: 300;
+      font-size: 2.0rem;
+      color: var(--blue);
+    }
+
+    .cardBox .card .cardName {
+      color: var(--black2);
+      font-size: 1.1rem;
+      margin-top: 5px;
+    }
+
+    .cardBox .card-calendar .cardName-event {
+      color: var(--black2);
+      font-size: 1.1rem;
+      margin-top: 5px;
+    }
+
+
+    .cardBox .card .iconBx {
+      font-size: 4rem;
+      color: var(--black2);
+    }
+
+    .cardBox .card .iconBx {
+      font-size: 3.5rem;
+      color: var(--black2);
+    }
+
+    .cardBox .card-calendar .iconBx {
+      font-size: 3.5rem;
+      color: var(--black2);
+    }
+
+    .cardBox .card:hover {
+      background: var(--blue);
+    }
+
+    .cardBox .card-calendar:hover .cardName-event {
+      color: var(--white);
+    }
+
+    .cardBox .card-calendar:hover {
+      background: var(--blue);
+    }
+
+    .cardBox .card:hover .numbers,
+    .cardBox .card:hover .cardName,
+    .cardBox .card:hover .iconBx {
+      color: var(--white);
+    }
+
+    .cardBox .card-calendar:hover .event {
+      color: var(--white);
+    }
+
+    .cardBox .card-calendar {
+      grid-column: span 2;
+      position: relative;
+      background: var(--white);
+      padding: 30px;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .cardBox .card-calendar .cardName-event {
+      color: var(--black2);
+      font-size: 1.1rem;
+      margin-top: 20px;
+    }
+
+    .details {
+      position: relative;
+      width: 100%;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      grid-gap: 30px;
+      /* margin-top: 10px; */
+    }
+
+    .details .student {
+      grid-column: span 2;
+      position: relative;
+      display: grid;
+      min-height: 500px;
+      background: var(--white);
+      padding: 20px;
+      box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+      border-radius: 20px;
+    }
+
+    .details .cardHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+
+    }
+
+    .cardHeader h2 {
+      font-weight: 600;
+      color: var(--blue);
+
+    }
+
+    .cardHeader__btn {
+      position: relative;
+      padding: 10px 15px;
+      background: var(--blue);
+      text-decoration: none;
+      color: var(--white);
+      border-radius: 6px;
+      justify-content: space-around;
+
+    }
+
+    .details table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      table-layout: fixed;
+    }
+
+    .details table thead td {
+      font-weight: 600;
+    }
+
+    .details .student table tr {
+      color: var(--black1);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .details .student table tr:last-child {
+      border-bottom: none;
+    }
+
+    .details .student table tbody tr:hover {
+      background: var(--blue);
+      color: var(--white);
+    }
+
+    .details .student table tr td {
+      padding: 30px;
+    }
+    
+
+      .h2 {
+        font-size: 20px;
+      }
+    .details .action-column a {
+        display: inline-block; 
+        margin-right: 5px; 
+    }
+    
+    .status.attached {
+        padding: 2px 4px;
+        background: #8de02c;
+        color: var(--white);
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+}
+
+    .status.notattached {
+        padding: 2px 4px;
+        background: #8de02c;
+        color: var(--white);
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+}
+    
+
+    /* Responsive Design */
+    @media (max-width: 991px) {
+
+      .cardBox {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .details {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+
+    }
+      
+  </style>
+</head>
+
+<body>
+
+<?php
 global $CFG, $COURSE, $DB, $USER, $ROLE;
  $con =mysqli_connect("localhost","root","","deliadata");
 
-$query = "select * from mdl_user";
+
+
+//total student query
+// $query = "SELECT distinct mdl_user.id ,mdl_user.email ,mdl_user.firstname,mdl_user.city, 
+// mdl_role_assignments.userid, mdl_role_assignments.roleid 
+// FROM mdl_user INNER JOIN mdl_role_assignments ON mdl_user.id = mdl_role_assignments.userid";
+// $result = mysqli_query($con,$query);
+
+$query = "SELECT *
+FROM mdl_user INNER JOIN mdl_user_info_data ON mdl_user.id = mdl_user_info_data.userid";
 $result = mysqli_query($con,$query);
-echo $ROLE->name;
+
+
+?>
+<?php
+global $CFG, $COURSE, $DB, $USER, $ROLE;
+
+// Database connection
+$conn = mysqli_connect("localhost", "root", "", "deliadata");
+
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+// Teacher's username from the session
+$teacherUsername = $USER->username;
+
+// Fetch the courses taught by the specified teacher
+$sql_courses = "SELECT c.id AS course_id, c.fullname AS course_name 
+                FROM mdl_course c
+                JOIN mdl_context ctx ON c.id = ctx.instanceid
+                JOIN mdl_role_assignments ra ON ctx.id = ra.contextid
+                JOIN mdl_user u ON ra.userid = u.id
+                WHERE u.username = ? AND c.category !=0
+                AND ctx.contextlevel = 50
+                AND ra.roleid = 3"; // Assuming 3 is the role ID for teachers
+
+$stmt_courses = mysqli_prepare($conn, $sql_courses);
+if ($stmt_courses === false) {
+    die("SQL prepare error: " . mysqli_error($conn));
+}
+
+mysqli_stmt_bind_param($stmt_courses, "s", $teacherUsername);
+mysqli_stmt_execute($stmt_courses);
+$result_courses = mysqli_stmt_get_result($stmt_courses);
+
+if ($result_courses === false) {
+    die("SQL execute error: " . mysqli_error($conn));
+}
+
+// Fetch courses into an array
+$courses = [];
+$course_ids = [];
+while ($course = mysqli_fetch_assoc($result_courses)) {
+    $courses[] = $course;
+    $course_ids[] = $course['course_id'];
+}
+
+// Fetch all students under the teacher's courses by default
+$students = [];
+if (!empty($course_ids)) {
+    $course_ids_placeholder = implode(',', array_fill(0, count($course_ids), '?'));
+    $sql_students = "SELECT u.id, u.firstname, u.lastname, u.email, 
+                            GROUP_CONCAT(DISTINCT ctx.instanceid) as course_ids,
+                            GROUP_CONCAT(DISTINCT c.fullname SEPARATOR ', ') as courses
+                     FROM mdl_user u
+                     JOIN mdl_role_assignments ra ON u.id = ra.userid
+                     JOIN mdl_context ctx ON ra.contextid = ctx.id
+                     JOIN mdl_course c ON ctx.instanceid = c.id
+                     WHERE ctx.instanceid IN ($course_ids_placeholder) 
+                     AND c.newsitems = 5  AND ctx.contextlevel = 50
+                     AND ra.roleid = 5
+                     GROUP BY u.id, u.firstname, u.lastname, u.email";
+
+    $stmt_students = mysqli_prepare($conn, $sql_students);
+    if ($stmt_students === false) {
+        die("SQL prepare error: " . mysqli_error($conn));
+    }
+
+    // Bind course IDs as parameters
+    mysqli_stmt_bind_param($stmt_students, str_repeat('i', count($course_ids)), ...$course_ids);
+    mysqli_stmt_execute($stmt_students);
+    $result_students = mysqli_stmt_get_result($stmt_students);
+
+    if ($result_students === false) {
+        die("SQL execute error: " . mysqli_error($conn));
+    }
+
+    while ($student = mysqli_fetch_assoc($result_students)) {
+        $students[] = $student;
+    }
+}
+
+// Check if a course is selected and filter students
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])) {
+    $courseId = $_POST['course_id'];
+
+    if (!empty($courseId)) {
+        $students = array_filter($students, function($student) use ($courseId) {
+            return in_array($courseId, explode(',', $student['course_ids']));
+        });
+    }
+}
+
+// Close the database connection
+mysqli_stmt_close($stmt_students);
+mysqli_close($conn);
 ?>
 
-
 <!DOCTYPE html>
-<html>
-   <head>
-
- 
-</head> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student List</title>
+    <!-- Include jQuery and DataTables CSS/JS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.flash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
+</head>
 <body>
-<table id="example" class="table table-striped" style="width:100%">
-    <thead>
-        <tr>
-            <th>First Name</th>
-            <th>Email</th>
-        </tr>
-    </thead>
-    <tbody>
-        
-           <?php 
-          
-          while ($row = $result->fetch_assoc()) {
-
-            if( $row["firstname"] != "Guest user" && $row["deleted"] != 1)
-          echo  "<tr><td>" . $row["firstname"] . "</td>
-                 <td>" . $row["email"] . "</td>
-                 </tr>";
-
-           }
-        
-           ?>
+<div class="container">
+<div class="details">
+    <div class="student">
+        <div class="cardHeader">
            
-            
-        
-    </tbody>
-</table>
+                <h2 id="courseHeading">Student Name List</h2>
+                <form method="post">
+                <select name="course_id" id="course" >
+                <option value="">All Courses</option>
+                    <?php foreach ($courses as $course) : ?>
+                        <option value="<?php echo $course['course_id']; ?>" <?php echo (isset($_POST['course_id']) && $_POST['course_id'] == $course['course_id']) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($course['course_name']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <button type="submit" class="cardHeader__btn">Filter</button>
+            </form>
+        </div>
+        <table class="example" id="example">
+            <thead>
+                <tr>
+                    <td>No</td>
+                    <td>Student ID</td>
+                    <td>First Name</td>
+                    <td>Last Name</td>
+                    <td class="action-column">Action</td>
+                    <td>Status</td>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $no = 0;
+                foreach ($students as $student) :
+                    $no++;
+                ?>
+                    <tr>
+                        <td><?php echo $no; ?></td>
+                        <td><?php echo htmlspecialchars($student['id']); ?></td>
+                        <td><?php echo htmlspecialchars($student['firstname']); ?></td>
+                        <td><?php echo htmlspecialchars($student['lastname']); ?></td>
+                       
+                        <td class="action-column">
+                            <a href='upload/index.php?id=<?php echo $student['id']; ?>' class='btn btn-primary cardHeader__btn'>Upload</a>
+                            <a href='mod/assign/view.php?id=<?php echo $student['id']; ?>' class='btn btn-primary cardHeader__btn'>View</a>
+                        </td>
+                        <td><span class="<?php echo $status_class; ?>"><?php echo $status_text; ?></span></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
 
-
-</body>
-<script src = "https://code.jquery.com/jquery-3.7.1.js"></script> 
-<script src = "https://cdn.datatables.net/2.0.3/js/dataTables.js"></script> 
-<script src = "https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script> 
-<script src = "https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.js"></script> 
-<script src = "https://cdn.datatables.net/buttons/3.0.1/js/buttons.bootstrap4.js"></script> 
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script> 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.print.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+</div>
 <script>
+    $(document).ready(function() {
+        $('#example').DataTable({
+           
+        });
+    });
 
-$('#example').DataTable({
-    layout: {
-        topStart: {
-            buttons: ['copy', 'excel', 'pdf', ]
+    document.addEventListener("DOMContentLoaded", function() {
+    var select = document.getElementById("course");
+    var actionColumn = document.querySelectorAll(".action-column");
+
+    // Function to toggle action column visibility
+    function toggleActionColumnVisibility(selectedCourse) {
+        if (selectedCourse !== "All Courses") {
+            // Show the action column if a course other than "All Courses" is selected
+            actionColumn.forEach(function(element) {
+                element.style.display = "table-cell";
+            });
+        } else {
+            // Hide the action column if "All Courses" is selected
+            actionColumn.forEach(function(element) {
+                element.style.display = "none";
+            });
         }
     }
+
+    // Initial visibility based on selected course
+    toggleActionColumnVisibility(select.options[select.selectedIndex].text);
+
+    // Event listener for course selection change
+    select.addEventListener("change", function() {
+        var selectedCourse = select.options[select.selectedIndex].text;
+        toggleActionColumnVisibility(selectedCourse);
+    });
+
+    // Event listener for form submission
+    // var form = document.querySelector("form");
+   // form.addEventListener("submit", function(event) {
+      //  var selectedCourse = select.options[select.selectedIndex].text;
+        //toggleActionColumnVisibility(selectedCourse);
+  //  });
 });
 </script>
-  <?php
-  
-  echo $OUTPUT->footer();
 
-  ?>
+</body>
+
+
+<?php
+echo $OUTPUT->footer();
+?>
 
 
 </html>

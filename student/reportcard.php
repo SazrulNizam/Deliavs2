@@ -106,7 +106,7 @@ if (empty($searchcriteria)) {
     $event->trigger();
 }
 
-$PAGE->set_heading('Participant Report');
+$PAGE->set_heading('Report Card');
 
 // $PAGE->requires->js(new \moodle_url('https://code.jquery.com/jquery-3.7.1.js'), true);
 // $PAGE->requires->js(new \moodle_url('https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js'), true);
@@ -122,78 +122,427 @@ $PAGE->set_heading('Participant Report');
 // $PAGE->requires->js(new \moodle_url('script.js'));
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap4.css'));
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/buttons/3.0.1/css/buttons.bootstrap4.css'));
-echo $OUTPUT->header();
+echo $OUTPUT->header();?>
+
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="stylesheet" href="vendors/feather/feather.css">
+  <link rel="stylesheet" href="vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="vendors/typicons/typicons.css">
+  <link rel="stylesheet" href="vendors/simple-line-icons/css/simple-line-icons.css">
+  <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <link rel="stylesheet" href="vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+  <link rel="stylesheet" href="js/select.dataTables.min.css">
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="css/vertical-layout-light/style.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="images/favicon.png" />
+  <title>Course Enrollment Charts</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+  <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+  <script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.bootstrap4.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.print.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <!--icons -->
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+  <style>
+    :root {
+      --blue: #2a2185;
+      --white: #fff;
+      --gray: #f5f5f5;
+      --black1: #222;
+      --black2: #999;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .container {
+      position: relative;
+      width: 100%;
+    }
+
+
+    /* Card in Dashboard */
+    .cardBox {
+      position: relative;
+      width: 100%;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-gap: 30px;
+    }
+
+    .cardBox .card {
+      position: relative;
+      background: var(--white);
+      padding: 30px;
+      border-radius: 20px;
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+      box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .cardBox .card .numbers {
+      position: relative;
+      font-weight: 500;
+      font-size: 2.5rem;
+      color: var(--blue);
+    }
+
+    .cardBox .card-calendar .event {
+      position: justify;
+      font-weight: 300;
+      font-size: 2.0rem;
+      color: var(--blue);
+    }
+
+    .cardBox .card .cardName {
+      color: var(--black2);
+      font-size: 1.1rem;
+      margin-top: 5px;
+    }
+
+    .cardBox .card-calendar .cardName-event {
+      color: var(--black2);
+      font-size: 1.1rem;
+      margin-top: 5px;
+    }
+
+
+    .cardBox .card .iconBx {
+      font-size: 4rem;
+      color: var(--black2);
+    }
+
+    .cardBox .card .iconBx {
+      font-size: 3.5rem;
+      color: var(--black2);
+    }
+
+    .cardBox .card-calendar .iconBx {
+      font-size: 3.5rem;
+      color: var(--black2);
+    }
+
+    .cardBox .card:hover {
+      background: var(--blue);
+    }
+
+    .cardBox .card-calendar:hover .cardName-event {
+      color: var(--white);
+    }
+
+    .cardBox .card-calendar:hover {
+      background: var(--blue);
+    }
+
+    .cardBox .card:hover .numbers,
+    .cardBox .card:hover .cardName,
+    .cardBox .card:hover .iconBx {
+      color: var(--white);
+    }
+
+    .cardBox .card-calendar:hover .event {
+      color: var(--white);
+    }
+
+    .cardBox .card-calendar {
+      grid-column: span 2;
+      position: relative;
+      background: var(--white);
+      padding: 30px;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .cardBox .card-calendar .cardName-event {
+      color: var(--black2);
+      font-size: 1.1rem;
+      margin-top: 20px;
+    }
+
+    .details {
+      position: relative;
+      width: 100%;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      grid-gap: 30px;
+      /* margin-top: 10px; */
+    }
+
+    .details .student {
+      grid-column: span 2;
+      position: relative;
+      display: grid;
+      min-height: 500px;
+      background: var(--white);
+      padding: 20px;
+      box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+      border-radius: 20px;
+    }
+
+    .details .cardHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+
+    }
+
+    .cardHeader h2 {
+      font-weight: 600;
+      color: var(--blue);
+
+    }
+
+    .cardHeader__btn {
+      position: relative;
+      padding: 10px 15px;
+      background: var(--blue);
+      text-decoration: none;
+      color: var(--white);
+      border-radius: 6px;
+      justify-content: space-around;
+
+    }
+
+    .details table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      table-layout: fixed;
+    }
+
+    .details table thead td {
+      font-weight: 600;
+    }
+
+    .details .student table tr {
+      color: var(--black1);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .details .student table tr:last-child {
+      border-bottom: none;
+    }
+
+    .details .student table tbody tr:hover {
+      background: var(--blue);
+      color: var(--white);
+    }
+
+    .details .student table tr td {
+      padding: 30px;
+    }
+    
+
+      .h2 {
+        font-size: 20px;
+      }
+    
+    
+
+    /* Responsive Design */
+    @media (max-width: 991px) {
+
+      .cardBox {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .details {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+
+    }
+      
+  </style>
+</head>
+
+<body>
+
+<?php
 global $CFG, $COURSE, $DB, $USER, $ROLE;
  $con =mysqli_connect("localhost","root","","deliadata");
 
-$query = "select * from mdl_user";
+
+
+//total student query
+// $query = "SELECT distinct mdl_user.id ,mdl_user.email ,mdl_user.firstname,mdl_user.city, 
+// mdl_role_assignments.userid, mdl_role_assignments.roleid 
+// FROM mdl_user INNER JOIN mdl_role_assignments ON mdl_user.id = mdl_role_assignments.userid";
+// $result = mysqli_query($con,$query);
+
+$query = "SELECT *
+FROM mdl_user INNER JOIN mdl_user_info_data ON mdl_user.id = mdl_user_info_data.userid";
 $result = mysqli_query($con,$query);
-echo $ROLE->name;
+
+
+?>
+<?php
+global $CFG, $COURSE, $DB, $USER, $ROLE;
+
+// Database connection
+$conn = mysqli_connect("localhost", "root", "", "deliadata");
+
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+// Fetch course details
+$courses = [];
+$sql_course_details = "SELECT c.id AS course_id,
+                        c.fullname AS course_name,
+                        CONCAT(t.firstname, ' ', t.lastname) AS teacher_name,
+                        COUNT(*) AS enrollment_count
+                    FROM mdl_course AS c
+                    JOIN mdl_context AS ctx ON c.id = ctx.instanceid
+                    JOIN mdl_role_assignments AS ra ON ra.contextid = ctx.id
+                    JOIN mdl_user AS u ON u.id = ra.userid
+                    JOIN mdl_user AS t ON t.id = (
+                        SELECT userid
+                        FROM mdl_role_assignments
+                        WHERE contextid = ctx.id AND c.category != 0
+                        AND roleid = 3 
+                        LIMIT 1
+                    )
+                    WHERE u.id = (SELECT id FROM mdl_user WHERE username = ?)
+                    GROUP BY c.id, c.fullname, t.firstname, t.lastname";
+
+$stmt_course_details = mysqli_prepare($conn, $sql_course_details);
+if ($stmt_course_details === false) {
+    die("SQL prepare error: " . mysqli_error($conn));
+}
+
+$username = $USER->username; // Assuming $USER->username contains the username of the logged-in user
+mysqli_stmt_bind_param($stmt_course_details, "s", $username);
+mysqli_stmt_execute($stmt_course_details);
+$result_course_details = mysqli_stmt_get_result($stmt_course_details);
+
+if ($result_course_details === false) {
+    die("SQL execute error: " . mysqli_error($conn));
+}
+
+while ($course = mysqli_fetch_assoc($result_course_details)) {
+    $courses[] = $course;
+}
+
+// Close the database connection
+mysqli_stmt_close($stmt_course_details);
+mysqli_close($conn);
 ?>
 
-
 <!DOCTYPE html>
-<html>
-   <head>
-
- 
-</head> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student List</title>
+    <!-- Include jQuery and DataTables CSS/JS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.flash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
+</head>
 <body>
-<table id="example" class="table table-striped" style="width:100%">
-    <thead>
-        <tr>
-            <th>First Name</th>
-            <th>Email</th>
-        </tr>
-    </thead>
-    <tbody>
-        
-           <?php 
-          
-          while ($row = $result->fetch_assoc()) {
+    <div class= container>
+    <div class="details">
+        <div class="student">
+            <div class="cardHeader">
+                <h2>Courses</h2>
+            </div>
 
-            if( $row["firstname"] != "Guest user" && $row["deleted"] != 1)
-          echo  "<tr><td>" . $row["firstname"] . "</td>
-                 <td>" . $row["email"] . "</td>
-                 </tr>";
+            <table id="example">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Course ID</th>
+                        <th>Course Name</th>
+                        <th>Teacher's Name</th>
+                        <td class="action-column">Action</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $no = 0;
+                    foreach ($courses as $course) :
+                        $no++;
+                    ?>
+                        <tr>
+                            <td><?php echo $no; ?></td>
+                            <td><?php echo htmlspecialchars($course['course_id']); ?></td>
+                            <td><?php echo htmlspecialchars($course['course_name']); ?></td>
+                            <td><?php echo htmlspecialchars($course['teacher_name']); ?></td>
+                            <td class="action-column">
+                            <a href='mod/assign/view.php?id=<?php echo $student['id']; ?>' class='btn btn-primary cardHeader__btn'>View</a></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
 
-           }
-        
-           ?>
-           
-            
-        
-    </tbody>
-</table>
-
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable({
+                // dom: 'Bfrtip',
+                // buttons: [
+                //     {
+                //         extend: 'csv',
+                //         title: 'Report Card'
+                //     },
+                //     {
+                //         extend: 'excel',
+                //         title: 'Report Card'
+                //     },
+                //     {
+                //         extend: 'pdf',
+                //         title: 'Report Card'
+                //     }
+                // ]
+            });
+        });
+    </script>
 
 </body>
-<script src = "https://code.jquery.com/jquery-3.7.1.js"></script> 
-<script src = "https://cdn.datatables.net/2.0.3/js/dataTables.js"></script> 
-<script src = "https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script> 
-<script src = "https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.js"></script> 
-<script src = "https://cdn.datatables.net/buttons/3.0.1/js/buttons.bootstrap4.js"></script> 
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script> 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.print.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-<script>
-
-$('#example').DataTable({
-    layout: {
-        topStart: {
-            buttons: ['copy', 'excel', 'pdf', ]
-        }
-    }
-});
-</script>
-  <?php
-  
-  echo $OUTPUT->footer();
-
-  ?>
-
-
 </html>
+
+<?php
+echo $OUTPUT->footer();
+?>
