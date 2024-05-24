@@ -185,6 +185,7 @@ $datatest=mysqli_fetch_assoc($tests);
 $currentyear = date("m");
 $total = $currentyear + 01;
  
+echo $datatest['userid'];
     ?>
     <div class="pb-4 pt-3">
         <div class="row">

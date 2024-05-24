@@ -27,8 +27,7 @@ if ($mform->is_cancelled()) {
     $data = new stdClass;
     $data->userid =   $_GET['id'];
 
-    $DB->insert_record('reportcard', $data);
-    redirect($redirect, 'Record have been added succesfully', null, \core\output\notification::NOTIFY_SUCCESS);
+    redirect($redirect, $name, null, \core\output\notification::NOTIFY_SUCCESS);
 
 
 } else {

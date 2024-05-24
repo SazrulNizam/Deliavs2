@@ -151,7 +151,7 @@ class primary implements renderable, templatable {
                 Dashboard | /superadmin/dashboard.php";
 
                 $CFG->custommenuitems .= "
-                Report | /superadmin/report.php";
+                Participant Report | /superadmin/report.php";
 
                 $CFG->custommenuitems .= "
                 Financial Report | /superadmin/financialreport.php";
@@ -161,6 +161,7 @@ class primary implements renderable, templatable {
 
                 $CFG->custommenuitems .= "
                 Calendar | /my/";
+                
 
                 if (has_capability('moodle/course:create', $coursecontext)){
                     $CFG->custommenuitems .= "
@@ -174,7 +175,7 @@ class primary implements renderable, templatable {
                 Manage Package | /badges/index.php?type=1";
 
                 $CFG->custommenuitems .= "
-                Manage Video | /superadmin/video/videolibrary.php";
+                Library | /superadmin/video/library.php";
 
             }
 
