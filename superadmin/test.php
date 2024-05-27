@@ -185,7 +185,7 @@ $result = mysqli_query($con,$query);
 </div>
 
 <div class="row">
-  <div class="col-sm-4">
+  <div class="col-sm-3">
     <div class="card">
     <video src="test.mp4#t=10"muted>
         </video>
@@ -194,7 +194,7 @@ $result = mysqli_query($con,$query);
       </div>
     </div>
   </div>
-  <div class="col-sm-4">
+  <div class="col-sm-3">
     <div data-toggle="modal" data-target=".bd-example-modal-lg" class="card">
     <video src="test.mp4#t=10"muted>
         </video>
@@ -203,7 +203,16 @@ $result = mysqli_query($con,$query);
       </div>
     </div>
   </div>
-  <div class="col-sm-4">
+  <div class="col-sm-3">
+    <div data-toggle="modal" data-target=".bd-example-modal-lg" class="card">
+    <video src="test.mp4#t=10"muted>
+        </video>
+      <div class="card-body">
+        <h5 class="card-title">Special title treatment</h5>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-3">
     <div data-toggle="modal" data-target=".bd-example-modal-lg" class="card">
     <video src="test.mp4#t=10"muted>
         </video>

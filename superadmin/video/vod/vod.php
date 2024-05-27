@@ -48,7 +48,7 @@ global $CFG, $COURSE, $DB, $USER, $ROLE;
 
 
 $query = "SELECT *
-FROM mdl_user INNER JOIN mdl_user_info_data ON mdl_user.id = mdl_user_info_data.userid";
+FROM mdl_local_videos ";
 $result = mysqli_query($con,$query);
 
 
@@ -74,6 +74,7 @@ $result = mysqli_query($con,$query);
 </head> 
 <body>
     
+
 <button type="button" class="btn btn-success float-right" onclick="location.href='index.php'" >Add Video <i class="fa-solid fa-plus"></i></button><br>
 <br>
 
@@ -81,8 +82,8 @@ $result = mysqli_query($con,$query);
     <thead>
         <tr>
             <th style="text-align:center;">No.</th>
-            <th>Email</th>
-            <th>First Name</th>
+            <th>Title</th>
+            <th>Description</th>
            
             <th>Action</th>
 
@@ -96,21 +97,19 @@ $result = mysqli_query($con,$query);
 
            while ($row = $result->fetch_assoc()) {
 
-            if($row["data"] == 'Student'){
-           
-             
+                     
             $no++;
           echo  
           "<tr>
           <td>" . $no . "</td>
-          <td>" . $row["email"] . "</td>
-          <td>" . $row["firstname"] . "</td>
+          <td>" . $row["title"] . "</td>
+          <td>" . $row["description"] . "</td>
 
-          <td> <a href='index.php?id=". $row["userid"]."'". "class='btn btn-primary'>Upload</button>
+          <td> <a href='index.php?id=". $row["id"]."'". "class='btn btn-danger'>Delete</button>
                 </td></tr>";
             
            }
-           }
+           
            ?>
        
         
