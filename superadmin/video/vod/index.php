@@ -2,20 +2,20 @@
 
 require_once("../../../config.php");
 global $CFG, $DB, $USER, $OUTPUT;
-require_once($CFG->dirroot.'/superadmin/video/vod/form.php');
 
 
 // Instantiate the myform form from within the plugin.
 echo $OUTPUT->header();
 $con =mysqli_connect("localhost","root","","deliadata");
 
-$ids = (int)$_GET["id"];
+$ids = $_GET["id"];
 echo $ids;
 
-$anjing = "SELECT *
+$anjin = "SELECT *
 FROM mdl_user WHERE id = $ids ";
-$babi = mysqli_query($con,$anjing);
-$ayam = mysqli_fetch_assoc($babi);
+$bab = mysqli_query($con,$anjin);
+$ayam = mysqli_fetch_assoc($bab);
+require_once($CFG->dirroot.'/superadmin/video/vod/form.php');
 
 $mform = new simplehtml_form();
 
