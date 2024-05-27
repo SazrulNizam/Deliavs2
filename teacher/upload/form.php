@@ -19,8 +19,8 @@ class simplehtml_form extends moodleform {
         $mform->setType('course_id', PARAM_INT);
         
         // Comments field
-        $mform->addElement('textarea', 'comments', get_string('comments'), 'wrap="virtual" rows="5" cols="50"');
-        $mform->addRule('comments', null, 'required', null, 'client');
+        //$mform->addElement('textarea', 'comments', get_string('comments'), 'wrap="virtual" rows="5" cols="50"');
+        //$mform->addRule('comments', null, 'required', null, 'client');
         
         // Submit button
         $this->add_action_buttons(true, get_string('upload'));
