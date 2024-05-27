@@ -104,7 +104,7 @@ $result = mysqli_query($con,$query);
           <td>" . $no . "</td>
           <td>" . $row["title"] . "</td>
           <td>" . $row["description"] . "</td>
-
+               
           <td> <a href='index.php?id=". $row["id"]."'". "class='btn btn-danger'>Delete</button>
                 </td></tr>";
             
