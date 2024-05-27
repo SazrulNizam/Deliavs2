@@ -583,13 +583,24 @@ mysqli_close($conn);
                 $no = 0;
                 foreach ($students as $student) :
                     $no++;
-                ?>
+                         // Fetch the status for each student
+                $record = $DB->get_record('local_reportcards', array('uploadid' => $student['id'], 'courseid' => $course['course_id']));
+                
+                if ($record && $record->status === 'uploaded') {
+                    $status_class = 'btn-success';
+                    $status_text = 'Uploaded';
+                    $view_link = "view_file.php?id={$student['id']}&course_id={$course['course_id']}";
+                } else {
+                    $status_class = 'btn-danger';
+                    $status_text = 'Not Uploaded';
+                }
+            ?>
                    <tr>
                             <td><?php echo $no; ?></td>
                             <td><?php echo htmlspecialchars($student['id']); ?></td>
                             <td><?php echo htmlspecialchars($student['firstname']); ?></td>
                             <td><?php echo htmlspecialchars($student['lastname']); ?></td>
-                            <td><button type="button" class="btn <?php echo $status_class; ?>" disabled> <!-- Added dynamic class -->
+                            <td><button type="button" class="btn <?php echo $status_class; ?>" disabled> 
                             <?php echo $status_text; ?>
                             </button> </td>
                             <td class="action-column">
@@ -598,11 +609,11 @@ mysqli_close($conn);
                                         Actions
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a class="dropdown-item" href="upload/index.php?id=<?php echo $student['id']; ?><?php echo $course['course_id']; ?>">Upload</a>
-                                        <a class="dropdown-item" href="mod/assign/view.php?id=<?php echo $student['id']; ?><?php echo $course['course_id']; ?>">View</a>
-                                        <a class="dropdown-item" href="edit.php?id=<?php echo $student['id']; ?><?php echo $course['course_id']; ?>">Edit</a>
+                                        <a class="dropdown-item" href="upload/index.php?id=<?php echo $student['id']; ?>&course_id=<?php echo $course['course_id']; ?>">Upload</a>
+                                        <a class="dropdown-item" href="mod/assign/view.php?id=<?php echo $student['id']; ?>&course_id=<?php echo $course['course_id']; ?>">View</a>
+                                        <a class="dropdown-item" href="edit.php?id=<?php echo $student['id']; ?>&course_id=<?php echo $course['course_id']; ?>">Edit</a>
                                         <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item text-danger" href="delete.php?id=<?php echo $student['id']; ?><?php echo $course['course_id']; ?>">Delete</a>
+                                        <a class="dropdown-item text-danger" href="delete.php?id=<?php echo $student['id']; ?>&course_id=<?php echo $course['course_id']; ?>">Delete</a>
                                     </div>
                                 </div>
                             </td>

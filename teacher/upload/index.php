@@ -2,7 +2,6 @@
 
 require_once("../../config.php");
 global $CFG, $DB, $USER, $OUTPUT;
-require_once($CFG->dirroot.'/teacher/upload/form.php');
 
 // Instantiate the form.
 echo $OUTPUT->header();
@@ -12,9 +11,10 @@ $course_id = $_GET['course_id'];
 
 echo "Student ID: " . $student_id . "<br>";
 echo "Course ID: " . $course_id . "<br>";
+echo "Current User ID: " . $USER->id . "<br>";
+require_once($CFG->dirroot.'/teacher/upload/form.php');
 
 $mform = new simplehtml_form();
-
 $mform->set_data([
     'userid' => $student_id,
     'courseid' => $course_id,
@@ -27,65 +27,55 @@ if ($mform->is_cancelled()) {
     echo "You have clicked the cancel button";
 } else if ($fromform = $mform->get_data()) {
     $name = $mform->get_new_filename('userfile');
-    $fullpath = $CFG->dataroot."/FileHere/".$name; 
+    $fullpath = "FileHere/".$name; 
     $success = $mform->save_file('userfile', $fullpath);
 
-    echo "name?: " .$name ."<br>";
-    echo "path?: ".$fullpath."<br>";
-    echo "success or not?: " . $success . "<br>";
-    echo "Upload success: " . ($success ? 'Yes' : 'No') . "<br>";
-    
-  
-
-
     if ($success) {
-        // Check if there's already a file uploaded for this student under this course
-        // Only one file is allowed for one student under specific course
-        $existing_record = $DB->get_record('local_reportcards', ['userid' => $student_id, 'courseid' => $course_id]);
-
-        $data = new stdClass;
-        $data->userid = $student_id;
-        $data->path = $fullpath;
-        $data->status = $existing_record ? 1 : 'Uploaded';
+        // Prepare the data for insertion
+        $data = new stdClass();
         $data->timecreated = time();
-        $data->uploadid = $USER->id;
-        $data->courseid = $course_id;
+        $data->file = $name;
+        $data->path = $fullpath;
+        $data->uploadid = $fromform->student_id;
+        $data->courseid = $fromform->course_id;
+        $data->userid = $USER->id;
+        $data->status = 'uploaded';
 
-        $insert_result =$DB->insert_record('local_reportcards', $data);
+        // Insert or update the record in the database
+        $existing_record = $DB->get_record('local_reportcards', array('uploadid' => $fromform->student_id, 'courseid' => $fromform->course_id));
 
-        // Check if insertion was successful
-        if ($insert_result) {
-        echo "Record inserted successfully.<br>";
+        if ($existing_record) {
+            $data->id = $existing_record->id;
+            $DB->update_record('local_reportcards', $data);
         } else {
-        echo "Error inserting record: " . $DB->get_last_error() . "<br>";
+            $DB->insert_record('local_reportcards', $data);
         }
 
-
-        redirect($redirect, 'Record have been added succesfully', null, \core\output\notification::NOTIFY_SUCCESS);
-    } if ($fromform = $mform->get_data()) {
-
-        echo "<pre>";
-        print_r($fromform);
-        echo "</pre>";
-
-       
-        // Check if file was uploaded successfully
-        if ($_FILES['file']['error'] !== UPLOAD_ERR_OK) {
-            echo "File upload failed with error code: " . $_FILES['file']['error'];
-            echo 'file count=', count($_FILES),"\n"; 
-            print "<pre>"; 
-            print_r($_FILES); 
-            print "</pre>"; 
-            echo "\n"; 
-            // Exit or return to prevent further execution
-            return;
-        }
-
-        
+        redirect('../reportcard.php', 'Record has been added successfully', null, \core\output\notification::NOTIFY_SUCCESS);
+    } else {
+        echo "Failed to save the file.";
     }
 } else {
+    
+    // Check if a file is already uploaded for this student under this course
+    $student_id = optional_param('student_id', 0, PARAM_INT);
+    $course_id = optional_param('course_id', 0, PARAM_INT);
+
+    if ($student_id && $course_id) {
+        $record = $DB->get_record('local_reportcards', array('uploadid' => $student_id, 'courseid' => $course_id));
+
+        if ($record && $record->status === 'uploaded') {
+            $status_message = "File has been uploaded.";
+        } else {
+            $status_message = "File not uploaded.";
+        }
+
+        echo "<p>Status: $status_message</p>";
+    }
+
     // Display the form.
     $mform->display();
 }
 
 echo $OUTPUT->footer();
+?>

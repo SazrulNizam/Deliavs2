@@ -123,10 +123,6 @@ echo $ROLE->name;
 $ids = $_GET["id"];
 echo $ids;
 
-       
-
-
-
 
 class simplehtml_form extends moodleform {
 
@@ -144,8 +140,6 @@ class simplehtml_form extends moodleform {
                 'accepted_types' => '*',
             ]
         );
-       
-
 
     }                           // Close the function
 
