@@ -386,7 +386,13 @@ echo $OUTPUT->header();?>
         font-size: 14px;
         font-weight: 500;
 }
-    
+.table-container {
+        width: 80%; /* Set desired width percentage */
+        margin: auto; /* Center the table */
+    }
+    .table-hover {
+        max-width: 100%; /* Ensure the table does not exceed the container's width */
+    }
 
     /* Responsive Design */
     @media (max-width: 991px) {
@@ -541,35 +547,35 @@ mysqli_close($conn);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 <body>
-<div class="container">
-<div class="details">
-    <div class="student">
-        <div class="cardHeader">
+
+
            
-                <h2 id="courseHeading">Student Name List</h2>
-                <form method="post">
-                <select name="course_id" id="course" >
-                <option value="">All Courses</option>
-                    <?php foreach ($courses as $course) : ?>
-                        <option value="<?php echo $course['course_id']; ?>" <?php echo (isset($_POST['course_id']) && $_POST['course_id'] == $course['course_id']) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($course['course_name']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-                <button type="submit" class="cardHeader__btn">Filter</button>
-            </form>
+<h2 id="courseHeading">Student Name List</h2>
+<form method="post" id="courseForm">
+    <select name="course_id" id="course">
+        <option value="">All Courses</option>
+        <?php foreach ($courses as $course) : ?>
+            <option value="<?php echo $course['course_id']; ?>" <?php echo (isset($_POST['course_id']) && $_POST['course_id'] == $course['course_id']) ? 'selected' : ''; ?>>
+                <?php echo htmlspecialchars($course['course_name']); ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+</form>
         </div>
-        <table class="example" id="example">
+        <div class="table-container">
+        <table id="example" class="table table-hover" style="width:100%">
             <thead>
                 <tr>
                     <td>No</td>
                     <td>Student ID</td>
                     <td>First Name</td>
                     <td>Last Name</td>
-                    <td class="action-column">Action</td>
                     <td>Status</td>
+                    <td class="action-column">Action</td>
+                    
                 </tr>
             </thead>
             <tbody>
@@ -577,68 +583,76 @@ mysqli_close($conn);
                 $no = 0;
                 foreach ($students as $student) :
                     $no++;
-                ?>
-                    <tr>
-                        <td><?php echo $no; ?></td>
-                        <td><?php echo htmlspecialchars($student['id']); ?></td>
-                        <td><?php echo htmlspecialchars($student['firstname']); ?></td>
-                        <td><?php echo htmlspecialchars($student['lastname']); ?></td>
-                       
-                        <td class="action-column">
-                            <a href='upload/index.php?id=<?php echo $student['id']; ?>' class='btn btn-primary cardHeader__btn'>Upload</a>
-                            <a href='mod/assign/view.php?id=<?php echo $student['id']; ?>' class='btn btn-primary cardHeader__btn'>View</a>
-                        </td>
-                        <td><span class="<?php echo $status_class; ?>"><?php echo $status_text; ?></span></td>
-                    </tr>
+                         // Fetch the status for each student
+                $record = $DB->get_record('local_reportcards', array('uploadid' => $student['id'], 'courseid' => $course['course_id']));
+                
+                if ($record && $record->status === 'uploaded') {
+                    $status_class = 'btn-success';
+                    $status_text = 'Uploaded';
+                    $view_link = "view_file.php?id={$student['id']}&course_id={$course['course_id']}";
+                } else {
+                    $status_class = 'btn-danger';
+                    $status_text = 'Not Uploaded';
+                }
+            ?>
+                   <tr>
+                            <td><?php echo $no; ?></td>
+                            <td><?php echo htmlspecialchars($student['id']); ?></td>
+                            <td><?php echo htmlspecialchars($student['firstname']); ?></td>
+                            <td><?php echo htmlspecialchars($student['lastname']); ?></td>
+                            <td><button type="button" class="btn <?php echo $status_class; ?>" disabled> 
+                            <?php echo $status_text; ?>
+                            </button> </td>
+                            <td class="action-column">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Actions
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="upload/index.php?id=<?php echo $student['id']; ?>&course_id=<?php echo $course['course_id']; ?>">Upload</a>
+                                        <a class="dropdown-item" href="mod/assign/view.php?id=<?php echo $student['id']; ?>&course_id=<?php echo $course['course_id']; ?>">View</a>
+                                        <a class="dropdown-item" href="edit.php?id=<?php echo $student['id']; ?>&course_id=<?php echo $course['course_id']; ?>">Edit</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item text-danger" href="delete.php?id=<?php echo $student['id']; ?>&course_id=<?php echo $course['course_id']; ?>">Delete</a>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                           
+                   
+                        </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
-    </div>
-</div>
 
-</div>
-<script>
+
+        <script>
     $(document).ready(function() {
-        $('#example').DataTable({
-           
+        $('#example').DataTable();
+
+        var select = document.getElementById("course");
+        var actionColumns = document.querySelectorAll(".action-column");
+
+        // Hide action columns initially
+        actionColumns.forEach(function(element) {
+            element.style.display = "none";
         });
-    });
 
-    document.addEventListener("DOMContentLoaded", function() {
-    var select = document.getElementById("course");
-    var actionColumn = document.querySelectorAll(".action-column");
+        // Event listener for course selection change
+        select.addEventListener("change", function() {
+            var selectedCourse = select.value;
+            var form = document.getElementById("courseForm");
+            form.submit();
+        });
 
-    // Function to toggle action column visibility
-    function toggleActionColumnVisibility(selectedCourse) {
-        if (selectedCourse !== "All Courses") {
-            // Show the action column if a course other than "All Courses" is selected
-            actionColumn.forEach(function(element) {
+        // Show action columns if a specific course is already selected on page load
+        var initialSelectedCourse = select.value;
+        if (initialSelectedCourse !== "") {
+            actionColumns.forEach(function(element) {
                 element.style.display = "table-cell";
             });
-        } else {
-            // Hide the action column if "All Courses" is selected
-            actionColumn.forEach(function(element) {
-                element.style.display = "none";
-            });
         }
-    }
-
-    // Initial visibility based on selected course
-    toggleActionColumnVisibility(select.options[select.selectedIndex].text);
-
-    // Event listener for course selection change
-    select.addEventListener("change", function() {
-        var selectedCourse = select.options[select.selectedIndex].text;
-        toggleActionColumnVisibility(selectedCourse);
     });
-
-    // Event listener for form submission
-    // var form = document.querySelector("form");
-   // form.addEventListener("submit", function(event) {
-      //  var selectedCourse = select.options[select.selectedIndex].text;
-        //toggleActionColumnVisibility(selectedCourse);
-  //  });
-});
 </script>
 
 </body>
