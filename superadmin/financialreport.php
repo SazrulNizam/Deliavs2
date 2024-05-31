@@ -146,43 +146,78 @@ include 'connection.php';
 </head> 
 <body>
 
-<table id="example" class="table table-striped" style="width:100%">
+<?php
+$studentcourse = "SELECT *
+FROM mdl_user_enrolments INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = mdl_enrol.id WHERE mdl_enrol.status = '1'";
+$stcourses = mysqli_query($con, $studentcourse);
+while ($rowss = $stcourses->fetch_assoc()) {
+    echo "test";
+}
+?>
+<table id="example" class="table table-striped display nowrap" style="width:100%">
     <thead>
         <tr>
-        <th style="text-align:center;">No.</th>
-            <th>First Name</th>
-            <th>Email</th>
-            <th>Package Name</th>
-            <th>Price</th>
+            <th>State of Nadi</th>
+            <th>Phase of NAdi</th>
+            <th>Name of Nadi</th>
+            <th>Email of Nadi</th>
+            <th>Participation Name</th>
+            <th>Participation IC Number</th>
+            <th>Subject</th>
+            <th>Payment Receive by Participant</th>
+            <th>Commission for Nadi</th>
+            <th>Other Commission</th>
+            <th>Balance to be Transfer to HQ</th>
+            <th>Date of Transaction</th>
+            <th>Transactors Name</th>
+            <th>Transactors Mobile Number</th>
+            <th>Commission Receiver Name</th>
+            <th>Commission Receivers</th>
+            <th>IC Number</th>
+            
 
         </tr>
     </thead>
     <tbody>
-      
-
-        <?php
+    <?php
 
 $no = 0;
 while ($row = $badge->fetch_assoc()) {
 
    
-
         $no++;
         echo
             "<tr>
 <td style='text-align:center;'>" . $no . "</td>
-<td>" . $row["firstname"] . "</td>
-<td>" . $row["email"] . "</td>
-<td>" . $row["name"] . "</td>
-<td>" . $row["version"] . "</td
+<td>" . $row['data'] . "</td>
+<td>" . $row['data'] . "</td>
+<td>" . $row['data'] . "</td>
+<td>" . $row['data'] . "</td>
+<td>" . $row['data'] . "</td>
+<td>" . $row['data'] . "</td>
+<td>" . $row['data'] . "</td>
+<td>" . $row['data'] . "</td>
+<td>" . $row['data'] . "</td>
+<td>" . $row['data'] . "</td>
+<td>" . $row['data'] . "</td>
+<td>" . $row['data'] . "</td>
+<td>" . $row['data'] . "</td>
+<td>" . $row['data'] . "</td>
+<td>" . $row['data'] . "</td>
+<td>" . $row['data'] . "</td>
+
+
 </tr>";
     
 }
 
 ?>
+
+
         
     </tbody>
 </table>
+
 
 
 </body>
@@ -200,6 +235,7 @@ while ($row = $badge->fetch_assoc()) {
 <script>
 
 $('#example').DataTable({
+    scrollX: true,
     layout: {
         topStart: {
             buttons: ['copy', 'excel', 'pdf', ]

@@ -27,7 +27,7 @@ class simplehtml_form extends moodleform {
 
 
        
-        $this->add_action_buttons();
+        $this->add_action_buttons(true, "Add Video");
 
 
     }                           // Close the function

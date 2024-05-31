@@ -58,8 +58,19 @@ $datauserinfo = mysqli_query($con,$userinfo);
 
 //Financial Report
 
-$badgequery = "SELECT distinct mdl_badge_issued.userid, mdl_user.firstname , mdl_user.email , mdl_badge.name , mdl_badge.version
-FROM mdl_badge INNER JOIN mdl_badge_issued ON mdl_badge.id = mdl_badge_issued.badgeid INNER JOIN mdl_user_info_data ON mdl_badge_issued.userid = mdl_user_info_data.userid 
-INNER JOIN mdl_user ON mdl_user_info_data.userid = mdl_user.id ";
+$badgequery = "SELECT *
+FROM mdl_badge JOIN mdl_badge_issued ON mdl_badge.id = mdl_badge_issued.badgeid 
+JOIN mdl_user_info_data ON mdl_badge_issued.userid = mdl_user_info_data.userid 
+AND mdl_user_info_data.data = 'Student'
+JOIN mdl_user ON mdl_user_info_data.userid = mdl_user.id ";
 $badge = mysqli_query($con,$badgequery);
+
+$financial = "SELECT ka.id, ka.firstname, ka.lastname, c.fullname AS course_name, nadi.data AS nadi_name
+FROM mdl_user ka
+JOIN mdl_user_enrolments ra ON ka.id = ra.userid
+JOIN mdl_enrol en ON ra.enrolid = en.id
+JOIN mdl_course c ON en.courseid = c.id
+JOIN mdl_user_info_data role ON ka.id = role.userid AND role.fieldid = 6 AND role.data = 'Student'
+LEFT JOIN mdl_user_info_data nadi ON ka.id = nadi.userid AND nadi.fieldid = 14";
+$financialdata = mysqli_query($con,$financial);
 

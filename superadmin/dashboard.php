@@ -307,7 +307,7 @@ echo $datatest['userid'];
           <td>" . $row2["shortname"] . "</td>";
 
                 $studentcourse = "SELECT *
-                FROM mdl_user_enrolments INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = mdl_enrol.id ";
+                FROM mdl_user_enrolments INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = mdl_enrol.id WHERE status = 1";
                 $stcourses = mysqli_query($con, $studentcourse);
                 while ($row = $stcourses->fetch_assoc()) {
                     $bulan = date('m',$row["timestart"]);

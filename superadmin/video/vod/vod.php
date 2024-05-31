@@ -48,7 +48,7 @@ global $CFG, $COURSE, $DB, $USER, $ROLE;
 
 
 $query = "SELECT *
-FROM mdl_local_videos ";
+FROM mdl_local_videos WHERE category = 'VOD' ";
 $result = mysqli_query($con,$query);
 
 
@@ -105,7 +105,7 @@ $result = mysqli_query($con,$query);
           <td>" . $row["title"] . "</td>
           <td>" . $row["description"] . "</td>
                
-          <td> <a href='index.php?id=". $row["id"]."'". "class='btn btn-danger'>Delete</button>
+          <td> <a href='delete.php?id=". $row["id"]."'". "class='btn btn-danger'>Delete</button>
                 </td></tr>";
             
            }

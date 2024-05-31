@@ -2,36 +2,61 @@
 
 require_once("../../../config.php");
 global $CFG, $DB, $USER, $OUTPUT;
-require_once($CFG->dirroot.'/superadmin/video/recoding/form.php');
 
 
 // Instantiate the myform form from within the plugin.
 echo $OUTPUT->header();
+$con =mysqli_connect("localhost","root","","deliadata");
+require_once($CFG->dirroot.'/superadmin/video/recording/form.php');
 
-$ids = $_GET["id"];
-echo $ids;
+
+
+
+
 $mform = new simplehtml_form();
+
+$mform->set_data([
+    'userid' => $ids,
+
+]);
 
 // Form processing and displaying is done here.
 if ($mform->is_cancelled()) {
-    redirect('recoding.php');
+    redirect('recording.php');
     
 } else if ($fromform = $mform->get_data()) {
    
-    echo $_GET['id'];
-    $name = $mform->get_new_filename('userfile');
 
-    $fullpath = "FileHere/".$name;
+
+   
+
+    $name = (rand(10,999999)).$mform->get_new_filename('userfile');
+
+  
+
+    $fullpath = "../Video/".$name;
     $success = $mform->save_file('userfile', $fullpath);
 
-    $data = new stdClass;
-    $data->userid =   $_GET['id'];
+    $data = new stdclass;
+    $data->file = $name;
+    $data->title = $fromform->title;
+    $data->path = $fullpath;
+    $data->description = $fromform->description;
+    $data->timecreated = time();
+    $data->category = "recording";
+    $data->title = $fromform->title;
 
-    redirect('recoding.php', 'Record have been added succesfully', null, \core\output\notification::NOTIFY_SUCCESS);
+    $DB->insert_record('local_videos',$data);
+
+    redirect('recording.php', 'Record have been added succesfully', null, \core\output\notification::NOTIFY_SUCCESS);
+ 
+
+
+    
 
 
 } else {
-   
+
 
     // Display the form.
     $mform->display();

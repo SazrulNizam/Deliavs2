@@ -9,8 +9,7 @@ echo $OUTPUT->header();
 $con =mysqli_connect("localhost","root","","deliadata");
 require_once($CFG->dirroot.'/superadmin/video/vod/form.php');
 
-(int)$ids = $_GET["id"];
-echo $ids;
+
 
 
 
@@ -51,7 +50,6 @@ if ($mform->is_cancelled()) {
 
     redirect('vod.php', 'Record have been added succesfully', null, \core\output\notification::NOTIFY_SUCCESS);
  
-
 
 
     
