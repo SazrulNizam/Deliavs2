@@ -364,8 +364,46 @@ echo $OUTPUT->header();?>
       .h2 {
         font-size: 20px;
       }
+    .details .action-column a {
+        display: inline-block; 
+        margin-right: 5px; 
+    }
     
-    
+    .status.attached {
+        padding: 2px 4px;
+        background: #8de02c;
+        color: var(--white);
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+}
+
+    .status.notattached {
+        padding: 2px 4px;
+        background: #8de02c;
+        color: var(--white);
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+}
+.table-container {
+        width: 80%; /* Set desired width percentage */
+        margin: auto; /* Center the table */
+    }
+    .table-hover {
+        max-width: 100%; /* Ensure the table does not exceed the container's width */
+    }
+    .table .action-button {
+            background: none;
+            border: none;
+            color: inherit; /* Inherit color to match text color */
+            padding: 0.5rem 1rem; /* Adjust padding to match table row */
+            cursor: pointer;
+        }
+        .table .action-button:focus, .table .action-button:hover {
+            background: rgba(0,0,0,0.1); /* Optional: Add hover effect */
+            outline: none;
+        }
 
     /* Responsive Design */
     @media (max-width: 991px) {
@@ -389,27 +427,7 @@ echo $OUTPUT->header();?>
 </head>
 
 <body>
-
 <?php
-global $CFG, $COURSE, $DB, $USER, $ROLE;
- $con =mysqli_connect("localhost","root","","deliadata");
-
-
-
-//total student query
-// $query = "SELECT distinct mdl_user.id ,mdl_user.email ,mdl_user.firstname,mdl_user.city, 
-// mdl_role_assignments.userid, mdl_role_assignments.roleid 
-// FROM mdl_user INNER JOIN mdl_role_assignments ON mdl_user.id = mdl_role_assignments.userid";
-// $result = mysqli_query($con,$query);
-
-$query = "SELECT *
-FROM mdl_user INNER JOIN mdl_user_info_data ON mdl_user.id = mdl_user_info_data.userid";
-$result = mysqli_query($con,$query);
-
-
-?>
-<?php
-global $CFG, $COURSE, $DB, $USER, $ROLE;
 
 // Database connection
 $conn = mysqli_connect("localhost", "root", "", "deliadata");
@@ -418,49 +436,82 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Fetch course details
+global $USER;
+$studentid = $USER->id;
+
+// Query to fetch student course enrollment data
+$sql_enrollments = "SELECT c.id AS course_id, c.fullname AS course_name, COUNT(*) AS enrollment_count
+    FROM mdl_course AS c
+    JOIN mdl_context AS ctx ON c.id = ctx.instanceid
+    JOIN mdl_role_assignments AS ra ON ra.contextid = ctx.id
+    JOIN mdl_user AS u ON u.id = ra.userid
+    WHERE u.id = ? AND c.category != 0
+    GROUP BY c.id, c.fullname";
+  
+
+$stmt_enrollments = mysqli_prepare($conn, $sql_enrollments);
+if ($stmt_enrollments === false) {
+    die('Error preparing enrollment query: ' . mysqli_error($conn));
+}
+mysqli_stmt_bind_param($stmt_enrollments, "i", $studentid);
+mysqli_stmt_execute($stmt_enrollments);
+$result_enrollments = mysqli_stmt_get_result($stmt_enrollments);
+
 $courses = [];
-$sql_course_details = "SELECT c.id AS course_id,
-                        c.fullname AS course_name,
-                        CONCAT(t.firstname, ' ', t.lastname) AS teacher_name,
-                        COUNT(*) AS enrollment_count
-                    FROM mdl_course AS c
-                    JOIN mdl_context AS ctx ON c.id = ctx.instanceid
-                    JOIN mdl_role_assignments AS ra ON ra.contextid = ctx.id
-                    JOIN mdl_user AS u ON u.id = ra.userid
-                    JOIN mdl_user AS t ON t.id = (
-                        SELECT userid
-                        FROM mdl_role_assignments
-                        WHERE contextid = ctx.id AND c.category != 0
-                        AND roleid = 3 
-                        LIMIT 1
-                    )
-                    WHERE u.id = (SELECT id FROM mdl_user WHERE username = ?)
-                    GROUP BY c.id, c.fullname, t.firstname, t.lastname";
-
-$stmt_course_details = mysqli_prepare($conn, $sql_course_details);
-if ($stmt_course_details === false) {
-    die("SQL prepare error: " . mysqli_error($conn));
+while ($row = mysqli_fetch_assoc($result_enrollments)) {
+    $courses[] = $row;
 }
 
-$username = $USER->username; // Assuming $USER->username contains the username of the logged-in user
-mysqli_stmt_bind_param($stmt_course_details, "s", $username);
-mysqli_stmt_execute($stmt_course_details);
-$result_course_details = mysqli_stmt_get_result($stmt_course_details);
+// Second query to fetch report card details
+$sql_reportcard = "SELECT DISTINCT rc.*, c.fullname AS course_name, c.id AS course_id, student.firstname AS student_firstname, 
+                  student.lastname AS student_lastname, uploader.firstname AS uploader_firstname, 
+                  uploader.lastname AS uploader_lastname FROM mdl_local_reportcards rc
+                    JOIN mdl_course c ON rc.courseid = c.id
+                    JOIN mdl_user_enrolments ra ON rc.userid = ra.userid
+                    JOIN mdl_enrol en ON ra.enrolid = en.id
+                    JOIN mdl_user student ON ra.userid = student.id
+                    JOIN mdl_user uploader ON rc.uploadid = uploader.id
+                    WHERE student.id = ? 
+                    AND rc.courseid = ? 
+                    AND rc.status = 'uploaded'";  
 
-if ($result_course_details === false) {
-    die("SQL execute error: " . mysqli_error($conn));
+$stmt_reportcard = mysqli_prepare($conn, $sql_reportcard);
+if ($stmt_reportcard === false) {
+    die('Error preparing report card query: ' . mysqli_error($conn));
 }
 
-while ($course = mysqli_fetch_assoc($result_course_details)) {
-    $courses[] = $course;
+$students = [];
+foreach ($courses as $course) {
+    $course_id = $course['course_id'];
+    mysqli_stmt_bind_param($stmt_reportcard, "ii", $studentid, $course_id);
+    mysqli_stmt_execute($stmt_reportcard);
+    $result_reportcard = mysqli_stmt_get_result($stmt_reportcard);
+
+    while ($reportcard = mysqli_fetch_assoc($result_reportcard)) {
+        $students[] = $reportcard;
+    }
+}
+
+// Free results and close statements
+mysqli_stmt_free_result($stmt_enrollments);
+mysqli_stmt_free_result($stmt_reportcard);
+mysqli_stmt_close($stmt_enrollments);
+mysqli_stmt_close($stmt_reportcard);
+
+// Check if a course is selected and filter data
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])) {
+    $courseId = $_POST['course_id'];
+
+    if (!empty($courseId)) {
+        $students = array_filter($students, function($student) use ($courseId) {
+          return $student['course_id'] == $courseId;
+        });
+    }
 }
 
 // Close the database connection
-mysqli_stmt_close($stmt_course_details);
 mysqli_close($conn);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -478,71 +529,117 @@ mysqli_close($conn);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
 </head>
 <body>
-    <div class= container>
-    <div class="details">
-        <div class="student">
-            <div class="cardHeader">
-                <h2>Courses</h2>
-            </div>
-
-            <table id="example">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Course ID</th>
-                        <th>Course Name</th>
-                        <th>Teacher's Name</th>
-                        <td class="action-column">Action</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $no = 0;
-                    foreach ($courses as $course) :
-                        $no++;
-                    ?>
-                        <tr>
+        <div class="table-container">
+        <?php if (!empty($students)) : ?>
+        <table id="example" class="table table-hover" style="width:100%">
+            <thead>
+                <tr>
+                    <td>No</td>
+                    <td>Course</td>
+                    <td>Course ID </td>
+                    <td>Uploader</td>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $no = 0;
+                foreach ($students as $student) :
+                    $no++;
+                         // Fetch the status for each student
+                $record = $DB->get_record('local_reportcards', array('userid' => $student['userid'], 'courseid' => $student['course_id']));
+                
+                if ($record && $record->status === 'uploaded') {
+                    $status_class = 'btn-success';
+                    $status_text = 'View';
+                    $view_link = "upload/view.php?action=view&id={$student['userid']}&course_id={$student['courseid']}";
+                } else {
+                    $status_class = 'btn-danger';
+                    $status_text = 'Not Uploaded';
+                }
+            ?>
+                   <tr>
                             <td><?php echo $no; ?></td>
-                            <td><?php echo htmlspecialchars($course['course_id']); ?></td>
-                            <td><?php echo htmlspecialchars($course['course_name']); ?></td>
-                            <td><?php echo htmlspecialchars($course['teacher_name']); ?></td>
-                            <td class="action-column">
-                            <a href='mod/assign/view.php?id=<?php echo $student['id']; ?>' class='btn btn-primary cardHeader__btn'>View</a></td>
+                            <td><?php echo htmlspecialchars($student['course_name']); ?></td>
+                            <td><?php echo htmlspecialchars($student['course_id']); ?></td>
+                            <td><?php echo htmlspecialchars($student['uploader_firstname']) . ' ' . htmlspecialchars($student['uploader_lastname']); ?></td>
+                            <td><a href="<?php echo $view_link; ?>" class="btn <?php echo $status_class; ?>" action="view">
+                            <?php echo $status_text; ?>
+                            </a></td>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    </div>
-
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        <?php else : ?>
+        <p>There is no report card available at the moment.</p>
+    <?php endif; ?>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('#example').DataTable({
-                // dom: 'Bfrtip',
-                // buttons: [
-                //     {
-                //         extend: 'csv',
-                //         title: 'Report Card'
-                //     },
-                //     {
-                //         extend: 'excel',
-                //         title: 'Report Card'
-                //     },
-                //     {
-                //         extend: 'pdf',
-                //         title: 'Report Card'
-                //     }
-                // ]
-            });
+    $(document).ready(function() {
+    // Initialize DataTable
+    $('#example').DataTable();
+
+    var select = document.getElementById("course");
+    var actionColumns = document.querySelectorAll(".action-column");
+
+    // Event listener for form submission
+form.addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent the default form submission
+    var selectedCourse = select.value;
+
+    select.addEventListener("change", function() {
+    console.log("Course selection changed");
+    // Your existing logic here
+});
+    // Add logic here to handle the selected course
+    if (selectedCourse !== "") {
+        actionColumns.forEach(function(element) {
+            element.style.display = "table-cell";
         });
-    </script>
+    } else {
+        actionColumns.forEach(function(element) {
+            element.style.display = "none";
+        });
+    }});
+
+    // Show action columns if a specific course is already selected on page load
+    var initialSelectedCourse = select.value;
+    if (initialSelectedCourse !== "") {
+        actionColumns.forEach(function(element) {
+            element.style.display = "table-cell";
+        });
+    }
+});
+        $action = optional_param('action', '', PARAM_ALPHA);
+        $student_id = optional_param('id', 0, PARAM_INT);
+        $course_id = optional_param('course_id', 0, PARAM_INT);
+        
+        switch ($action) {
+    case 'view':
+        // view
+        header("Location: upload/view.php?action=view&id={$student['userid']}&course_id={$student['courseid']}");
+        exit();
+}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+    
+
 
 </body>
-</html>
+
 
 <?php
 echo $OUTPUT->footer();
 ?>
+
+
+</html>

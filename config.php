@@ -19,7 +19,7 @@ $CFG->dboptions = array (
 );
 
 $CFG->wwwroot   = 'http://deliavs2.test';
-$CFG->dataroot  = 'C:\\Users\\User\\Documents\\GitHub\\moodledata';
+$CFG->dataroot  = 'C:\\Users\\User\\Documents\\moodledata';
 $CFG->admin     = 'admin';
 
 $CFG->directorypermissions = 0777;
