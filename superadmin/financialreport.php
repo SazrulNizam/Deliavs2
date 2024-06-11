@@ -173,8 +173,7 @@ while ($rowss = $stcourses->fetch_assoc()) {
             <th>Transactors Mobile Number</th>
             <th>Commission Receiver Name</th>
             <th>Commission Receivers</th>
-            <th>IC Number</th>
-            
+            <th>IC Number</th>          
 
         </tr>
     </thead>

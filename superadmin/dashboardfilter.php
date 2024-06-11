@@ -312,7 +312,8 @@ Select Course  </button>
             $month = date("m");
 
             $no = 0;
-            $querys = "SELECT * FROM mdl_course WHERE category !=0";
+            $ids = $_GET["id"];
+            $querys = "SELECT * FROM mdl_course WHERE category = $ids";
             $results = mysqli_query($con,$querys);
 
             while ($row2 = $results->fetch_assoc()) {

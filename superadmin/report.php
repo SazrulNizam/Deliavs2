@@ -194,17 +194,20 @@ include 'connection.php';
           <td>" . $ppnum["data"] . "</td>
           <td><ul>";
 
-
-                    $enrol = "SELECT *
-FROM mdl_user_enrolments INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = mdl_enrol.id INNER JOIN mdl_course ON mdl_enrol.courseid = mdl_course.id";
+                    $usus = $row["userid"];
+                    $enrol = "SELECT DISTINCT cc.name 
+                    FROM mdl_course_categories cc
+                    JOIN mdl_course c ON cc.id = c.category
+                    JOIN mdl_enrol e ON c.id = e.courseid
+                    JOIN mdl_user_enrolments ue ON e.id = ue.enrolid
+                    WHERE ue.userid = $usus ";
                     $enrolreport = mysqli_query($con, $enrol);
                     while ($rows = $enrolreport->fetch_assoc()) {
 
-                        if ($rows["userid"] == $row["userid"]) {
+                      
 
-                            echo "<li>" . $rows["fullname"] . "</li>";
-
-                        }
+                            echo "<li>" . $rows["name"] . "</li>";
+                  
                     }
                     echo "</ul></td></tr>";
 

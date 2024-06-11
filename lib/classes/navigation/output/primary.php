@@ -151,14 +151,14 @@ class primary implements renderable, templatable {
                 Dashboard | /superadmin/dashboard.php";
 
                 $CFG->custommenuitems .= "
-                Participant Report | /superadmin/report.php";
+                Report
+                -Participant Report | /superadmin/report.php
+                
+                -Financial Report | /superadmin/financialreport.php
+                
+                -Report Card | /superadmin/reportcard.php";
 
-                $CFG->custommenuitems .= "
-                Financial Report | /superadmin/financialreport.php";
-
-                $CFG->custommenuitems .= "
-                Report Card | /superadmin/reportcard.php";
-
+         
                 $CFG->custommenuitems .= "
                 Calendar | /my/";
                 
@@ -170,6 +170,9 @@ class primary implements renderable, templatable {
 
                 $CFG->custommenuitems .= "
                 Create User | /user/editadvanced.php?id=-1";
+
+                $CFG->custommenuitems .= "
+                Manage Teacher | /superadmin/ManageTeacher/manage-teacher.php";
 
                 $CFG->custommenuitems .= "
                 Manage Package | /badges/index.php?type=1";
@@ -200,6 +203,9 @@ class primary implements renderable, templatable {
 
                 $CFG->custommenuitems .= "
                 Manage Package | /badges/index.php?type=1";
+
+                $CFG->custommenuitems .= "
+                Create User | /user/editadvanced.php?id=-1";
 
                 
             }
