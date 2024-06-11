@@ -163,270 +163,12 @@ echo $OUTPUT->header();?>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 
   <style>
-    :root {
-      --blue: #2a2185;
-      --white: #fff;
-      --gray: #f5f5f5;
-      --black1: #222;
-      --black2: #999;
-    }
-
-    body {
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    .container {
-      position: relative;
-      width: 100%;
-    }
-
-
-    /* Card in Dashboard */
-    .cardBox {
-      position: relative;
-      width: 100%;
-      padding: 20px;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-gap: 30px;
-    }
-
-    .cardBox .card {
-      position: relative;
-      background: var(--white);
-      padding: 30px;
-      border-radius: 20px;
-      display: flex;
-      justify-content: space-between;
-      cursor: pointer;
-      box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
-    }
-
-    .cardBox .card .numbers {
-      position: relative;
-      font-weight: 500;
-      font-size: 2.5rem;
-      color: var(--blue);
-    }
-
-    .cardBox .card-calendar .event {
-      position: justify;
-      font-weight: 300;
-      font-size: 2.0rem;
-      color: var(--blue);
-    }
-
-    .cardBox .card .cardName {
-      color: var(--black2);
-      font-size: 1.1rem;
-      margin-top: 5px;
-    }
-
-    .cardBox .card-calendar .cardName-event {
-      color: var(--black2);
-      font-size: 1.1rem;
-      margin-top: 5px;
-    }
-
-
-    .cardBox .card .iconBx {
-      font-size: 4rem;
-      color: var(--black2);
-    }
-
-    .cardBox .card .iconBx {
-      font-size: 3.5rem;
-      color: var(--black2);
-    }
-
-    .cardBox .card-calendar .iconBx {
-      font-size: 3.5rem;
-      color: var(--black2);
-    }
-
-    .cardBox .card:hover {
-      background: var(--blue);
-    }
-
-    .cardBox .card-calendar:hover .cardName-event {
-      color: var(--white);
-    }
-
-    .cardBox .card-calendar:hover {
-      background: var(--blue);
-    }
-
-    .cardBox .card:hover .numbers,
-    .cardBox .card:hover .cardName,
-    .cardBox .card:hover .iconBx {
-      color: var(--white);
-    }
-
-    .cardBox .card-calendar:hover .event {
-      color: var(--white);
-    }
-
-    .cardBox .card-calendar {
-      grid-column: span 2;
-      position: relative;
-      background: var(--white);
-      padding: 30px;
-      border-radius: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      cursor: pointer;
-      box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
-    }
-
-    .cardBox .card-calendar .cardName-event {
-      color: var(--black2);
-      font-size: 1.1rem;
-      margin-top: 20px;
-    }
-
-    .details {
-      position: relative;
-      width: 100%;
-      padding: 20px;
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      grid-gap: 30px;
-      /* margin-top: 10px; */
-    }
-
-    .details .student {
-      grid-column: span 2;
-      position: relative;
-      display: grid;
-      min-height: 500px;
-      background: var(--white);
-      padding: 20px;
-      box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
-      border-radius: 20px;
-    }
-
-    .details .cardHeader {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-
-    }
-
-    .cardHeader h2 {
-      font-weight: 600;
-      color: var(--blue);
-
-    }
-
-    .cardHeader__btn {
-      position: relative;
-      padding: 10px 15px;
-      background: var(--blue);
-      text-decoration: none;
-      color: var(--white);
-      border-radius: 6px;
-      justify-content: space-around;
-
-    }
-
-    .details table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      table-layout: fixed;
-    }
-
-    .details table thead td {
-      font-weight: 600;
-    }
-
-    .details .student table tr {
-      color: var(--black1);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    }
-
-    .details .student table tr:last-child {
-      border-bottom: none;
-    }
-
-    .details .student table tbody tr:hover {
-      background: var(--blue);
-      color: var(--white);
-    }
-
-    .details .student table tr td {
-      padding: 30px;
-    }
-    
-
-      .h2 {
-        font-size: 20px;
-      }
-    .details .action-column a {
-        display: inline-block; 
-        margin-right: 5px; 
-    }
-    
-    .status.attached {
-        padding: 2px 4px;
-        background: #8de02c;
-        color: var(--white);
-        border-radius: 4px;
-        font-size: 14px;
-        font-weight: 500;
-}
-
-    .status.notattached {
-        padding: 2px 4px;
-        background: #8de02c;
-        color: var(--white);
-        border-radius: 4px;
-        font-size: 14px;
-        font-weight: 500;
-}
-.table-container {
-        width: 80%; /* Set desired width percentage */
-        margin: auto; /* Center the table */
-    }
-    .table-hover {
-        max-width: 100%; /* Ensure the table does not exceed the container's width */
-    }
-    .table .action-button {
-            background: none;
-            border: none;
-            color: inherit; /* Inherit color to match text color */
-            padding: 0.5rem 1rem; /* Adjust padding to match table row */
-            cursor: pointer;
+    .table-container {
+            margin-bottom: 20px;
         }
-        .table .action-button:focus, .table .action-button:hover {
-            background: rgba(0,0,0,0.1); /* Optional: Add hover effect */
-            outline: none;
-        }
-
-    /* Responsive Design */
-    @media (max-width: 991px) {
-
-      .cardBox {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .details {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 480px) {
-
-    }
-      
   </style>
 </head>
 
-<body>
 <?php
 
 // Database connection
@@ -436,34 +178,47 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Fetch course details directly
-$sql_courses = "SELECT id, fullname FROM mdl_course where category !=0";
+// Fetch categories
+$sql_categories = "SELECT id, name FROM mdl_course_categories WHERE id != 0";
+$result_categories = mysqli_query($conn, $sql_categories);
+
+if (!$result_categories) {
+    die("Query failed: " . mysqli_error($conn));
+}
+
+// Categories into an array
+$categories = [];
+while ($category = mysqli_fetch_assoc($result_categories)) {
+    $categories[] = $category;
+}
+
+if (empty($categories)) {
+    die("No categories found.");
+}
+
+// Fetch all courses
+$courses = [];
+$sql_courses = "SELECT id, fullname, category FROM mdl_course WHERE category != 0";
 $result_courses = mysqli_query($conn, $sql_courses);
 
 if (!$result_courses) {
     die("Query failed: " . mysqli_error($conn));
 }
 
-// Courses into an array
-$courses = [];
 while ($course = mysqli_fetch_assoc($result_courses)) {
-   $courses[] = $course;
-}
-
-if (empty($courses)) {
-    die("No courses found.");
+    $courses[] = $course;
 }
 
 // Fetch all students
 $students = [];
-$sql_students = "SELECT ka.id, ka.firstname, ka.lastname, c.id AS course_id, c.fullname AS course_name, nadi.data AS nadi_name
+$sql_students = "SELECT ka.id, ka.firstname, ka.lastname, c.id AS course_id, c.fullname AS course_name, nadi.data AS nadi_name, c.category AS category_id
 FROM mdl_user ka
 JOIN mdl_user_enrolments ra ON ka.id = ra.userid
 JOIN mdl_enrol en ON ra.enrolid = en.id
 JOIN mdl_course c ON en.courseid = c.id
 JOIN mdl_user_info_data role ON ka.id = role.userid AND role.fieldid = 6 AND role.data = 'Student'
 LEFT JOIN mdl_user_info_data nadi ON ka.id = nadi.userid AND nadi.fieldid = 14
-GROUP BY ka.id, ka.firstname, ka.lastname, c.id, c.fullname, nadi.data";
+GROUP BY ka.id, ka.firstname, ka.lastname, c.id, c.fullname, nadi.data, c.category";
 
 $result_students = mysqli_query($conn, $sql_students);
 if ($result_students === false) {
@@ -479,7 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])) {
     $courseId = $_POST['course_id'];
 
     if (!empty($courseId)) {
-        $students = array_filter($students, function($student) use ($courseId) {
+        $students = array_filter($students, function ($student) use ($courseId) {
             return $student['course_id'] == $courseId;
         });
     }
@@ -496,6 +251,8 @@ mysqli_close($conn);
     <!-- Include jQuery and DataTables CSS/JS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
@@ -506,139 +263,154 @@ mysqli_close($conn);
     <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <style>
+
+    </style>
 </head>
 <body>
-          
-<h2 id="courseHeading">Student Name List</h2>
-<form method="post" id="courseForm">
-    <select name="course_id" id="course">
-        <option value="">All Courses</option>
-        <?php foreach ($courses as $course) : ?>
-            <option value="<?php echo $course['id']; ?>" <?php echo (isset($_POST['course_id']) && $_POST['course_id'] == $course['id']) ? 'selected' : ''; ?>>
-                <?php echo htmlspecialchars($course['fullname']); ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-</form>
-        </div>
-        <div class="table-container">
-        <table id="example" class="table table-hover" style="width:100%">
+
+<h2 id="courseHeading"></h2>
+
+<?php foreach ($categories as $category) : ?>
+    <h3><?php echo htmlspecialchars($category['name']); ?></h3>
+    <form method="post" id="courseForm-<?php echo $category['id']; ?>">
+        <select name="course_id" id="course-<?php echo $category['id']; ?>" class="form-control course-select" data-category-id="<?php echo $category['id']; ?>">
+            <option value="">All Courses</option>
+            <?php foreach ($courses as $course) :
+                if ($course['category'] == $category['id']) : ?>
+                    <option value="<?php echo $course['id']; ?>" <?php echo (isset($_POST['course_id']) && $_POST['course_id'] == $course['id']) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($course['fullname']); ?>
+                    </option>
+                <?php endif;
+            endforeach; ?>
+        </select>
+    </form>
+    <br>
+    <div class="table-container">
+        <table id="example-<?php echo $category['id']; ?>" class="table table-hover" style="width:100%">
             <thead>
                 <tr>
                     <td>No</td>
-                    <td>Student ID</td>
+                    <td hidden>Student ID</td>
                     <td>Student Name</td>
                     <td>Course</td>
                     <td>Nadi Name</td>
-                    <td>Course ID </td>
+                    <td hidden>Course ID</td>
                     <td>Status</td>
-                    <td class="action-column hidden">Action</td>
-                    
+                    <td class="action-column">Action</td>
                 </tr>
             </thead>
             <tbody>
-                <?php
-                $no = 0;
-                foreach ($students as $student) :
-                    $no++;
-                         // Fetch the status for each student
-                $record = $DB->get_record('local_reportcards', array('userid' => $student['id'], 'courseid' => $student['course_id']));
-                
-                if ($record && $record->status === 'uploaded') {
-                    $status_class = 'btn-success';
-                    $status_text = 'Uploaded';
-                    $view_link = "upload/view.php?id={$student['id']}&course_id={$course['id']}";
-                } else {
-                    $status_class = 'btn-danger';
-                    $status_text = 'Not Uploaded';
-                }
-            ?>
-                   <tr>
-                            <td><?php echo $no; ?></td>
-                            <td><?php echo htmlspecialchars($student['id']); ?></td>
-                            <td><?php echo htmlspecialchars($student['firstname'] . ' ' . $student['lastname']); ?></td>
-                            <td><?php echo htmlspecialchars($student['course_name']); ?></td>
-                            <td><?php echo htmlspecialchars($student['nadi_name']); ?></td>
-                            <td><?php echo htmlspecialchars($student['course_id']); ?></td>
-                            <td><button type="button" class="btn <?php echo $status_class; ?>" disabled> 
-                            <?php echo $status_text; ?>
-                            </button> </td>
-                            <td class="action-column">
-                              <div class="btn-group">
-                                  <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                      <i class="fas fa-ellipsis-v"></i>
-                                  </button>
-                                  <div class="dropdown-menu">
-                                      <a class="dropdown-item" href="upload/index.php?id=<?php echo $student['id']; ?>&course_id=<?php echo $student['course_id']; ?>">Upload</a>
-                                      <a class="dropdown-item" href="upload/view.php?action=view&id=<?php echo $student['id']; ?>&course_id=<?php echo $student['course_id']; ?>">View</a>
-                                      <a class="dropdown-item" href="edit.php?action=edit&id=<?php echo $student['id']; ?>&course_id=<?php echo $student['course_id'];?>">Edit</a>
-                                      <div class="dropdown-divider"></div>
-                                      <a class="dropdown-item text-danger" href="upload/view.php?action=delete&id=<?php echo $student['id']; ?>&course_id=<?php echo  $student['course_id']; ?>">Delete</a>
-                                  </div>
-                              </div>
-                          </td>
-                                                      
-                           
-                   
-                        </tr>
-                <?php endforeach; ?>
-            </tbody>
+            <tbody>
+    <?php
+    $no = 0;
+    foreach ($students as $student) :
+        if ($student['category_id'] == $category['id']) :
+            $no++;
+            // Fetch the status for each student
+            $record = $DB->get_record('local_reportcards', array('userid' => $student['id'], 'courseid' => $student['course_id']));
+            
+
+            if ($record && $record->status === 'uploaded') {
+                $status_class = 'btn-success';
+                $status_text = 'Uploaded';
+                $filename = $record->path;
+                $actions = "
+                    <a class='dropdown-item' href='upload/view.php?action=view&file=$filename'>View</a>
+                    <div class='dropdown-divider'></div>
+                    <a class='dropdown-item text-danger' href='upload/view.php?action=delete&id={$student['id']}&course_id={$student['course_id']}'>Delete</a>
+                ";
+            } else {
+                $status_class = 'btn-danger';
+                $status_text = 'Not Uploaded';
+                $actions = "
+                    <a class='dropdown-item' href='upload/index.php?id={$student['id']}&course_id={$student['course_id']}'>Upload</a>
+                ";
+            }
+    ?>
+            <tr>
+                <td><?php echo $no; ?></td>
+                <td hidden><?php echo htmlspecialchars($student['id']); ?></td>
+                <td><?php echo htmlspecialchars($student['firstname'] . ' ' . $student['lastname']); ?></td>
+                <td><?php echo htmlspecialchars($student['course_name']); ?></td>
+                <td><?php echo htmlspecialchars($student['nadi_name']); ?></td>
+                <td hidden><?php echo htmlspecialchars($student['course_id']); ?></td>
+                <td><button type="button" class="btn <?php echo $status_class; ?>" disabled><?php echo $status_text; ?></button></td>
+                <td class="action-column">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <?php echo $actions; ?>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+    <?php
+        endif;
+    endforeach;
+    ?>
+</tbody>
+
         </table>
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-    $(document).ready(function() {
-    // Initialize DataTable
-    $('#example').DataTable();
-
-    var select = document.getElementById("course");
-    var actionColumns = document.querySelectorAll(".action-column");
-
-    // Event listener for form submission
-form.addEventListener("submit", function(event) {
-    event.preventDefault(); // Prevent the default form submission
-    var selectedCourse = select.value;
-
-    select.addEventListener("change", function() {
-    console.log("Course selection changed");
-    // Your existing logic here
-});
-    // Add logic here to handle the selected course
-    if (selectedCourse !== "") {
-        actionColumns.forEach(function(element) {
-            element.style.display = "table-cell";
-        });
-    } else {
-        actionColumns.forEach(function(element) {
-            element.style.display = "none";
-        });
-    }});
-
-    // Show action columns if a specific course is already selected on page load
-    var initialSelectedCourse = select.value;
-    if (initialSelectedCourse !== "") {
-        actionColumns.forEach(function(element) {
-            element.style.display = "table-cell";
-        });
-    }
-});
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
-    
-</script>
-
-</body>
+    </div>
+<?php endforeach; 
 
 
-<?php
-echo $OUTPUT->footer();
 ?>
 
+<script>
+$(document).ready(function() {
+    var selectedCourses = {}; // Object to store selected courses for each category
 
+    // Event listener for course selection change
+    $('.course-select').change(function() {
+        var categoryId = $(this).data('category-id');
+        var courseId = $(this).val();
+        selectedCourses[categoryId] = courseId; // Store the selected course for this category
+        updateTableVisibility(categoryId, courseId); // Update the table rows visibility for the selected category
+    });
+
+    // Function to update table rows visibility based on selected course
+    function updateTableVisibility(categoryId, courseId) {
+        $('#example-' + categoryId + ' tbody tr').each(function() {
+            var courseTd = $(this).find('td:eq(5)'); 
+            if (courseTd.text() === courseId || courseId === '') {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+        if (courseId !== '') {
+            $('#example-' + categoryId + ' .action-column').css('display', 'table-cell');
+        } else {
+            $('#example-' + categoryId + ' .action-column').hide();
+        }
+    }
+
+    // Initialize DataTables for each category's table
+    $('.course-table').each(function() {
+        var categoryId = $(this).data('category-id');
+        $(this).DataTable();
+    });
+
+    // Show action columns if a specific course is already selected on page load
+    $('.course-select').each(function() {
+        var initialSelectedCourse = $(this).val();
+        var categoryId = $(this).data('category-id');
+        selectedCourses[categoryId] = initialSelectedCourse; // Store the selected course for this category
+        updateTableVisibility(categoryId, initialSelectedCourse);
+    });
+
+    // Restore selected courses when page loads or is refreshed
+    Object.keys(selectedCourses).forEach(function(categoryId) {
+        $('#course-' + categoryId).val(selectedCourses[categoryId]);
+    });
+});
+
+
+</script>
+<?php echo $OUTPUT->footer();?>
+</body>
 </html>

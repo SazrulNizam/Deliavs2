@@ -171,48 +171,41 @@ include 'connection.php';
         <tbody>
 
             <?php
-            while ($row = $datareport->fetch_assoc()) {
-
-                if ($row["data"] == 'Student') {
-
-                    $datauserid = $row["userid"];
-                    include 'reportconnection.php';
-
-                    echo
-                        "<tr>
-          <td> " . $dstate["data"] . "</td>
-          <td>" . $nphase["data"] . "</td>
-          <td>" . $nnadi["data"] . "</td>
-          <td>" . $nemail["data"] . "</td>
-          <td>" . $uname["firstname"] . "</td>
-          <td>" . $icnumber["data"] . "</td>
-          <td>" . $uemail["email"] . "</td>
-          <td>" . $uage["data"] . "</td>
-          <td>" . $pnum["data"] . "</td>
-          <td>" . $pname["data"] . "</td>
-          <td>" . $pemail["data"] . "</td>
-          <td>" . $ppnum["data"] . "</td>
-          <td><ul>";
-
-
-                    $enrol = "SELECT *
-FROM mdl_user_enrolments INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = mdl_enrol.id INNER JOIN mdl_course ON mdl_enrol.courseid = mdl_course.id";
-                    $enrolreport = mysqli_query($con, $enrol);
-                    while ($rows = $enrolreport->fetch_assoc()) {
-
-                        if ($rows["userid"] == $row["userid"]) {
-
-                            echo "<li>" . $rows["fullname"] . "</li>";
-
-                        }
-                    }
-                    echo "</ul></td></tr>";
-
-                }
-            }
-
-
-            ?>
+          while ($row = $datareport->fetch_assoc()) {
+              if ($row["data"] == 'Student') {
+                  $datauserid = $row["userid"];
+                  include 'reportconnection.php';
+                  echo "<tr>
+                          <td> " . $dstate["data"] . "</td>
+                          <td>" . $nphase["data"] . "</td>
+                          <td>" . $nnadi["data"] . "</td>
+                          <td>" . $nemail["data"] . "</td>
+                          <td>" . $uname["firstname"] . "</td>
+                          <td>" . $icnumber["data"] . "</td>
+                          <td>" . $uemail["email"] . "</td>
+                          <td>" . $uage["data"] . "</td>
+                          <td>" . $pnum["data"] . "</td>
+                          <td>" . $pname["data"] . "</td>
+                          <td>" . $pemail["data"] . "</td>
+                          <td>" . $ppnum["data"] . "</td>
+                          <td><ul>";
+                 
+                  $categories_query = "SELECT DISTINCT cc.name 
+                                       FROM mdl_course_categories cc
+                                       JOIN mdl_course c ON cc.id = c.category
+                                       JOIN mdl_enrol e ON c.id = e.courseid
+                                       JOIN mdl_user_enrolments ue ON e.id = ue.enrolid
+                                       WHERE ue.userid = $datauserid";
+          
+                  $categories_result = mysqli_query($con, $categories_query);
+                  while ($category_row = mysqli_fetch_assoc($categories_result)) {
+                      echo "<li>" . $category_row["name"] . "</li>";
+                  }
+                  echo "</ul></td></tr>";
+              }
+          }
+          ?>
+          
 
 
 
