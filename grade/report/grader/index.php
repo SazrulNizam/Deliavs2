@@ -256,5 +256,4 @@ $event = \gradereport_grader\event\grade_report_viewed::create(
     )
 );
 $event->trigger();
-
 echo $OUTPUT->footer();

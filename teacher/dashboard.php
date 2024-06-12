@@ -407,17 +407,19 @@ echo $ROLE->name;
     $current_session_username = $USER->username;
 
 
-    // Query to fetch enrollment data
-            $sql_enrollments = "SELECT c.fullname AS Course,
-                              COUNT(student_asg.userid) AS Students
-                              FROM mdl_user AS u
-                              JOIN mdl_role_assignments AS ra ON u.id = ra.userid
-                              JOIN mdl_context AS teacher_context ON ra.contextid = teacher_context.id AND teacher_context.contextlevel = 50
-                              JOIN mdl_course AS c ON teacher_context.instanceid = c.id
-                              JOIN mdl_role_assignments AS student_asg ON student_asg.contextid = teacher_context.id
-                              WHERE u.username = ? AND student_asg.roleid = 5 AND c.category !=0
-                              GROUP BY c.fullname
-                              ORDER BY Students DESC;";
+   // Query to fetch enrollment data
+$sql_enrollments = "SELECT c.fullname AS Course,
+COUNT(student_asg.userid) AS Students
+FROM mdl_user AS u
+JOIN mdl_role_assignments AS ra ON u.id = ra.userid
+JOIN mdl_context AS teacher_context ON ra.contextid = teacher_context.id AND teacher_context.contextlevel = 50
+JOIN mdl_course AS c ON teacher_context.instanceid = c.id
+JOIN mdl_role_assignments AS student_asg ON student_asg.contextid = teacher_context.id
+JOIN mdl_user_enrolments AS ue ON ue.userid = student_asg.userid
+JOIN mdl_enrol AS e ON e.id = ue.enrolid AND e.courseid = c.id
+WHERE u.username = ? AND student_asg.roleid = 5 AND c.category != 0 AND ue.status = 0
+GROUP BY c.fullname
+ORDER BY Students DESC;";
 
     // Prepare and execute the query
     $stmt_enrollments = mysqli_prepare($con, $sql_enrollments);
@@ -588,16 +590,20 @@ $students = [];
 if (!empty($course_ids)) {
     $course_ids_placeholder = implode(',', array_fill(0, count($course_ids), '?'));
     $sql_students = "SELECT u.id, u.firstname, u.lastname, u.email, 
-                            GROUP_CONCAT(DISTINCT ctx.instanceid) as course_ids,
-                            GROUP_CONCAT(DISTINCT c.fullname SEPARATOR ', ') as courses
-                     FROM mdl_user u
-                     JOIN mdl_role_assignments ra ON u.id = ra.userid
-                     JOIN mdl_context ctx ON ra.contextid = ctx.id
-                     JOIN mdl_course c ON ctx.instanceid = c.id
-                     WHERE ctx.instanceid IN ($course_ids_placeholder) 
-                     AND c.newsitems = 5  AND ctx.contextlevel = 50
-                     AND ra.roleid = 5
-                     GROUP BY u.id, u.firstname, u.lastname, u.email";
+    GROUP_CONCAT(DISTINCT ctx.instanceid) as course_ids,
+    GROUP_CONCAT(DISTINCT c.fullname SEPARATOR ', ') as courses
+FROM mdl_user u
+JOIN mdl_role_assignments ra ON u.id = ra.userid
+JOIN mdl_context ctx ON ra.contextid = ctx.id
+JOIN mdl_course c ON ctx.instanceid = c.id
+JOIN mdl_user_enrolments ue ON ue.userid = u.id
+JOIN mdl_enrol e ON e.id = ue.enrolid AND e.courseid = c.id
+WHERE ctx.instanceid IN ($course_ids_placeholder) 
+AND c.newsitems = 5  
+AND ctx.contextlevel = 50
+AND ra.roleid = 5
+AND ue.status = 0
+GROUP BY u.id, u.firstname, u.lastname, u.email";
 
     $stmt_students = mysqli_prepare($conn, $sql_students);
     if ($stmt_students === false) {
