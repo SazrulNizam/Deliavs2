@@ -162,15 +162,6 @@ while ($state = $states->fetch_assoc()) {
 // Fetch categories
 $categories = $conn->query("SELECT id, name FROM mdl_course_categories");
 
-// Add state dropdown filter
-echo '<label for="state_filter">Filter by State: </label>';
-echo '<select id="state_filter">';
-echo '<option value="">All States</option>';
-foreach ($stateOptions as $state) {
-    echo "<option value=\"$state\">$state</option>";
-}
-echo '</select>';
-
 while ($category = $categories->fetch_assoc()) {
     $category_id = $category['id'];
     $category_name = $category['name'];

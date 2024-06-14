@@ -1,7 +1,5 @@
 .drawer {
-    top: 4rem;
     padding: 0;
-    height: calc(100% - 4rem);
     background: $drawer-bg-color;
 
     .drawerheader {
@@ -77,7 +75,6 @@ body div#page {
     .courseindex .courseindex-item .courseindex-link,
     .courseindex .courseindex-item .courseindex-chevron {
         color: choose-contrast-color($drawer-bg-color);
-
         &:hover {
             text-decoration: underline;
         }

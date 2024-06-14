@@ -127,7 +127,7 @@
             <h1 class="sr-only container pb-0 mb-0 mt-5">{{sitename}}</h1>
         {{#showbanner}}
         {{#ifcarrousel}}
-            <div id="carouselTrema" class="carousel slide carousel-fade {{^frontpagecarrousel}}d-none{{/frontpagecarrousel}}" data-ride="carousel">
+            <div id="carouselTrema" class="carousel slide {{^frontpagecarrousel}}d-none{{/frontpagecarrousel}}" data-ride="carousel">
                 <div class="carousel-inner" data-interval="false">
                     <ol class="carousel-indicators">
                         {{#frontpagecarrousel}}
@@ -139,9 +139,9 @@
                         <div style="{{image}}"
                             class="frontpage-banner" alt="{{title}}"></div>
                         <div class="frontpage-banner-content">
-                            {{#title}}<h2 class="pb-4 pl-3 mb-3">{{title}}</h2>{{/title}}
-                            {{#subtitle}}<h3 class="mb-3">{{{subtitle}}}</h3>{{/subtitle}}
-                            {{#btntext}}{{#btnhref}}<a href="{{btnhref}}" class="m-3 btn {{btnclass}}" role="button">{{{btntext}}}</a>{{/btnhref}}{{/btntext}}
+                            {{#title}}<h2 class="pb-4 mb-3">{{title}}</h2>{{/title}}
+                            {{#subtitle}}<p class="h3 mb-3">{{{subtitle}}}</p>{{/subtitle}}
+                            {{#btntext}}{{#btnhref}}<a href="{{btnhref}}" class="px-3 py-1 btn {{btnclass}}" role="button">{{{btntext}}}</a>{{/btnhref}}{{/btntext}}
                         </div>
                     </div>
                     <a class="carousel-control-prev" href="#carouselTrema" role="button" data-slide="prev">
@@ -160,13 +160,14 @@
         {{^ifcarrousel}}
         <div id="frontpage-banner">
             <div id="frontpage-banner-content">
-	            {{#frontpagetitle}}<h2 class="pb-4 pl-3 mb-3">{{{frontpagetitle}}}</h2>{{/frontpagetitle}}
-	            {{#frontpagesubtitle}}<h3 class="mb-3">{{{frontpagesubtitle}}}</h3>{{/frontpagesubtitle}}
-	            {{#frontpagebuttontext}}{{#frontpagebuttonhref}}<a href="{{frontpagebuttonhref}}" class="m-3 btn {{frontpagebuttonclass}}" role="button">{{{frontpagebuttontext}}}</a>{{/frontpagebuttonhref}}{{/frontpagebuttontext}}
+	            {{#frontpagetitle}}<h2 class="pb-4 mb-3">{{{frontpagetitle}}}</h2>{{/frontpagetitle}}
+	            {{#frontpagesubtitle}}<p class="h3 mb-3">{{{frontpagesubtitle}}}</p>{{/frontpagesubtitle}}
+	            {{#frontpagebuttontext}}{{#frontpagebuttonhref}}<a href="{{frontpagebuttonhref}}" class="px-3 py-1 btn {{frontpagebuttonclass}}" role="button">{{{frontpagebuttontext}}}</a>{{/frontpagebuttonhref}}{{/frontpagebuttontext}}
             </div>
             {{{ output.frontpage_settings_menu }}}
         </div>
         {{/ifcarrousel}}
+        <div id="topofcontent"></div>
         {{/showbanner}}
         {{^showbanner}}
             {{{ output.frontpage_settings_menu }}}
@@ -176,41 +177,40 @@
                 {{> core/moremenu}}
             </div>
         {{/secondarymoremenu}}
-
         {{#hascards}}
             {{> theme_trema/frontpage_cards }}
         {{/hascards}}
-            <div id="page-content" class="pb-3 container d-print-block">
-                <div id="region-main-box">
-                    {{#hasregionmainsettingsmenu}}
-                    <div id="region-main-settings-menu" class="d-print-none">
-                        <div> {{{ regionmainsettingsmenu }}} </div>
-                    </div>
-                    {{/hasregionmainsettingsmenu}}
-                    <section id="region-main" aria-label="{{#str}}content{{/str}}">
-
-                        {{#hasregionmainsettingsmenu}}
-                            <div class="region_main_settings_menu_proxy"></div>
-                        {{/hasregionmainsettingsmenu}}
-                        {{#defaultfrontpagebody}}
-                        <div id="defaultfrontpagebody" class="mb-4">
-                            {{{defaultfrontpagebody}}}
-                        </div>
-                        {{/defaultfrontpagebody}}
-                        {{{ output.course_content_header }}}
-                        {{#headercontent}}
-                            {{> core/activity_header }}
-                        {{/headercontent}}
-                        {{#overflow}}
-                            {{> core/url_select}}
-                        {{/overflow}}
-                        {{{ output.main_content }}}
-                        {{{ output.activity_navigation }}}
-                        {{{ output.course_content_footer }}}
-
-                    </section>
+        <div id="page-content" class="pb-3 container d-print-block">
+            <div id="region-main-box">
+                {{#hasregionmainsettingsmenu}}
+                <div id="region-main-settings-menu" class="d-print-none">
+                    <div> {{{ regionmainsettingsmenu }}} </div>
                 </div>
+                {{/hasregionmainsettingsmenu}}
+                <section id="region-main" aria-label="{{#str}}content{{/str}}">
+
+                    {{#hasregionmainsettingsmenu}}
+                        <div class="region_main_settings_menu_proxy"></div>
+                    {{/hasregionmainsettingsmenu}}
+                    {{#defaultfrontpagebody}}
+                    <div id="defaultfrontpagebody" class="mb-4">
+                        {{{defaultfrontpagebody}}}
+                    </div>
+                    {{/defaultfrontpagebody}}
+                    {{{ output.course_content_header }}}
+                    {{#headercontent}}
+                        {{> core/activity_header }}
+                    {{/headercontent}}
+                    {{#overflow}}
+                        {{> core/url_select}}
+                    {{/overflow}}
+                    {{{ output.main_content }}}
+                    {{{ output.activity_navigation }}}
+                    {{{ output.course_content_footer }}}
+
+                </section>
             </div>
+        </div>
         {{#hasadminblocks}}
         <div id="side-admin-blocks" class="mt-4">
             <div class="container py-3">

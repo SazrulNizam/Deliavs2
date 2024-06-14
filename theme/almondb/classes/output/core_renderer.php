@@ -59,13 +59,4 @@ class core_renderer extends \core_renderer {
         }
         return $firstview;
     }
-    /**
-     * Wrapper for header elements.
-     *
-     * @return string HTML to display the main header.
-     */
-    public function almondb_courseheaderimg() {
-        $templatecontext['courseheaderimg'] = almondb_get_course_image($this->page->course->id);
-        return $templatecontext;
-    }
 }

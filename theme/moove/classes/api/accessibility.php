@@ -249,7 +249,7 @@ class accessibility extends external_api {
         }
 
         $enableaccessibilitytoolbar = null;
-        if ($data['enableaccessibilitytoolbar']) {
+        if (isset($data['enableaccessibilitytoolbar'])) {
             $enableaccessibilitytoolbar = true;
         }
 

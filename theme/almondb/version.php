@@ -23,10 +23,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 defined('MOODLE_INTERNAL') || die();
 $plugin->component = 'theme_almondb';
-$plugin->version = 2024032000;
+$plugin->version = 2024051200;
 $plugin->requires = 2023100400;
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '433.24.320';
+$plugin->release = '433.24.512';

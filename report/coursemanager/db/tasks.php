@@ -27,7 +27,43 @@ defined('MOODLE_INTERNAL') || die();
 
 $tasks = [
     [
-        'classname' => 'report_coursemanager\task\run_reports_task',
+        'classname' => 'report_coursemanager\task\run_clean_reports_task',
+        'blocking' => 0,
+        'minute' => '*',
+        'hour' => '3',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
+    [
+        'classname' => 'report_coursemanager\task\run_orphan_submissions_report_task',
+        'blocking' => 0,
+        'minute' => '*',
+        'hour' => '2',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
+    [
+        'classname' => 'report_coursemanager\task\run_course_content_report_task',
+        'blocking' => 0,
+        'minute' => '*',
+        'hour' => '2',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
+    [
+        'classname' => 'report_coursemanager\task\run_student_visit_report_task',
+        'blocking' => 0,
+        'minute' => '*',
+        'hour' => '2',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
+    [
+        'classname' => 'report_coursemanager\task\run_teacher_visit_report_task',
         'blocking' => 0,
         'minute' => '*',
         'hour' => '2',
@@ -44,4 +80,5 @@ $tasks = [
         'month' => '*',
         'dayofweek' => '*',
     ],
+
 ];

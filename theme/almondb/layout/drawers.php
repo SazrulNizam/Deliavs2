@@ -104,7 +104,11 @@ $templatecontext = [
     'addblockbutton' => $addblockbutton,
 ];
 // Course page header img.
-$templatecontext = array_merge($templatecontext, $OUTPUT->almondb_courseheaderimg());
+if ($COURSE->id != 1) {
+    $templatecontext['courseheaderimg'] = almondb_get_course_image($COURSE->id);
+} else {
+    $templatecontext['courseheaderimg'] = "";
+}
 // Footer.
 $templatecontext = array_merge($templatecontext, theme_almondb_frontpageblock20());
 // Footer select dashboard .
