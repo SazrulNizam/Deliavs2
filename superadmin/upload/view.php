@@ -17,7 +17,7 @@ if ($action === 'view') {
 
     $filename = basename($_GET["file"]);
     echo $filename;
-    $filepath = "FileHere/" . $filename;
+    $filepath = "FileHere/".$filename;
     
     header("Cache-Control: public");
     header("Content-Description: File Transfer");
@@ -27,6 +27,7 @@ if ($action === 'view') {
     readfile($filepath);
      exit;
 
+     
     } 
 
 

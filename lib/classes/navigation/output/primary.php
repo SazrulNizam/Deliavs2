@@ -154,16 +154,13 @@ class primary implements renderable, templatable {
                 Report
                 -Participant Report | /superadmin/report.php
                 
-                -Financial Report | /superadmin/financialreport.php
+                -Report Card | /superadmin/reportcard.php
                 
-                -Report Card | /superadmin/reportcard.php";
+                -Grade Report | /superadmin/grade.php";
 
-         
+                       
                 $CFG->custommenuitems .= "
                 Calendar | /my/";
-
-                $CFG->custommenuitems .= "
-                Grade Report | /superadmin/grade.php";
                 
 
                 if (has_capability('moodle/course:create', $coursecontext)){
@@ -177,8 +174,8 @@ class primary implements renderable, templatable {
                 $CFG->custommenuitems .= "
                 Manage Teacher | /superadmin/ManageTeacher/manage-teacher.php";
 
-                $CFG->custommenuitems .= "
-                Manage Package | /badges/index.php?type=1";
+                // $CFG->custommenuitems .= "
+                // Manage Package | /badges/index.php?type=1";
 
                 $CFG->custommenuitems .= "
                 Library | /superadmin/video/library.php";
@@ -195,8 +192,8 @@ class primary implements renderable, templatable {
                 $CFG->custommenuitems .= "
                 Report | /admindelia/report.php";
 
-                $CFG->custommenuitems .= "
-                Financial Report | /admindelia/financialreport.php";
+                // $CFG->custommenuitems .= "
+                // Financial Report | /admindelia/financialreport.php";
 
                 $CFG->custommenuitems .= "
                 Report Card | /admindelia/reportcard.php";
@@ -204,8 +201,8 @@ class primary implements renderable, templatable {
                 $CFG->custommenuitems .= "
                 Calendar | /my/";
 
-                $CFG->custommenuitems .= "
-                Manage Package | /badges/index.php?type=1";
+                // $CFG->custommenuitems .= "
+                // Manage Package | /badges/index.php?type=1";
 
                 $CFG->custommenuitems .= "
                 Grade Report | /admindelia/grade.php";
@@ -240,6 +237,9 @@ class primary implements renderable, templatable {
 
                 $CFG->custommenuitems .= "
                 Report Card | /student/reportcard.php";
+
+                // $CFG->custommenuitems .= "
+                // Teacher | /student/teacher/teacher.php";
 
                 $CFG->custommenuitems .= "
                 Calendar | /my/";

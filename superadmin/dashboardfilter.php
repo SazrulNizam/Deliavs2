@@ -275,17 +275,28 @@ $datatest=mysqli_fetch_assoc($tests);
     <h2>Courses</h2>
 
     <?php $dropdown = "SELECT * FROM mdl_course_categories";
-$dropresult = mysqli_query($con,$dropdown); ?>
+$dropresult = mysqli_query($con,$dropdown); 
 
+$dropselect = "SELECT * FROM mdl_course_categories";
+$selectresult = mysqli_query($con,$dropselect);
+
+?>
 
 <div class="dropdown">
+<?php 
+  while ($select = $selectresult->fetch_assoc()) {
+    if($select['id'] == $_GET["id"]){
+?>
   <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-Select Course  </button>
+  <?php echo $select['name'];?></button>
+<?php }} ?>
+
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
   <a class="dropdown-item" href="dashboard.php">All Course</a>
 
   <?php 
   while ($datadrop = $dropresult->fetch_assoc()) {
+    $_GET["id"];
 ?>
     <a class="dropdown-item" href="dashboardfilter.php?id=<?php echo $datadrop['id']; ?>"><?php echo $datadrop['name'];?> </a>
 

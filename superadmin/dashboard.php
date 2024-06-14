@@ -72,36 +72,14 @@ if ($CFG->forcelogin) {
     require_login();
 }
 
-$strcourses = new lang_string("courses");
-$strsearch = new lang_string("search");
-$strsearchresults = new lang_string("searchresults");
-$strnovalidcourses = new lang_string('novalidcourses');
 
 $courseurl = core_course_category::user_top() ? new moodle_url('/index.php') : null;
 $PAGE->navbar->add("Home", $courseurl);
 $PAGE->navbar->add('Dashboard', new moodle_url('/course/newpage.php'));
 
 
-if (empty($searchcriteria)) {
-    // no search criteria specified, print page with just search form
-    $PAGE->set_title($strsearch);
-} else {
-    // this is search results page
-    $PAGE->set_title($strsearchresults);
-    // Link to manage search results should be visible if user have system or category level capability
-    if ((can_edit_in_category() || !empty($usercatlist))) {
-        $aurl = new moodle_url('/course/management.php', $searchcriteria);
-        $searchform = $OUTPUT->single_button($aurl, get_string('managecourses'), 'get');
-    } else {
-        $searchform = $courserenderer->course_search_form($search);
-    }
-    $PAGE->set_button($searchform);
 
-    // Trigger event, courses searched.
-    $eventparams = array('context' => $PAGE->context, 'other' => array('query' => $search));
-    $event = \core\event\courses_searched::create($eventparams);
-    $event->trigger();
-}
+$PAGE->set_title("Dashboard");
 
 $PAGE->set_heading('Dashboard');
 
