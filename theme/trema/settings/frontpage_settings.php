@@ -55,16 +55,49 @@ $setting = new admin_setting_configselect($name, $title, $description, $default,
 $setting->set_updatedcallback('theme_reset_all_caches');
 $page->add($setting);
 
+// Enable/disable dark banner overlay.
+$name = 'theme_trema/frontpageenabledarkoverlay';
+$title = get_string('frontpageenabledarkoverlay', 'theme_trema');
+$description = get_string('frontpageenabledarkoverlay_desc', 'theme_trema');
+$default = true;
+$setting = new admin_setting_configcheckbox($name, $title, $description, $default, true, false);
+$setting->set_updatedcallback('theme_reset_all_caches');
+$page->add($setting);
+
+// Frontpage banner text alignment.
+$choices = [
+    'left' => get_string('left', 'editor'),
+    'center' => get_string('middle', 'editor'),
+    'right' => get_string('right', 'editor'),
+];
+$name = 'theme_trema/frontpagebannercontentalign';
+$title = get_string('frontpagebannercontentalign', 'theme_trema');
+$description = get_string('frontpagebannercontentalign_desc', 'theme_trema');
+$default = 'center';
+$setting = new admin_setting_configselect($name, $title, $description, $default, $choices);
+$setting->set_updatedcallback('theme_reset_all_caches');
+$page->add($setting);
+
+// Frontpage banner height.
+$choices = ['50vh' => '50%', '60vh' => '60%', '70vh' => '70%', '80vh' => '80%', '90vh' => '90%', '100vh' => '100%'];
+$name = 'theme_trema/bannerheight';
+$title = get_string('bannerheight', 'theme_trema');
+$description = get_string('bannerheight_desc', 'theme_trema');
+$default = '100vh';
+$setting = new admin_setting_configselect($name, $title, $description, $default, $choices);
+$setting->set_updatedcallback('theme_reset_all_caches');
+$page->add($setting);
+
 // Frontpage button class.
 $btnchoices = [
-    "btn-primary" => "btn-primary",
-    "btn-secondary" => "btn-secondary",
-    "btn-success" => "btn-success",
-    "btn-danger" => "btn-danger",
-    "btn-warning" => "btn-warning",
-    "btn-info" => "btn-info",
-    "btn-light" => "btn-light",
-    "btn-dark" => "btn-dark",
+    'btn-primary' => 'btn-primary',
+    'btn-secondary' => 'btn-secondary',
+    'btn-success' => 'btn-success',
+    'btn-danger' => 'btn-danger',
+    'btn-warning' => 'btn-warning',
+    'btn-info' => 'btn-info',
+    'btn-light' => 'btn-light',
+    'btn-dark' => 'btn-dark',
 ];
 
 $numberofcarousel = get_config('theme_trema', 'numberofimages');
@@ -125,7 +158,7 @@ if ($numberofcarousel == 1) {
     $name = 'theme_trema/frontpagebuttonhref';
     $title = get_string('frontpagebuttonhref', 'theme_trema');
     $description = get_string('frontpagebuttonhref_desc', 'theme_trema');
-    $default = '#frontpage-cards';
+    $default = '#topofcontent';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $page->add($setting);
@@ -187,6 +220,7 @@ if ($numberofcarousel == 1) {
         $name = 'theme_trema/carrouselbtnhref' . $i;
         $title = get_string('carrouselbtnhref', 'theme_trema', $i);
         $description = get_string('carrouselbtnhref_desc', 'theme_trema', $i);
+        $default = '#topofcontent';
         $setting = new admin_setting_configtext($name, $title, $description, $default);
         $setting->set_updatedcallback('theme_reset_all_caches');
         $page->add($setting);
@@ -195,23 +229,22 @@ if ($numberofcarousel == 1) {
         $name = 'theme_trema/carrouselbtnclass' . $i;
         $title = get_string('carrouselbtnclass', 'theme_trema', $i);
         $description = get_string('carrouselbtnclass_desc', 'theme_trema', $i);
+        $default = 'btn-primary';
         $setting = new admin_setting_configtext($name, $title, $description, $default);
         $setting->set_updatedcallback('theme_reset_all_caches');
         $page->add($setting);
     }
 }
 
-// Enable/disable dark overlay on banner.
-$name = 'theme_trema/frontpageenabledarkoverlay';
-$title = get_string('frontpageenabledarkoverlay', 'theme_trema');
-$description = get_string('frontpageenabledarkoverlay_desc', 'theme_trema');
-$default = true;
-$setting = new admin_setting_configcheckbox($name, $title, $description, $default, true, false);
-$setting->set_updatedcallback('theme_reset_all_caches');
+// Frontpage content.
+$name = 'theme_trema_frontpagecontent';
+$title = get_string('content');
+$description = '';
+$format = FORMAT_MARKDOWN;
+$setting = new admin_setting_heading($name, $title, $description, $format);
 $page->add($setting);
 
 // HTML to include in the main content of frontpage.
-
 $name = 'theme_trema/defaultfrontpagebody';
 $title = get_string('defaultfrontpagebody', 'theme_trema');
 $description = get_string('defaultfrontpagebody_desc', 'theme_trema');

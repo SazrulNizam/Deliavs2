@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'Course manager';
 $string['title'] = 'Course Manager for teachers';
 
-// Settings pages.
+// Settings page.
 $string['configtitle'] = 'Course Manager settings';
 $string['category_bin'] = 'Category for bin';
 $string['teacherroledashboard'] = 'Teacher role in courses';
@@ -55,12 +55,26 @@ $string['show_report_in_course_choices_collapse'] = 'Scrolling menu under course
 $string['show_report_in_course_choices_popover'] = 'Icons next to course title';
 $string['enablemailing'] = 'Activate reports mailing';
 $string['enablemailing_desc'] = 'If checked, activates automated task for reports mailing. Default periodicity is every 30 days.';
+$string['enablecoursecontenttask'] = 'Activate empty or heavy courses reports';
+$string['enablecoursecontenttask_desc'] = 'If checked, activates automated task to detect heavy courses or courses without contents.';
+$string['enableteacherstask'] = 'Activate reports concerning teachers visits and enrolments';
+$string['enableteacherstask_desc'] = 'If checked, activates automated task to detect courses without teachers or without recent teachers visits.';
+$string['enablestudentstask'] = 'Activate reports concerning students visits and enrolments';
+$string['enablestudentstask_desc'] = 'If checked, activates automated task to detect courses without students or without recent students visits.';
+$string['enableorphanstask'] = 'Activate orphaned submissions report';
+$string['enableorphanstask_desc'] = 'If checked, activates automated task to detect assigns with orphaned files.';
 $string['mailingintro_setting'] = 'Email content';
 $string['mailingintro_setting_desc'] = 'Introduction of the report mailing.<br>
 You can use the following variables :<br>
 %userfirstname% : User\'s first name<br>
 %userlastname% : User\'s last name<br>
 %coursemanagerlink% : Course Manager\'s link';
+
+// Headings for settings page.
+$string['reportssettingsheading'] = 'Settings for reports calculation';
+$string['trashsettingsheading'] = 'Settings for trash category and courses deletion';
+$string['reportsheading'] = 'Reports';
+$string['mailingheading'] = 'Teachers mailing';
 
 // Banner for courses in category bin.
 $string['trash'] = 'This course is in the category for deleted courses.';
@@ -97,7 +111,7 @@ $string['last_access_multiple_teacher_alert'] = '<b>No teacher visit since {$a->
 $string['last_access_unique_teacher_alert'] = '<b>You didn\' visit this course since {$a->limit_visit} months.</b><br />You are the only teacher in this course. If you don\'t use it anymore, think about deleting it.';
 $string['last_access_student_alert'] = '<b>No student visit since {$a->limit_visit} months.</b><br />No students have visited this course since a long time. If necessary, delete it.';
 $string['empty_student_alert'] = '<b>No student enrolled</b><br />There are no users enrolled as student in this course. If it isn\'t used anymore, think about delete it !';
-$string['orphan_submissions_alert'] = '<b>Orphan submissions ({$a->filesize} Mo)</b><br />This course contains one or more assigns containing files submitted by unenrolled students. Those files can represent a hige volume. Think about resetting or deleting these activities.';
+$string['orphan_submissions_alert'] = '<b>Orphan submissions</b><br />This course contains {$a->assigns} Assigns containing {$a->filescount} files submitted by now unenrolled students. Those files represent {$a->filesize} Mo. Please remind to reset or delete these activities.';
 $string['no_advices'] = '<b>No sepecific reports.</b><br />Congratulations, this course seems ok !';
 $string['no_course_to_show'] = '<h2>No courses</h2>You are not enrolled in courses with a teacher role.';
 $string['closereportmodal'] = 'Close window';
@@ -225,8 +239,9 @@ $string['filesdistributiontotalfiles'] = 'Number of files';
 // Admin page for courses without teachers.
 $string['title_admin_no_teacher_courses'] = '<b>Manage courses without teachers</b>';
 $string['admin_no_teacher_courses_info'] = '<p>This tool lists all courses where no user is enrolled as teacher, and possibly move them in bin category if needed.</p>';
-$string['adminnoteachercoursesnote'] = '<ul class="alert alert-info"><li>Informations concerning course weight and number of activities are not calculated in real time.</li>
+$string['adminnoteachercoursesnote'] = '<ul><li>Informations concerning course weight and number of activities are not calculated in real time.</li>
 <li>Informations concerning last teacher log are based on edulevel filed in logstore database. Modified permissions can distort this result.</li></ul>';
+$string['adminnoteachercoursesweight'] = '<ul class="alert alert-warning">The task for weight calculation is activated. Courses for which  weight has not been calculated yet will not appear in this list. If necessary, launch task manually or wait for next cron run.';
 $string['tablecountenrolledstudents'] = 'Students';
 $string['tablelastaccess'] = 'Last access in course';
 $string['tablehascontents'] = 'Number of contents';
@@ -252,8 +267,8 @@ $string['stats_heavy_courses'] = 'Heavy courses';
 $string['stats_heavy_courses_desc'] = 'Courses weighing more than {$a->totalfilesizethreshold} Mo (threshold defined in Course Manager settings).';
 $string['stats_empty_courses'] = 'Empty courses';
 $string['stats_empty_courses_desc'] = 'Number of courses having only native Forum for activity.';
-$string['stats_courses_orphan_submissions'] = 'Courses with orphan submissions';
-$string['stats_courses_orphan_submissions_desc'] = 'Number of courses having Assign activities containing submissions belonging to unenrolled users.';
+$string['stats_files_orphan_submissions'] = 'Total of orphan submissions files';
+$string['stats_files_orphan_submissions_desc'] = 'Number of files considered as submissions belonging to unenrolled users.';
 $string['stats_weight_courses_orphan_submissions'] = 'Weight for orphan submissions';
 $string['stats_weight_courses_orphan_submissions_desc'] = 'Total filesize for orphan submissions';
 $string['stats_heaviest_course'] = 'Heaviest course';
@@ -302,6 +317,11 @@ $string['ok'] = 'No reports';
 // Tasks.
 $string['runreportstask'] = 'Reports calculation for Course Manager';
 $string['mailingtask'] = 'Mailing reports for teachers for Course Manager';
+$string['runorphansubmissionstask'] = 'Course Manager report for orphaned submissions';
+$string['runcoursecontentreporttask'] = 'Course Manager report for heavy and empty courses';
+$string['runstudentvisitreporttask'] = 'Course Manager report for students visits and courses without students';
+$string['runteachervisitreporttask'] = 'Course Manager report for teachers visits and courses without teachers';
+$string['runcleanreportstask'] = 'Course manager reports cleaner';
 
 // Warning displays in courses.
 $string['course_alert_heavy'] = 'Total files size in this course is actually <b>{$a->size} Mo</b>. Consider sorting files or reseting this course.<br /><b>{$a->heavy_link}</b>';
@@ -314,6 +334,8 @@ $string['more_information'] = 'More information';
 $string['text_link_delete'] = 'Delete course';
 $string['text_link_reset'] = 'Reset course';
 $string['collapse_show_report'] = 'Show report';
+$string['warntextcoursetrash'] = 'WARNING : this course is in trash category and will be deleted later. Move it in another category with Course Manager tool if you want to keep it.';
+$string['warntextcategorytrash'] = 'WARNING : this category is used by Course Manager as trash. All courses in this category are expected to be deleted at a later date. If you wish to keep your course, please move it in another category.';
 
 // Mailing.
 $string['mailingtitle'] = 'Course Manager - Reports for your courses';

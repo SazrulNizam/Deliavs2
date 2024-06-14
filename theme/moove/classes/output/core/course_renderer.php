@@ -102,7 +102,7 @@ class course_renderer extends \core_course_renderer {
             // There are more than one page of results and we are in 'view all' mode, suggest to go back to paginated view mode.
             $pagingbar = html_writer::tag('div',
                 html_writer::link($paginationurl->out(false, ['perpage' => $CFG->coursesperpage]),
-                    get_string('showperpage', '', $CFG->coursesperpage)), ['class' => 'paging paging-showperpage']);
+                get_string('showperpage', '', $CFG->coursesperpage)), ['class' => 'paging paging-showperpage']);
         }
 
         // Display list of courses.

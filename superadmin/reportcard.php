@@ -22,16 +22,16 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once("../config.php");
-require_once($CFG->dirroot.'/course/lib.php');
+require_once ("../config.php");
+require_once ($CFG->dirroot . '/course/lib.php');
 
-$q         = optional_param('q', '', PARAM_RAW);       // Global search words.
-$search    = optional_param('search', '', PARAM_RAW);  // search words
-$page      = optional_param('page', 0, PARAM_INT);     // which page to show
-$perpage   = optional_param('perpage', '', PARAM_RAW); // how many per page, may be integer or 'all'
+$q = optional_param('q', '', PARAM_RAW);       // Global search words.
+$search = optional_param('search', '', PARAM_RAW);  // search words
+$page = optional_param('page', 0, PARAM_INT);     // which page to show
+$perpage = optional_param('perpage', '', PARAM_RAW); // how many per page, may be integer or 'all'
 $blocklist = optional_param('blocklist', 0, PARAM_INT);
-$modulelist= optional_param('modulelist', '', PARAM_PLUGIN);
-$tagid     = optional_param('tagid', '', PARAM_INT);   // searches for courses tagged with this tag id
+$modulelist = optional_param('modulelist', '', PARAM_PLUGIN);
+$tagid = optional_param('tagid', '', PARAM_INT);   // searches for courses tagged with this tag id
 
 // Use global search.
 if ($q) {
@@ -55,7 +55,7 @@ foreach (array('search', 'blocklist', 'modulelist', 'tagid') as $param) {
     }
 }
 $urlparams = array();
-if ($perpage !== 'all' && !($perpage = (int)$perpage)) {
+if ($perpage !== 'all' && !($perpage = (int) $perpage)) {
     // default number of courses per page
     $perpage = $CFG->coursesperpage;
 } else {
@@ -106,7 +106,7 @@ if (empty($searchcriteria)) {
     $event->trigger();
 }
 
-$PAGE->set_heading('Report Card');
+$PAGE->set_heading('Student Grade Report');
 
 // $PAGE->requires->js(new \moodle_url('https://code.jquery.com/jquery-3.7.1.js'), true);
 // $PAGE->requires->js(new \moodle_url('https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js'), true);
@@ -122,10 +122,14 @@ $PAGE->set_heading('Report Card');
 // $PAGE->requires->js(new \moodle_url('script.js'));
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap4.css'));
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/buttons/3.0.1/css/buttons.bootstrap4.css'));
-echo $OUTPUT->header();?>
+echo $OUTPUT->header();
+global $CFG, $COURSE, $DB, $USER, $ROLE;
+include 'connection.php';
 
+?>
+
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -243,7 +247,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])) {
 // Close the database connection
 mysqli_close($conn);
 ?>
-<!DOCTYPE html>
+w
 <html lang="en">
 <head>
     <meta charset="UTF-8">

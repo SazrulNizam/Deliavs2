@@ -49,8 +49,11 @@ function theme_trema_get_pre_scss($theme) {
         'h1-font-family' => 'h1font',
         'hx-font-family' => 'hxfont',
         'text-transform' => 'texttransform',
+        'banner-title-font-family' => 'bannertitlesfont',
         'banner-title-transform' => 'bannertitletransform',
         'banner-title-spacing' => 'bannertitlespacing',
+        'banner-text-align' => 'frontpagebannercontentalign',
+        'banner-height' => 'bannerheight',
         'custom-menu-alignment' => 'custommenualignment',
         'links-decoration' => 'linkdecoration',
         'dropdown-bg-color' => 'bodybackgroundcolor',
@@ -124,6 +127,7 @@ function theme_trema_get_pre_scss($theme) {
     ];
 
     $scss .= '$bodyfontfile: "' . $fonts[$theme->settings->sitefont] . '";' . PHP_EOL;
+    $scss .= '$bannertitlesfontfile: "' . $fonts[$theme->settings->bannertitlesfont] . '";' . PHP_EOL;
     $scss .= '$h1fontfile: "' . $fonts[$theme->settings->h1font] . '";' . PHP_EOL;
     $scss .= '$hxfontfile: "' . $fonts[$theme->settings->hxfont] . '";' . PHP_EOL;
 
@@ -231,7 +235,7 @@ function theme_trema_get_pre_scss($theme) {
     // ....
 
     // Softness: Rounding some corners.
-    $scss .= '$softness: ' . (!empty($theme->settings->softness) ? '.5rem' : '0') . ";\n";
+    $scss .= '$softness: ' . (!empty($theme->settings->softness) ? '.4rem' : '0') . ";\n";
 
     // ....
     // Prepend pre-scss.
@@ -252,16 +256,12 @@ function theme_trema_get_pre_scss($theme) {
  * @return string
  */
 function theme_trema_get_main_scss_content($theme) {
-    global $CFG;
+    global $CFG, $SITE;
 
     $scss = '';
 
     $filename = !empty($theme->settings->preset) ? $theme->settings->preset : 'default.scss';
     $scss .= file_get_contents("$CFG->dirroot/theme/trema/scss/preset/{$filename}");
-
-    if (!empty($theme->settings->enabletrematopics)) {
-        $scss .= file_get_contents("$CFG->dirroot/theme/trema/scss/trema/topics.scss");
-    }
 
     if (empty($theme->settings->enabletremalines)) {
         $scss .= "%border-frequency { &:before, &:after { content: none !important;}}";
@@ -279,6 +279,10 @@ function theme_trema_get_main_scss_content($theme) {
     } else {
         $scss .= "#frontpage-banner {background-image: $darkoverlay url([[pix:theme|frontpage/banner]]);}";
     }
+
+    // Compensate for long site names.
+    $sitenamefontscale = strlen($SITE->shortname) < 36 ? '1' : '0.75';
+    $scss .= '$sitename-font-scale: ' . $sitenamefontscale . ";\n";
 
     return $scss;
 }

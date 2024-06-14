@@ -292,7 +292,7 @@ function theme_almondb_frontpageblock07() {
         }
     };
     $j = 0;
-    $sql = "SELECT  en.courseid, en.cost, en.currency";
+    $sql = "SELECT  en.id, en.courseid, en.cost, en.currency";
     $sql = $sql." FROM {enrol} en";
     $sql = $sql." WHERE en.courseid = :courseid and en.status = 0 and en.cost != 'NULL'";
     $templatecontext['block07priceshow'] = $theme->settings->block07priceshow;
@@ -526,7 +526,7 @@ function theme_almondb_frontpageblock11() {
     global $CFG, $OUTPUT, $DB;
     $theme = theme_config::load('almondb');
     $templatecontext['block11enabled'] = $theme->settings->block11enabled;
-    if ($CFG->bloglevel < BLOG_GLOBAL_LEVEL and (!isloggedin() or isguestuser())) {
+    if ($CFG->bloglevel < BLOG_GLOBAL_LEVEL && (!isloggedin() || isguestuser())) {
         $templatecontext['block11enabled'] = "false";
         return $templatecontext;
     }

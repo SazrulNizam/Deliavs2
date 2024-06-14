@@ -71,12 +71,18 @@ $coursecards-bg-color: $white !default;
 
 $body-font-size: 1rem !default;
 $body-font-family: 'Lato' !default;
+$banner-title-font-family: 'Lato' !default;
 $h1-font-family: 'Lato' !default;
 $hx-font-family: 'Lato' !default;
 
+$sitename-font-scale: 1;
+
+$banner-font-color: $white !default;
 $text-transform: 'none' !default;
 $banner-title-transform: 'none' !default;
 $banner-title-spacing: 'normal' !default;
+$banner-text-align: 'center' !default;
+$banner-height: 100vh;
 
 $links-decoration: none !default; // Values: underline or none. Does not affect navigation or buttons.
 $links-color: #114b88 !default; // Does not affect navigation or buttons.

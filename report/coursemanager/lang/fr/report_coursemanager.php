@@ -55,12 +55,26 @@ $string['show_report_in_course_choices_popover'] = 'Icônes à côté du titre';
 $string['enablemailing'] = 'Activer l\'envoi du mailing aux enseignants';
 $string['enablemailing_desc'] = 'Si coché, active l\'envoi des rapports de cours à chaque enseignant. La périodicité du mailing est définie par défaut
 tous les 30 jours, et peut être modifiée dans les tâches programmées.';
+$string['enablecoursecontenttask'] = 'Activer le rapport des cours vides ou lourds';
+$string['enablecoursecontenttask_desc'] = 'Si coché, active la tâche permettant de détecter les cours lourds ou sans contenus.';
+$string['enableteacherstask'] = 'Activer le rapport sur les inscriptions et visites d\'enseignants';
+$string['enableteacherstask_desc'] = 'Si coché, active la tâche permettant de détecter les cours sans enseignants ou sans visites d\'enseignants récents.';
+$string['enablestudentstask'] = 'Activer le rapport sur les inscriptions et visites d\'étudiants';
+$string['enablestudentstask_desc'] = 'Si coché, active la tâche permettant de détecter les cours sans étudiants ou sans visites d\'étudiants récents.';
+$string['enableorphanstask'] = 'Activer le rapport des devoirs orphelins';
+$string['enableorphanstask_desc'] = 'Si coché, active la tâche permettant de détecter les fichiers orphelins dans les devoirs.';
 $string['mailingintro_setting'] = 'Introduction du mail';
 $string['mailingintro_setting_desc'] = 'Message d\'introduction pour le mailing envoyé aux enseignants.<br>
 Vous pouvez utiliser les variables suivantes :<br>
 %userfirstname% : prénom de l\'utilisateur<br>
 %userlastname% : nom de l\'utilisateur<br>
 %coursemanagerlink% : lien vers le gestionnaire de cours';
+
+// Headings for settings page.
+$string['reportssettingsheading'] = 'Paramètres pour le calcul des rapports';
+$string['trashsettingsheading'] = 'Paramètres de la catégorie Corbeille et la suppression des cours';
+$string['reportsheading'] = 'Rapports';
+$string['mailingheading'] = 'Mailing aux enseignants';
 
 // Banner for courses in categorby bin.
 $string['trash'] = 'Ce cours est dans la catégorie à supprimer.';
@@ -97,7 +111,7 @@ $string['last_access_multiple_teacher_alert'] = '<b>Pas de visites d\'enseignant
 $string['last_access_unique_teacher_alert'] = '<b>Vous n\'avez pas visité ce cours depuis plus de {$a->limit_visit} mois.</b><br />Aucun autre enseignant n\'y figure. Si vous n\'utilisez plus ce cours, pensez à le supprimer.';
 $string['last_access_student_alert'] = '<b>Pas de visites d\'étudiants depuis plus de {$a->limit_visit} mois.</b><br />Aucun étudiant inscrit à votre cours n\'a visité ce cours durant cette période. Si ce cours n\'a plus d\'utilité , pensez à le supprimer.';
 $string['empty_student_alert'] = '<b>Pas d\'étudiants inscrits.</b><br />Aucun utilisateur n\'est inscrit dans ce cours avec le rôle Étudiant. Si ce cours n\'est pas utilisé, pensez à le supprimer.';
-$string['orphan_submissions_alert'] = '<b>Il y a des devoirs "orphelins" représentant {$a->filesize} Mo.</b><br />Actuellement, ce cours contient un ou plusieurs devoirs avec des dépôts invisibles, déposés par des étudiants désinscrits du cours. Ces fichiers peuvent représenter un poids important, pensez à réinitialiser le devoir ou à supprimer l\'activité .';
+$string['orphan_submissions_alert'] = '<b>Devoirs "orphelins"</b><br />Ce cours contient {$a->assigns} activité(s) Devoir avec {$a->filescount} fichiers invisibles, c\'est-à-dire déposés par des étudiants désinscrits du cours. Ces fichiers représentent un poids de {$a->filesize} Mo, pensez à réinitialiser le devoir ou à supprimer l\'activité .';
 $string['no_advices'] = '<b>Pas de préconisations spécifiques.</b><br />Il n\'y a pas de remarques particulières sur ce cours quant à son poids ou son utilisation.';
 $string['no_course_to_show'] = '<h2>Pas de cours</h2>Vous n\'êtes inscrit dans aucun cours avec un rôle permettant de l\'administrer avec cette interface.';
 $string['closereportmodal'] = 'Fermer la fenêtre de rapport';
@@ -240,9 +254,10 @@ $string['filesdistributiontotalfiles'] = 'Nombre de fichiers';
 $string['title_admin_no_teacher_courses'] = '<b>Gestion des cours sans enseignants</b>';
 $string['admin_no_teacher_courses_info'] = '<p>Les cours peuvent se retrouver sans enseignant si la personne qui détenait ce rôle se désinscrit intentionnellement ou non du cours,
  ou si son compte n\'existe plus. Cet outil permet de recenser les cours concernés, et éventuellement de les basculer dans la catégorie Cours sans enseignants.</p>';
-$string['adminnoteachercoursesnote'] = '<ul class="alert alert-info"><li>Les informations concernant le poids du cours et le nombre de modules ne sont pas calculés en temps réel,
+$string['adminnoteachercoursesnote'] = '<ul><li>Les informations concernant le poids du cours et le nombre de modules ne sont pas calculés en temps réel,
  mais proviennent des rapports automatiques.</li><li>Les informations concernant le dernier log enseignant sont déduites à partir du champ edulevel de la table des
  logs et sont à titre indicatif. Les permissions modifiées dans un cours peuvent fausser ce résultat.</li></ul>';
+$string['adminnoteachercoursesweight'] = '<ul class="alert alert-warning">La tâche calculant le poids des cours est activée. Les cours pour lesquels le poids n\'a pas encore été calculé n\'apparaitront pas dans cette liste. Si besoin, lancez la tâche manuellement ou attendez le prochain passage du cron.';
 $string['tablecountenrolledstudents'] = 'Etudiants';
 $string['tablelastaccess'] = 'Dernier accès au cours';
 $string['tablehascontents'] = 'Nombre de contenus du cours';
@@ -269,8 +284,8 @@ $string['stats_heavy_courses'] = 'Cours lourds';
 $string['stats_heavy_courses_desc'] = 'Cours pesant plus de {$a->totalfilesizethreshold} Mo (limite définie dans les paramètres de Course Manager).';
 $string['stats_empty_courses'] = 'Cours vides';
 $string['stats_empty_courses_desc'] = 'Nombre de cours contenant uniquement le forum des annonces.';
-$string['stats_courses_orphan_submissions'] = 'Cours contenant des devoirs orphelins';
-$string['stats_courses_orphan_submissions_desc'] = 'Nombre de cours avec des Devoirs contenant des fichiers déposés par des étudiants désinscrits.';
+$string['stats_files_orphan_submissions'] = 'Total de devoirs orphelins';
+$string['stats_files_orphan_submissions_desc'] = 'Nombre de fichiers déposés comme devoirs par des étudiants désinscrits.';
 $string['stats_weight_courses_orphan_submissions'] = 'Poids des devoirs orphelins';
 $string['stats_weight_courses_orphan_submissions_desc'] = 'Somme des fichiers considérés comme devoirs orphelins';
 $string['stats_heaviest_course'] = 'Cours le plus lourd';
@@ -284,7 +299,6 @@ $string['stats_count_courses_without_students'] = 'Cours sans étudiants';
 $string['stats_count_courses_without_students_desc'] = 'Nombre de cours sans utilisateurs inscrits comme étudiant.';
 $string['stats_count_courses_without_visit_students'] = 'Cours sans visite d\'étudiants';
 $string['stats_count_courses_without_visit_students_desc'] = 'Nombre de cours où aucun étudiant ne s\'est connecté depuis plus de {$a->lastaccessstudent} jours.';
-
 
 // Confirmation alert on dashboard.
 $string['confirm_cohort_unenrolled_title'] = 'Cohortes supprimées';
@@ -320,7 +334,12 @@ $string['ok'] = 'Aucune remarque';
 
 // Tasks.
 $string['runreportstask'] = 'Calcul des rapports pour Course Manager';
-$string['mailingtask'] = 'Mailing des rapports aux enseignants';
+$string['mailingtask'] = 'Mailing des rapports Course Manager aux enseignants';
+$string['runorphansubmissionstask'] = 'Calcul du rapport Course Manager des devoirs orphelins';
+$string['runcoursecontentreporttask'] = 'Calcul des rapports Course Manager des cours vides ou lourds';
+$string['runstudentvisitreporttask'] = 'Calcul des rapports Course Manager des cours sans étudiants ou sans visites d\'étudiants';
+$string['runteachervisitreporttask'] = 'Calcul des rapports Course Manager des cours sans enseignants ou sans visites d\'enseignants';
+$string['runcleanreportstask'] = 'Nettoyage des rapports Course Manager';
 
 // Warning displays in courses.
 $string['course_alert_heavy'] = 'Le <b>poids des fichiers</b> rattachés à ce cours est actuellement de <b>{$a->size} Mo</b>. Pensez à faire du tri vos documents, à réinitialiser les activités ou à déplacer les fichiers volumineux.<br /><b>{$a->heavy_link}</b>';
@@ -333,6 +352,8 @@ $string['more_information'] = 'Plus d\'informations';
 $string['text_link_delete'] = 'Supprimer ce cours';
 $string['text_link_reset'] = 'Réinitialiser';
 $string['collapse_show_report'] = 'Afficher le rapport';
+$string['warntextcoursetrash'] = 'ATTENTION : ce cours se trouve dans la catégorie Corbeille et sera supprimé ultérieurement. Si vous souhaitez le conserver, utilisez Course Manager pour le déplacer dans une autre catégorie.';
+$string['warntextcategorytrash'] = 'ATTENTION : cette catégorie de cours est utilisée comme corbeile par l\'outil Course Manager. Tous les cours sont appelés à être supprimés ultérieurement. Si vous souhaitez conserver des cours, merci de les déplacer dans une autre catégorie.';
 
 // Mailing.
 $string['mailingtitle'] = 'Course Manager - Rapport de vos cours';
