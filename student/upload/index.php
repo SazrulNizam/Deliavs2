@@ -9,9 +9,7 @@ echo $OUTPUT->header();
 $student_id = $_GET["id"];
 $course_id = $_GET['course_id'];
 
-echo "Student ID: " . $student_id . "<br>";
-echo "Course ID: " . $course_id . "<br>";
-echo "Current User ID: " . $USER->id . "<br>";
+
 require_once($CFG->dirroot.'/teacher/upload/form.php');
 
 $mform = new simplehtml_form();
@@ -73,8 +71,7 @@ if ($mform->is_cancelled()) {
         echo "<p>Status: $status_message</p>";
     }
 
-    // Display the form.
-    $mform->display();
+    
 }
 
 echo $OUTPUT->footer();

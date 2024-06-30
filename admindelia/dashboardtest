@@ -1,101 +1,8 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- * Displays external information about a course
- * @package    core_course
- * @copyright  1999 onwards Martin Dougiamas  http://dougiamas.com
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 
 require_once ("../config.php");
 require_once ($CFG->dirroot . '/course/lib.php');
 
-$q = optional_param('q', '', PARAM_RAW);       // Global search words.
-$search = optional_param('search', '', PARAM_RAW);  // search words
-$page = optional_param('page', 0, PARAM_INT);     // which page to show
-$perpage = optional_param('perpage', '', PARAM_RAW); // how many per page, may be integer or 'all'
-$blocklist = optional_param('blocklist', 0, PARAM_INT);
-$modulelist = optional_param('modulelist', '', PARAM_PLUGIN);
-$tagid = optional_param('tagid', '', PARAM_INT);   // searches for courses tagged with this tag id
-
-// Use global search.
-if ($q) {
-    $search = $q;
-}
-
-// List of minimum capabilities which user need to have for editing/moving course
-$capabilities = array('moodle/course:create', 'moodle/category:manage');
-
-// Populate usercatlist with list of category id's with course:create and category:manage capabilities.
-$usercatlist = core_course_category::make_categories_list($capabilities);
-
-$search = trim(strip_tags($search)); // trim & clean raw searched string
-
-$site = get_site();
-
-$searchcriteria = array();
-foreach (array('search', 'blocklist', 'modulelist', 'tagid') as $param) {
-    if (!empty($$param)) {
-        $searchcriteria[$param] = $$param;
-    }
-}
-$urlparams = array();
-if ($perpage !== 'all' && !($perpage = (int) $perpage)) {
-    // default number of courses per page
-    $perpage = $CFG->coursesperpage;
-} else {
-    $urlparams['perpage'] = $perpage;
-}
-if (!empty($page)) {
-    $urlparams['page'] = $page;
-}
-$PAGE->set_url('/course/newpage.php', $searchcriteria + $urlparams);
-$PAGE->set_context(context_system::instance());
-$PAGE->set_pagelayout('standard');
-$courserenderer = $PAGE->get_renderer('core', 'course');
-
-if ($CFG->forcelogin) {
-    require_login();
-}
-
-
-$courseurl = core_course_category::user_top() ? new moodle_url('/index.php') : null;
-$PAGE->navbar->add("Home", $courseurl);
-$PAGE->navbar->add('Dashboard', new moodle_url('/course/newpage.php'));
-
-
-$PAGE->set_title("Dashboard");
-
-$PAGE->set_heading('Dashboard');
-
-// $PAGE->requires->js(new \moodle_url('https://code.jquery.com/jquery-3.7.1.js'), true);
-// $PAGE->requires->js(new \moodle_url('https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js'), true);
-// $PAGE->requires->js(new \moodle_url('https://cdn.datatables.net/2.0.3/js/dataTables.js'), true);
-// $PAGE->requires->js(new \moodle_url('https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js'), true);
-// $PAGE->requires->js(new \moodle_url('https://cdn.datatables.net/v/bs4/dt-2.0.3/b-3.0.1/b-html5-3.0.1/b-print-3.0.1/datatables.min.js'), true);
-// $PAGE->requires->js(new \moodle_url('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js'), true);
-// $PAGE->requires->js(new \moodle_url('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js'), true);
-// $PAGE->requires->js(new \moodle_url('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'), true);
-// $PAGE->requires->js(new \moodle_url('https://cdn.datatables.net/buttons/3.0.1/js/buttons.html5.min.js'), true);
-// $PAGE->requires->js(new \moodle_url('https://cdn.datatables.net/buttons/3.0.1/js/buttons.print.min.js'), true);
-
-// $PAGE->requires->js(new \moodle_url('script.js'));
-$PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap4.css'));
-$PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/buttons/3.0.1/css/buttons.bootstrap4.css'));
 echo $OUTPUT->header();
 global $CFG, $COURSE, $DB, $USER, $ROLE;
 include 'connection.php';
@@ -127,7 +34,7 @@ $categoryData = [];
 $students = [];
 
 // Fetch all students registered under nadi
-$studentsQuery = "SELECT DISTINCT u.id AS student_id, CONCAT(u.firstname, ' ', u.lastname) AS student_name, u.email
+$studentsQuery = "SELECT DISTINCT u.id AS student_id, CONCAT(u.firstname, ' ', u.lastname) AS student_name
                   FROM mdl_user u
                   LEFT JOIN mdl_user_info_data nadi ON u.id = nadi.userid AND nadi.fieldid = 14
                   LEFT JOIN mdl_user_info_data admin_nadi ON $adminid = admin_nadi.userid AND admin_nadi.fieldid = 14
@@ -180,7 +87,6 @@ while ($row = $categoriesQuery->fetch_assoc()) {
                 mdl_user_info_data admin_nadi ON $adminid = admin_nadi.userid AND admin_nadi.fieldid = 14
             WHERE
                 c.id = $categoryId
-                AND c.id !=1
                 AND YEAR(FROM_UNIXTIME(a.sessdate)) = $currentYear
                 AND MONTH(FROM_UNIXTIME(a.sessdate)) = $month
                 AND u.id = $studentId
@@ -209,8 +115,6 @@ while ($row = $categoriesQuery->fetch_assoc()) {
 
     $categoryData[$categoryName] = $monthlyAttendanceData;
 }
-
-
 $conn->close();
 ?>
 
@@ -232,7 +136,6 @@ $conn->close();
     </style>
 </head>
 <body>
-
     <h2>Student Attendance Record </h2>
     <div class="container mt-5">
         <?php foreach ($categoryData as $categoryName => $monthlyAttendanceData): ?>
@@ -262,28 +165,49 @@ $conn->close();
     </div>
 
     <h2>Students Details</h2>
-    <table id="example" class="table table-striped" style="width:100%">
-        <thead>
-            <tr>
-                <th style="text-align:center;">No.</th>
-                <th>Name</th>
-                <th>Email</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            // Loop through your student data and output rows
-            foreach ($students as $student) {
-                $no++;
-                echo "<tr>
-                        <td style='text-align:center;'>{$no}</td>
-                        <td>{$student['student_name']}</td>
-                        <td>{$student['email']}</td>
-                    </tr>";
-            }
-            ?>
-        </tbody>
-    </table>
+<table id="example" class="table table-striped" style="width:100%">
+    <thead>
+        <tr>
+            <th style="text-align:center;">No.</th>
+            <th>First Name</th>
+            <th>Email</th>
+            <th>Nadi Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        // Establish database connection
+        $con = mysqli_connect("localhost", "root", "", "deliadata");
+        if (!$con) {
+            die("Connection failed: " . mysqli_connect_error());
+        }
+
+        // Query to fetch student details including nadi name
+        $query = "SELECT u.firstname, u.email, ui_nadi.data AS nadi_name FROM mdl_user u
+        LEFT JOIN mdl_user_info_data ui_student ON u.id = ui_student.userid AND ui_student.fieldid = 6 
+        LEFT JOIN mdl_user_info_data ui_nadi ON u.id = ui_nadi.userid AND ui_nadi.fieldid = 14 
+        WHERE ui_student.data = 'Student'
+        AND u.deleted = 0"; 
+
+
+        $result = mysqli_query($con, $query);
+        if (!$result) {
+            die("Query failed: " . mysqli_error($con));
+        }
+
+        $no = 0;
+        while ($row = mysqli_fetch_assoc($result)) {
+            $no++;
+            echo "<tr>
+                    <td style='text-align:center;'>" . $no . "</td>
+                    <td>" . $row["firstname"] . "</td>
+                    <td>" . $row["email"] . "</td>
+                    <td>" . $row["nadi_name"] . "</td>
+                  </tr>";
+        }
+        ?>
+    </tbody>
+</table>
 
 <script id="categoryData" type="application/json"><?php echo json_encode($categoryData); ?></script>
     <script src="chart.js"></script>
@@ -297,6 +221,6 @@ $conn->close();
     <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
     
    
-  <?php echo $OUTPUT->footer();?>
+
 </body>
 </html>
