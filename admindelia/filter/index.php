@@ -32,10 +32,10 @@ require_once($CFG->dirroot.'/course/lib.php');
 
 $courseurl = core_course_category::user_top() ? new moodle_url('/index.php') : null;
 $PAGE->navbar->add("Home", $courseurl);
-$PAGE->navbar->add("Manage Teacher", new moodle_url('../library.php'));
+$PAGE->navbar->add("Manage Filter Students", new moodle_url('manage-filter-student.php'));
+$PAGE->navbar->add('Add Student', new moodle_url('vod.php'));
 
-
-$PAGE->set_heading('Add User Filter');
+$PAGE->set_heading('Add Student');
 
 
 echo $OUTPUT->header();
@@ -68,7 +68,7 @@ $result = mysqli_query($con,$query);
 </head> 
 <body>
     
-<form>
+<form method="post" action="connection.php">
 <div class="accordion" id="accordionExample">
   <div class="">
     <div class="card-header" id="headingOne">
@@ -107,6 +107,37 @@ Guardian Information
       </div>
     </div>
   </div>
+  <!-- Sibling Information -->
+  <div class="">
+    <div class="card-header" id="headingTwo">
+      <h2 class="mb-0">
+        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseLate,#icon31,#icon41" aria-expanded="false" aria-controls="collapseTwo">
+Sibling Information 
+<i id="icon31" class="float-right collapse " data-feather="arrow-down" width="20" height="20" stroke-width="1"></i>
+<i id="icon41" class="float-right collapse show" data-feather="arrow-right" width="20" height="20" stroke-width="1"></i>
+      </h2>
+    </div>
+    <!-- Collapse -->
+    <div id="collapseLate" class="collapse" aria-labelledby="headingTwo" >
+      <div class="card-body">
+  <div class="form-group">
+  <div id="sibling"></div>
+       
+      </div>
+    </div>
+    <div class="form-row">
+          <div class="form-group col-md-4">
+          &nbsp;&nbsp;&nbsp;
+          <button id="btnsibling" class="btn btn-primary" type="button">
+                  <i data-feather="plus" class="me-25"></i>
+                  <span>Add Input</span>
+                </button>             
+              </div>
+        </div>
+        <br>
+  </div>
+
+    <!-- ENDHERE -->
   <div class="">
     <div class="card-header" id="headingThree">
       <h2 class="mb-0">
@@ -168,23 +199,144 @@ Academic/Non Academic
 <div class="card-body">
 <div class="form-group">
 <div class="content-header">
-          <h5 class="mb-0">FORM 4 END OF YEAR EXAM</h5>
+          <h5 class="mb-0">FORM 4 END OF YEAR EXAM<span style="color:red;">*</span></h5>
           
         </div>
         <br>
-  <div id="form4"></div>
+  <div id="form4">
+
+    <!-- SUBJECT PERTAMA -->
+    <div id="form4del" class="form-row">
+  <div class="form-group col-md-3">
+    <label for="grade">Subject</label>
+    <select class="form-control" name="form4subject[]" id="grade" >
+      <option value="" selected hidden>Please Choose</option>
+      <option value="Malay Language">Malay Language</option>
+      <option value="Mathematics">Mathematics</option>
+      <option value="English">English</option>
+      <option value="History">History</option>
+    </select></div>
+    <div class="form-group col-md-2">
+      <label for="grade">Grade</label>
+      <select name="form4grade[]" class="form-control" id="grade">
+        <option value="" selected hidden >Please Choose</option>
+        <option value="A+">A+</option>
+        <option value="A">A</option>
+        <option value="A-">A-</option>
+        <option value="B+">B+</option>
+        <option value="B">B</option>
+        <option value="C+">C+</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+        <option value="E">E</option>
+        <option value="G">G</option>
+        <option value="TH">TH</option>
+      </select></div><div class="form-group col-md-2">
+        <label for="formGroupExampleInput">Marks</label>
+        <input type="number" name="form4marks[]" class="form-control" id="formGroupExampleInput" ></div>
+        </div>
+
+        <!-- SUBJECT KEDUA -->
+
+        <div id="form4del" class="form-row">
+  <div class="form-group col-md-3">
+    <label for="grade">Subject</label>
+    <select class="form-control" name="form4subject[]" id="grade" >
+      <option value="" selected hidden>Please Choose</option>
+      <option value="Malay Language">Malay Language</option>
+      <option value="Mathematics">Mathematics</option>
+      <option value="English">English</option>
+      <option value="History">History</option>
+    </select></div>
+    <div class="form-group col-md-2">
+      <label for="grade">Grade</label>
+      <select name="form4grade[]" class="form-control" id="grade" >
+        <option value="" selected hidden>Please Choose</option>
+        <option value="A+">A+</option>
+        <option value="A">A</option>
+        <option value="A-">A-</option>
+        <option value="B+">B+</option>
+        <option value="B">B</option>
+        <option value="C+">C+</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+        <option value="E">E</option>
+        <option value="G">G</option>
+        <option value="TH">TH</option>
+      </select></div><div class="form-group col-md-2">
+        <label for="formGroupExampleInput">Marks</label>
+        <input type="number" name="form4marks[]" class="form-control" id="formGroupExampleInput"  ></div>
+     </div>
+
+            <!-- SUBJECT KETIGA -->
+
+            <div id="form4del" class="form-row">
+  <div class="form-group col-md-3">
+    <label for="grade">Subject</label>
+    <select class="form-control" name="form4subject[]" id="grade" >
+      <option value="" selected hidden>Please Choose</option>
+      <option value="Malay Language">Malay Language</option>
+      <option value="Mathematics">Mathematics</option>
+      <option value="English">English</option>
+      <option value="History">History</option>
+    </select></div>
+    <div class="form-group col-md-2">
+      <label for="grade">Grade</label>
+      <select name="form4grade[]" class="form-control" id="grade" >
+        <option value="" selected hidden>Please Choose</option>
+        <option value="A+">A+</option>
+        <option value="A">A</option>
+        <option value="A-">A-</option>
+        <option value="B+">B+</option>
+        <option value="B">B</option>
+        <option value="C+">C+</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+        <option value="E">E</option>
+        <option value="G">G</option>
+        <option value="TH">TH</option>
+      </select></div><div class="form-group col-md-2">
+        <label for="formGroupExampleInput">Marks</label>
+        <input type="number" name="form4marks[]" class="form-control" id="formGroupExampleInput" ></div>
+    </div>
+
+            <!-- SUBJECT KEEMPAT -->
+            <div id="form4del" class="form-row">
+  <div class="form-group col-md-3">
+    <label for="grade">Subject</label>
+    <select class="form-control" name="form4subject[]" id="grade" >
+      <option value="" selected hidden>Please Choose</option>
+      <option value="Malay Language">Malay Language</option>
+      <option value="Mathematics">Mathematics</option>
+      <option value="English">English</option>
+      <option value="History">History</option>
+    </select></div>
+    <div class="form-group col-md-2">
+      <label for="grade">Grade</label>
+      <select name="form4grade[]" class="form-control" id="grade" >
+        <option value="" selected hidden>Please Choose</option>
+        <option value="A+">A+</option>
+        <option value="A">A</option>
+        <option value="A-">A-</option>
+        <option value="B+">B+</option>
+        <option value="B">B</option>
+        <option value="C+">C+</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+        <option value="E">E</option>
+        <option value="G">G</option>
+        <option value="TH">TH</option>
+      </select></div><div class="form-group col-md-2">
+        <label for="formGroupExampleInput">Marks</label>
+        <input type="number" name="form4marks[]" class="form-control" id="formGroupExampleInput" ></div>
+       </div>
+
+          <!-- END HERE -->
+  </div>
        </div>
           </div>
           
-          <div class="form-row">
-          <div class="form-group col-md-4">
-          &nbsp;&nbsp;&nbsp;
-          <button id="btnform4" class="btn btn-primary" type="button">
-                  <i data-feather="plus" class="me-25"></i>
-                  <span>Add Input</span>
-                </button>             
-</div>
-</div>
+
   <!-- End here -->
    <br>
 
@@ -197,16 +349,10 @@ Academic/Non Academic
           
         </div>
         </div>
-        <div class="form-group col-md-4">       
-<label for="grade">Grade</label>
-      <select class="form-control" id="grade">
-      <option selected disabled>Please Choose</option>
-      <option value="A">A</option> 
-      <option value="B">B</option>
-      <option value="C">C</option>
-      <option value="D">D</option>
-      <option value="E">E</option>
-    </select>
+        <input type="text" value="PAJSK" name="pajsk" hidden>
+        <div class="form-group col-md-2">       
+        <label for="formGroupExampleInput">Average Marks</label>
+        <input type="number" name="pajskgrade" class="form-control" min="0" max="100" onkeyup=enforceMinMax(this) id="formGroupExampleInput" >
 </div>
 </div>
 </div>   
@@ -221,17 +367,11 @@ Academic/Non Academic
           <h5 class="mb-0">PSYCHOMETRIC ASSESSMENT</h5>
           
         </div>
+        <input type="text" value="PSY" name="psy" hidden>
         </div>
-        <div class="form-group col-md-4">       
-<label for="grade">Grade</label>
-      <select class="form-control" id="grade">
-      <option selected disabled>Please Choose</option>
-      <option value="A">A</option> 
-      <option value="B">B</option>
-      <option value="C">C</option>
-      <option value="D">D</option>
-      <option value="E">E</option>
-    </select>
+        <div class="form-group col-md-2">       
+ <label for="formGroupExampleInput">Average Marks</label>
+        <input type="number" name="psygrade" class="form-control" min="0" max="100" onkeyup=enforceMinMax(this) id="formGroupExampleInput" >
 </div>
 </div>
 </div>   
@@ -268,7 +408,7 @@ Academic/Non Academic
   
 <br>
 <div class="d-flex flex-row-reverse">
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <button type="submit" name="submit" class="btn btn-primary">Submit</button>
 </div>
 </form>
 
@@ -291,19 +431,20 @@ $(document).ready(function() {
   
 
   $("#btnupsr").click(function(){
-    $("#upsr").append('<div id="upsr1" class="form-row"><div class="form-group col-md-3"><label for="grade">Subject</label><select class="form-control" id="grade"><option selected disabled>Please Choose</option><option value="Malay Language Comprenhension">Malay Language Comprehension</option><option value="Malay Language Writing">Malay Language Writing</option><option value="English Language Comprenhension">English Language Comprenhension</option><option value="English Language Writing">English Language Writing</option><option value="Mathematics">Mathematics</option><option value="Science">Science</option></select></div><div class="form-group col-md-2"><label for="grade">Grade</label><select class="form-control" id="grade"><option selected disabled>Please Choose</option><option value="10">A+</option><option value="9">A</option><option value="8">A-</option><option value="7">B+</option><option value="6">B</option><option value="5">C+</option><option value="4">C</option><option value="3">D</option><option value="2">E</option><option value="1">G</option></select></div><div class="form-group col-md-2"><label for="formGroupExampleInput">Marks</label><input type="number" class="form-control" id="formGroupExampleInput" ></div><div class="form-group col-md-2 pt-5"><button onclick="myFunction()" class="btn btn-outline-danger text-nowrap" type="button"><i data-feather="x" class="me-25"></i><span>Delete</span></button></div></div>').fadeIn();;
+    $("#upsr").append('<div id="upsr1" class="form-row"> <div class="form-group col-md-3"> <label for="grade">Subject</label> <select class="form-control" name="UPSRsubject[]" id="grade"> <option value="" selected hidden>Please Choose</option> <option value="Malay Language Comprenhension">Malay Language Comprehension</option> <option value="Malay Language Writing">Malay Language Writing</option> <option value="English Language Comprenhension">English Language Comprenhension</option> <option value="English Language Writing">English Language Writing</option> <option value="Mathematics">Mathematics</option><option value="Science">Science</option> </select></div> <div class="form-group col-md-2"> <label for="grade">Grade</label> <select name="UPSRgrade[]" class="form-control" id="grade"> <option selected hidden>Please Choose</option> <option value="A+">A+</option> <option value="A">A</option> <option value="A-">A-</option> <option value="B+">B+</option> <option value="B">B</option> <option value="C+">C+</option> <option value="C">C</option> <option value="D">D</option> <option value="E">E</option> <option value="G">G</option> <option value="TH">TH</option> </select></div><div class="form-group col-md-2"> <label for="formGroupExampleInput">Marks</label> <input type="number" name="UPSRmarks[]" class="form-control" id="formGroupExampleInput" ></div> <div class="form-group col-md-2 pt-5"> <button onclick="myFunction()" class="btn btn-outline-danger text-nowrap" type="button"><i data-feather="x" class="me-25"></i><span>Delete</span></button></div></div>').fadeIn();;
+
     feather.replace()
 
   });
 
   $("#btnform3").click(function(){
-    $("#form3").append('<div id="form3del" class="form-row"><div class="form-group col-md-3"><label for="grade">Subject</label><select class="form-control" id="grade"><option selected disabled>Please Choose</option><option value="Malay Language Comprenhension">Malay Language Comprehension</option><option value="Malay Language Writing">Malay Language Writing</option><option value="English Language Comprenhension">English Language Comprenhension</option><option value="English Language Writing">English Language Writing</option><option value="Mathematics">Mathematics</option><option value="Science">Science</option></select></div><div class="form-group col-md-2"><label for="grade">Grade</label><select class="form-control" id="grade"><option selected disabled>Please Choose</option><option value="10">A+</option><option value="9">A</option><option value="8">A-</option><option value="7">B+</option><option value="6">B</option><option value="5">C+</option><option value="4">C</option><option value="3">D</option><option value="2">E</option><option value="1">G</option></select></div><div class="form-group col-md-2"><label for="formGroupExampleInput">Marks</label><input type="number" class="form-control" id="formGroupExampleInput" ></div><div class="form-group col-md-2 pt-5"><button onclick="form3function()" class="btn btn-outline-danger text-nowrap" type="button"><i data-feather="x" class="me-25"></i><span>Delete</span></button></div></div>').fadeIn();;
+    $("#form3").append('<div id="form3del" class="form-row"> <div class="form-group col-md-3"> <label for="grade">Subject</label> <select class="form-control" name="UASAsubject[]" id="grade"> <option value="" selected hidden>Please Choose</option> <option value="Malay Language">Malay Language</option> <option value="Mathematics">Mathematics</option> <option value="Science">Science</option> <option value="English">English</option> <option value="History">History</option> <option value="Geography">Geography</option> <option value="Arabic Language">Arabic Language</option> <option value="Chinese Language">Chinese Language</option> <option value="Tamil Language">Tamil Language</option> <option value="Punjabi Language">Punjabi Language</option> <option value="Kadazandusun Language">Kadazandusun Language</option> <option value="Semai Language">Semai Language</option> <option value="Islamic Studies">Islamic Studies</option> <option value="Foundation of Computer Science">Foundation of Computer Science</option> <option value="Design and Technology">Design and Technology</option> <option value="Maharat Al-Quran">Maharat Al-Quran</option> <option value="Al-Syariah">Al-Syariah</option> <option value="Usul Al-Din">Usul Al-Din</option> <option value="Al-Lughah Al Arabiah Al-Mu Asirah">Al-Lughah Al Arabiah Al-Mu Asirah</option></select></div> <div class="form-group col-md-2"> <label for="grade">Grade</label> <select name="UASAgrade[]" class="form-control" id="grade"> <option value="" selected hidden>Please Choose</option> <option value="A+">A+</option> <option value="A">A</option> <option value="A-">A-</option> <option value="B+">B+</option> <option value="B">B</option> <option value="C+">C+</option> <option value="C">C</option> <option value="D">D</option> <option value="E">E</option> <option value="G">G</option> <option value="TH">TH</option> </select></div><div class="form-group col-md-2"> <label for="formGroupExampleInput">Marks</label> <input type="number" name="UASAmarks[]" class="form-control" id="formGroupExampleInput" ></div> <div class="form-group col-md-2 pt-5"> <button onclick="form3Function()" class="btn btn-outline-danger text-nowrap" type="button"><i data-feather="x" class="me-25"></i><span>Delete</span></button></div></div>').fadeIn();;
     feather.replace()
 
   });
 
-  $("#btnform4").click(function(){
-    $("#form4").append('<div id="form4del" class="form-row"><div class="form-group col-md-3"><label for="grade">Subject</label><select class="form-control" id="grade"><option selected disabled>Please Choose</option><option value="Malay Language Comprenhension">Malay Language Comprehension</option><option value="Malay Language Writing">Malay Language Writing</option><option value="English Language Comprenhension">English Language Comprenhension</option><option value="English Language Writing">English Language Writing</option><option value="Mathematics">Mathematics</option><option value="Science">Science</option></select></div><div class="form-group col-md-2"><label for="grade">Grade</label><select class="form-control" id="grade"><option selected disabled>Please Choose</option><option value="10">A+</option><option value="9">A</option><option value="8">A-</option><option value="7">B+</option><option value="6">B</option><option value="5">C+</option><option value="4">C</option><option value="3">D</option><option value="2">E</option><option value="1">G</option></select></div><div class="form-group col-md-2"><label for="formGroupExampleInput">Marks</label><input type="number" class="form-control" id="formGroupExampleInput" ></div><div class="form-group col-md-2 pt-5"><button onclick="form4function()" class="btn btn-outline-danger text-nowrap" type="button"><i data-feather="x" class="me-25"></i><span>Delete</span></button></div></div>').fadeIn();;
+  $("#btnsibling").click(function(){
+    $("#sibling").append('<div id="siblingdel" class="form-row"> <div class="form-group col-md-4"> <label for="formGroupExampleInput">Name</label> <input type="text" name="siblingname[]" class="form-control" id="formGroupExampleInput" ></div> <div class="form-group col-md-3"> <label for="formGroupExampleInput">Education</label> <input type="text" name="siblingeducation[]" class="form-control" id="formGroupExampleInput" ></div> <div class="form-group col-md-1"> <label for="formGroupExampleInput">Age</label> <input type="number" name="siblingage[]" class="form-control" id="formGroupExampleInput" ></div> <div class="form-group col-md-2 pt-5"> <button onclick="siblingFunction()" class="btn btn-outline-danger text-nowrap" type="button"><i data-feather="x" class="me-25"></i><span>Delete</span></button></div></div>').fadeIn();;
     feather.replace()
 
   });
@@ -317,14 +458,14 @@ function myFunction() {
   confirm("Are you sure want to delete this input?");
 }
 
-function form3function() {
+function form3Function() {
   const element = document.getElementById("form3del");
   element.remove();
   confirm("Are you sure want to delete this input?");
 }
 
-function form4function() {
-  const element = document.getElementById("form4del");
+function siblingFunction() {
+  const element = document.getElementById("siblingdel");
   element.remove();
   confirm("Are you sure want to delete this input?");
 }
@@ -359,6 +500,17 @@ function isNumber(evt) {
         }
         return true;
     }
+
+    function enforceMinMax(el) {
+  if (el.value != "") {
+    if (parseInt(el.value) < parseInt(el.min)) {
+      el.value = el.min;
+    }
+    if (parseInt(el.value) > parseInt(el.max)) {
+      el.value = el.max;
+    }
+  }
+}
 </script>
 
   

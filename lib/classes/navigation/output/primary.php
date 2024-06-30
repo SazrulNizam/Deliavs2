@@ -208,7 +208,7 @@ class primary implements renderable, templatable {
                 Grade Report | /admindelia/grade.php";
 
                 $CFG->custommenuitems .= "
-                User Filter | /admindelia/filter/index.php";
+                Student Filter | /admindelia/filter/manage-filter-student.php";
 
                 $CFG->custommenuitems .= "
                 Create User | /user/editadvanced.php?id=-1";
