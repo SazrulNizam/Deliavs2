@@ -9,9 +9,18 @@ echo $OUTPUT->header();
 $student_id = $_GET["id"];
 $course_id = $_GET['course_id'];
 
-echo "Student ID: " . $student_id . "<br>";
-echo "Course ID: " . $course_id . "<br>";
-echo "Current User ID: " . $USER->id . "<br>";
+// Get student name
+$student = $DB->get_record('user', array('id' => $student_id), 'firstname, lastname');
+$student_name = $student->firstname . ' ' . $student->lastname;
+
+// Get course name
+$course = $DB->get_record('course', array('id' => $course_id), 'fullname');
+$course_name = $course->fullname;
+
+
+echo "<h2>Report Card Submission</h2>";
+echo "Student Name: " . $student_name . "<br>";
+echo "Course: " . $course_name . "<br>";
 require_once($CFG->dirroot.'/teacher/upload/form.php');
 
 $mform = new simplehtml_form();

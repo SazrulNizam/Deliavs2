@@ -411,45 +411,54 @@ echo $ROLE->name;
     $current_session_username = $USER->username;
    // <h2>echo  $current_session_username;</h2>
 
-    // Query to fetch student enrollment data
-    $sql_enrollments = "SELECT c.id AS course_id,
+    // Query to fetch student enrollment data and count categories
+$sql_enrollments = "
+SELECT 
+    c.id AS course_id,
     c.fullname AS course_name,
-    COUNT(*) AS enrollment_count
-    FROM mdl_course AS c
-    JOIN mdl_context AS ctx ON c.id = ctx.instanceid
-    JOIN mdl_role_assignments AS ra ON ra.contextid = ctx.id
-    JOIN mdl_user AS u ON u.id = ra.userid
-    WHERE u.id = (SELECT id FROM mdl_user WHERE username = ?) AND c.category !=0
-    GROUP BY c.id, c.fullname";
+    c.category,
+    COUNT(*) AS enrollment_count,
+    (
+        SELECT COUNT(DISTINCT cc.id)
+        FROM mdl_course_categories AS cc
+        JOIN mdl_course AS c2 ON c2.category = cc.id
+    ) AS category_count
+FROM mdl_course AS c
+JOIN mdl_context AS ctx ON c.id = ctx.instanceid
+JOIN mdl_role_assignments AS ra ON ra.contextid = ctx.id
+JOIN mdl_user AS u ON u.id = ra.userid
+WHERE u.id = (SELECT id FROM mdl_user WHERE username = ?) AND c.category != 0
+GROUP BY c.id, c.fullname, c.category";
 
-    // Prepare and execute the query
-    $stmt_enrollments = mysqli_prepare($con, $sql_enrollments);
-    if ($stmt_enrollments === false) {
-      die("SQL prepare error: " . mysqli_error($con));
-    }
+// Prepare and execute the query
+$stmt_enrollments = mysqli_prepare($con, $sql_enrollments);
+if ($stmt_enrollments === false) {
+die("SQL prepare error: " . mysqli_error($con));
+}
 
-    mysqli_stmt_bind_param($stmt_enrollments, "s", $current_session_username);
-    mysqli_stmt_execute($stmt_enrollments);
-    $result_enrollments = mysqli_stmt_get_result($stmt_enrollments);
+mysqli_stmt_bind_param($stmt_enrollments, "s", $current_session_username);
+mysqli_stmt_execute($stmt_enrollments);
+$result_enrollments = mysqli_stmt_get_result($stmt_enrollments);
 
-    if ($result_enrollments === false) {
-      die("SQL execute error: " . mysqli_error($con));
-    }
+if ($result_enrollments === false) {
+die("SQL execute error: " . mysqli_error($con));
+}
 
-    // Initialize arrays for storing labels, data, and user IDs
-    $labels = [];
-    $data = [];
-    $userid = [];
-    $courseCount = 0;
+// Initialize arrays for storing labels, data, and user IDs
+$labels = [];
+$data = [];
+$categoryCount = 0;
+$courseCount = 0;
 
-    // Iterate over the results
-    while ($record = mysqli_fetch_assoc($result_enrollments)) {
-      $courseName = $record['course_name'];
-      $enrollmentCount = $record['enrollment_count'];
-      $labels[] = $courseName;
-      $data[] = $enrollmentCount;
-      $courseCount++;
-    }
+// Iterate over the results
+while ($record = mysqli_fetch_assoc($result_enrollments)) {
+$courseName = $record['course_name'];
+$enrollmentCount = $record['enrollment_count'];
+$labels[] = $courseName;
+$data[] = $enrollmentCount;
+$courseCount++;
+$categoryCount = $record['category_count']; // Assuming the category count is the same for all rows
+}
 
 
     // Close connection
@@ -463,22 +472,22 @@ echo $ROLE->name;
           <ion-icon name="book-outline"></ion-icon>
         </div>
         <div>
-          <div class="numbers"><?php echo $courseCount ?></div>
+          <div class="numbers"><?php echo $categoryCount ?></div>
           <div class="cardName">Course Involvement</div>
         </div>
-
-
       </div>
 
       <div class="card">
         <div class="iconBx">
-          <ion-icon name="book-outline"></ion-icon>
+          <ion-icon name="bookmark"></ion-icon>
         </div>
         <div>
-          <div class="numbers"><?php echo $courseCount ?></div>
-          <div class="cardName">TBA</div>
+          <div class="numbers"><?php echo $courseCount?></div>
+          <div class="cardName">Sub Course</div>
         </div>
       </div>
+
+      
 
       <div class="card-calendar">
         <div class="iconBx">
@@ -550,23 +559,24 @@ if (!$conn) {
 
 // Fetch course details
 $courses = [];
-$sql_course_details = "SELECT c.id AS course_id,
-                        c.fullname AS course_name,
-                        CONCAT(t.firstname, ' ', t.lastname) AS teacher_name,
-                        COUNT(*) AS enrollment_count
-                    FROM mdl_course AS c
-                    JOIN mdl_context AS ctx ON c.id = ctx.instanceid
-                    JOIN mdl_role_assignments AS ra ON ra.contextid = ctx.id
-                    JOIN mdl_user AS u ON u.id = ra.userid
-                    JOIN mdl_user AS t ON t.id = (
-                        SELECT userid
-                        FROM mdl_role_assignments
-                        WHERE contextid = ctx.id AND c.category != 0
-                        AND roleid = 3 
-                        LIMIT 1
-                    )
-                    WHERE u.id = (SELECT id FROM mdl_user WHERE username = ?)
-                    GROUP BY c.id, c.fullname, t.firstname, t.lastname";
+$sql_course_details = "
+    SELECT c.id AS course_id,
+           c.fullname AS course_name,
+           CONCAT(t.firstname, ' ', t.lastname) AS teacher_name,
+           COUNT(ra.userid) AS enrollment_count
+    FROM mdl_course AS c
+    JOIN mdl_context AS ctx ON c.id = ctx.instanceid
+    JOIN mdl_role_assignments AS ra ON ra.contextid = ctx.id
+    JOIN mdl_user AS u ON u.id = ra.userid
+    LEFT JOIN (
+        SELECT ra2.contextid, ra2.userid, u2.firstname, u2.lastname
+        FROM mdl_role_assignments ra2
+        JOIN mdl_user u2 ON ra2.userid = u2.id
+        WHERE ra2.roleid = 3
+    ) AS t ON t.contextid = ctx.id
+    WHERE u.id = (SELECT id FROM mdl_user WHERE username = ?)
+      AND c.category != 0
+    GROUP BY c.id, c.fullname, t.firstname, t.lastname";
 
 $stmt_course_details = mysqli_prepare($conn, $sql_course_details);
 if ($stmt_course_details === false) {
@@ -589,8 +599,9 @@ while ($course = mysqli_fetch_assoc($result_course_details)) {
 // Close the database connection
 mysqli_stmt_close($stmt_course_details);
 mysqli_close($conn);
-?>
 
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -646,21 +657,7 @@ mysqli_close($conn);
     <script>
         $(document).ready(function() {
             $('#example').DataTable({
-                dom: 'Bfrtip',
-                buttons: [
-                    {
-                        extend: 'csv',
-                        title: 'Course data'
-                    },
-                    {
-                        extend: 'excel',
-                        title: 'Course data'
-                    },
-                    {
-                        extend: 'pdf',
-                        title: 'Course data'
-                    }
-                ]
+
             });
         });
     </script>

@@ -78,7 +78,6 @@ $PAGE->navbar->add("Home", $courseurl);
 $PAGE->navbar->add('Dashboard', new moodle_url('/course/newpage.php'));
 
 
-
 $PAGE->set_title("Dashboard");
 
 $PAGE->set_heading('Dashboard');
@@ -104,65 +103,140 @@ $test = "SELECT *
 FROM mdl_user_enrolments WHERE userid = 18 AND enrolid= 10";
 $tests = mysqli_query($con,$test);
 $datatest=mysqli_fetch_assoc($tests);
+$conn =mysqli_connect("localhost","root","","deliadata");
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$currentYear = date("Y");
+$states = ["Johor", "Kedah", "Kelantan", "Melaka", "N.Sembilan", "Pahang", "Penang", "Perak", "Perlis", "Sabah", "Sarawak", "Selangor", "Terengganu"];
+$months = range(1, 12);
+
+// Query to fetch teachers
+$query = "SELECT * FROM mdl_user INNER JOIN mdl_user_info_data ON mdl_user.id = mdl_user_info_data.userid WHERE data='Teacher'";
+$result = mysqli_query($con, $query);
+$totalTeachers = mysqli_num_rows($result);
+
+// Fetch categories 
+$categoriesQuery = $conn->query("SELECT id, name FROM mdl_course_categories");
+$categoryCountQuery = $conn->query("SELECT COUNT(id) AS totalCategories FROM mdl_course_categories");
+$categoryCount = $categoryCountQuery->fetch_assoc();
+$totalCategories = $categoryCount['totalCategories'];
+
+if (!$categoriesQuery) {
+    die("Query failed: " . $conn->error);
+}
+
+$categoryData = [];
+
+while ($row = $categoriesQuery->fetch_assoc()) {
+    $categoryId = $row['id'];
+    $categoryName = $row['name'];
+
+    $stateData = [];
+
+    // Fetch attendance data for each state and month within the current category
+    foreach ($months as $month) {
+        $monthData = [];
+
+        // Fetch attendance data for each state
+        foreach ($states as $stateName) {
+            $query = "SELECT
+                            c.id AS category_id,
+                            c.name AS category_name,
+                            MONTH(FROM_UNIXTIME(a.sessdate)) AS month,
+                            YEAR(FROM_UNIXTIME(a.sessdate)) AS year,
+                            uid1.data AS state_name,
+                            COUNT(DISTINCT al.studentid) AS student_count,
+                            COUNT(DISTINCT a.id) AS total_sessions,
+                            SUM(CASE WHEN ast.acronym = 'P' THEN 1 ELSE 0 END) AS present_count
+                        FROM
+                            mdl_course_categories c
+                        LEFT JOIN
+                            mdl_course course ON c.id = course.category
+                        LEFT JOIN
+                            mdl_attendance att ON course.id = att.course
+                        LEFT JOIN
+                            mdl_attendance_sessions a ON att.id = a.attendanceid
+                        LEFT JOIN
+                            mdl_attendance_log al ON a.id = al.sessionid
+                        LEFT JOIN
+                            mdl_user u ON al.studentid = u.id
+                        LEFT JOIN
+                            mdl_attendance_statuses ast ON al.statusid = ast.id
+                        LEFT JOIN
+                            mdl_user_info_data uid1 ON u.id = uid1.userid AND uid1.fieldid = 1
+                        WHERE
+                            c.id = $categoryId
+                            AND YEAR(FROM_UNIXTIME(a.sessdate)) = $currentYear
+                            AND MONTH(FROM_UNIXTIME(a.sessdate)) = $month
+                            AND uid1.data = '$stateName'
+                        GROUP BY
+                            c.id, c.name, MONTH(FROM_UNIXTIME(a.sessdate)), YEAR(FROM_UNIXTIME(a.sessdate)), uid1.data
+                        ORDER BY
+                            c.name ASC, MONTH(FROM_UNIXTIME(a.sessdate)) ASC";
+
+            $result = $conn->query($query);
+
+            if (!$result) {
+                die("Query failed: " . $conn->error);
+            }
+
+            // Fetch and process attendance data
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $attendanceCount = $row['present_count'];
+                $sessionCount = $row['total_sessions'];
+                $studentCount = $row['student_count'];
+
+                // Calculate percentage
+                $percentage = ($sessionCount > 0 && $studentCount > 0) ? ($attendanceCount / ($sessionCount * $studentCount)) * 100 : 0;
+
+                // Store data in $monthData array
+                $monthData[$stateName] = [
+                    'attendance_count' => $attendanceCount,
+                    'session_count' => $sessionCount,
+                    'percentage' => $percentage,
+                ];
+            } else {
+                //Default data
+                $monthData[$stateName] = [
+                    'attendance_count' => 0,
+                    'session_count' => 0,
+                    'percentage' => 0,
+                ];
+            }
+        }
 
 
+        $stateData[$month] = $monthData;
+    }
+
+    $categoryData[$categoryName] = $stateData;
+}
+
+$conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html>
-
 <head>
     <link rel="stylesheet" href="dashboard.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-
-    <!------ Include the above in your HEAD tag ---------->
-    <link href="https://canvasjs.com/assets/css/jquery-ui.1.11.2.min.css" rel="stylesheet" />
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
-    <script type="text/javascript" src="fetch.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.bootstrap4.min.css">
     <style>
-        .ui-tabs-anchor {
-            outline: none;
+        .chart-container {
+            position: relative;
+            width: 90%;
+            height: 400px;
         }
-
-        .container {
-            width: 70%;
-            margin: 15px auto;
-        }
-
-        body {
-            text-align: center;
-        }
-
-        h2 {
-            text-align: center;
-            font-family: "Verdana", sans-serif;
-            font-size: 30px;
-        }
-
-        #examplee th {
-            text-align: center;
-        }
-
-        #examplee td {
-            text-align: center;
-        }
-
-        #example th {
-            text-align: center;
-        }
-        
     </style>
 </head>
-
 <body>
-
-   
     <div class="pb-4 pt-3">
         <div class="row">
             <div class="col-md-3">
@@ -175,239 +249,100 @@ $datatest=mysqli_fetch_assoc($tests);
 
             <div class="col-md-3">
                 <div class="card-counter danger">
-                    <i class="fa fa-book"></i>
-                    <span class="count-numbers"><?php echo $allcourse['allcourse']; ?></span>
-                    <span class="count-name">Total Course</span>
+                <i class="fa fa-chalkboard-teacher"></i>
+                    <span class="count-numbers"><?php echo $totalTeachers; ?></span>
+                    <span class="count-name">Total Teachers</span>
                 </div>
             </div>
 
+            <div class="col-md-3">
+                <div class="card-counter danger">
+                    <i class="fa fa-list"></i>
+                    <span class="count-numbers"><?php echo $totalCategories; ?></span>
+                    <span class="count-name">Total Category</span>
+                </div>
+            </div>
 
+            <div class="col-md-3">
+                <div class="card-counter danger">
+                    <i class="fa fa-book"></i>
+                    <span class="count-numbers"><?php echo $allcourse['allcourse']; ?></span>
+                    <span class="count-name">Total Sub-Course</span>
+                </div>
+            </div>
         </div>
     </div>
-    <hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
 
-    <?php include 'graphstate.php'
-
-        ?>
-    <div id="tabs">
-        <ul>
-            <li><a href="#tabs-1" style="font-size: 12px">January</a></li>
-            <li><a href="#tabs-2" style="font-size: 12px">February</a></li>
-            <li><a href="#tabs-3" style="font-size: 12px">March</a></li>
-            <li><a href="#tabs-4" style="font-size: 12px">April</a></li>
-            <li><a href="#tabs-5" style="font-size: 12px">May</a></li>
-            <li><a href="#tabs-6" style="font-size: 12px">Jun</a></li>
-            <li><a href="#tabs-7" style="font-size: 12px">July</a></li>
-            <li><a href="#tabs-8" style="font-size: 12px">August</a></li>
-            <li><a href="#tabs-9" style="font-size: 12px">September</a></li>
-            <li><a href="#tabs-10" style="font-size: 12px">October</a></li>
-            <li><a href="#tabs-11" style="font-size: 12px">November</a></li>
-            <li><a href="#tabs-12" style="font-size: 12px">December</a></li>
-
+    <h2>Attendance Record by States</h2>
+    <div class="container mt-5">
+        <?php foreach ($categoryData as $categoryName => $stateData): ?>
+        <h2><?php echo htmlspecialchars($categoryName); ?></h2>
+        <ul class="nav nav-tabs" role="tablist">
+            <?php foreach ($months as $index => $month): ?>
+            <li class="nav-item">
+                <a class="nav-link <?php echo $index === 0 ? 'active' : ''; ?>" data-toggle="tab"
+                    href="#tab-<?php echo htmlspecialchars($categoryName); ?>-<?php echo $month; ?>">
+                    <?php echo date('F', mktime(0, 0, 0, $month, 1)); ?>
+                </a>
+            </li>
+            <?php endforeach; ?>
         </ul>
-        <div class="container">
-
-
-            <?php include "chart.php" ?>
+        <div class="tab-content">
+            <?php foreach ($months as $index => $month): ?>
+            <div id="tab-<?php echo htmlspecialchars($categoryName); ?>-<?php echo $month; ?>"
+                class="tab-pane fade <?php echo $index === 0 ? 'show active' : ''; ?>">
+                <div class="chart-container">
+                    <canvas id="myChart-<?php echo htmlspecialchars($categoryName); ?>-<?php echo $month; ?>"></canvas>
+                </div>
+            </div>
+            <?php endforeach; ?>
         </div>
+        <hr>
+        <?php endforeach; ?>
     </div>
+   
+  
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.bootstrap4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
+    
+    <script>
 
-    <hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
-    <h2>Students</h2>
-    <table id="example" class="table table-striped" style="width:100%">
-        <thead>
-            <tr>
-                <th style="text-align:center;">No.</th>
-                <th>First Name</th>
-                <th>Email</th>
-                <th>City</th>
-
-            </tr>
-        </thead>
-        <tbody>
-
-
-            <?php
-
-            $no = 0;
-            while ($row = $result->fetch_assoc()) {
-
-                if ($row["data"] == 'Student') {
-
-                    $no++;
-                    echo
-                        "<tr>
-          <td style='text-align:center;'>" . $no . "</td>
-          <td>" . $row["firstname"] . "</td>
-          <td>" . $row["email"] . "</td>
-          <td>" . $row["city"] . "</td>
-          </tr>";
-                }
-            }
-
-            ?>
-        </tbody>
-    </table>
-
-    <hr class="pb-4" style="width:100%;text-align:left;margin-left:0">
-    <h2>Courses</h2>
-
-    <?php $dropdown = "SELECT * FROM mdl_course_categories";
-$dropresult = mysqli_query($con,$dropdown); ?>
-
-
-<div class="dropdown">
-  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-Select Course  </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-  <a class="dropdown-item" href="dashboard.php">All Course</a>
-
-  <?php 
-  while ($datadrop = $dropresult->fetch_assoc()) {
-?>
-    <a class="dropdown-item" href="dashboardfilter.php?id=<?php echo $datadrop['id']; ?>"><?php echo $datadrop['name'];?> </a>
-
-    <?php } ?>
-  </div>
-</div>
- 
-
-    <table id="examplee" class="table table-striped" style="width:100%">
-        <thead>
-            <tr>
-                <th>No.</th>
-                <th>Full Name</th>
-                <th>Short Name</th>
-                <th>Total Students</th>
-
-
-
-            </tr>
-        </thead>
-        <tbody id="ans">
-
-            <?php
-            $month = date("m");
-
-            $no = 0;
-            $querys = "SELECT * FROM mdl_course WHERE category !=0";
-            $results = mysqli_query($con,$querys);
-
-            while ($row2 = $results->fetch_assoc()) {
-                $yes = 0;
-
-                $no++;
-
-
-                echo
-                    "<tr>
-          <td>" . $no . "</td>
-          <td>" . $row2["fullname"] . "</td>
-          <td>" . $row2["shortname"] . "</td>";
-
-                $studentcourse = "SELECT *
-                FROM mdl_user_enrolments INNER JOIN mdl_enrol ON mdl_user_enrolments.enrolid = mdl_enrol.id ";
-                $stcourses = mysqli_query($con, $studentcourse);
-                while ($row = $stcourses->fetch_assoc()) {
-                    $bulan = date('m',$row["timestart"]);
-                    if ($row["courseid"] == $row2["id"]) {
-
-                        $query3 = "SELECT *
-                        FROM mdl_user INNER JOIN mdl_user_info_data ON mdl_user.id = mdl_user_info_data.userid WHERE data='Student'";
-                        $result3 = mysqli_query($con, $query3);
-                        while ($row3 = $result3->fetch_assoc()) {
-
-                            if ($row3["userid"] == $row["userid"]) {
-                                $yes++;
-
+        document.addEventListener("DOMContentLoaded", function () {
+            <?php foreach ($categoryData as $categoryName => $stateData): ?>
+                <?php foreach ($stateData as $month => $data): ?>
+                    new Chart(document.getElementById("myChart-<?php echo htmlspecialchars($categoryName); ?>-<?php echo $month; ?>"), {
+                        type: 'bar',
+                        data: {
+                            labels: <?php echo json_encode(array_keys($data)); ?>,
+                            datasets: [{
+                                label: 'Attendance Percentage - <?php echo htmlspecialchars($categoryName); ?>, Month: <?php echo date('F', mktime(0, 0, 0, $month, 1)); ?>',
+                                data: <?php echo json_encode(array_column($data, 'percentage')); ?>,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100
+                                }
                             }
                         }
-                    }
-                }
-                echo "<td>" . $yes . "</td>
-
-          </tr>";
-
-            }
-
-            ?>
-        </tbody>
-    </table>
-
-   
+                    });
+                <?php endforeach; ?>
+            <?php endforeach; ?>
+        });
+    </script>
+  <?php echo $OUTPUT->footer();?>
 </body>
-<script>
-
-</script>
-
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
-<script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script>
-<script src="https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.js"></script>
-<script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.bootstrap4.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.print.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-<script src="https://canvasjs.com/assets/script/jquery-ui.1.11.2.min.js"></script>
-<script src="https://cdn.canvasjs.com/jquery.canvasjs.min.js"></script>
-<script>
-
-    $('#example').DataTable({
-        layout: {
-            topStart: {
-                buttons: [
-                    {
-                        extend: 'csv',
-                        filename: 'Student data'
-                    },
-                    {
-                        extend: 'excel',
-                        filename: 'Student data'
-                    },
-                    {
-                        extend: 'pdf',
-                        filename: 'Student data'
-                    }
-                ]
-            }
-        }
-    });
-
-    $('#examplee').DataTable({
-        layout: {
-            topStart: {
-                buttons: [
-                    {
-                        extend: 'csv',
-                        filename: 'Course report'
-                    },
-                    {
-                        extend: 'excel',
-                        filename: 'Course report'
-                    },
-                    {
-                        extend: 'pdf',
-                        filename: 'Course report'
-                    }
-                ]
-            }
-        }
-    });
-
-
-
-
-</script>
-
-<?php
-include "graphscript.php";
-
-echo $OUTPUT->footer();
-
-?>
-
-
 </html>

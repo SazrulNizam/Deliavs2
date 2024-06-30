@@ -436,10 +436,7 @@ $selectresult = mysqli_query($con,$dropselect);
 
 </script>
 
-<?php
-include "graphscript.php";
-
-echo $OUTPUT->footer();
+<?php echo $OUTPUT->footer();
 
 ?>
 

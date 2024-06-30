@@ -1,4 +1,4 @@
-<h2>Student Base on State</h2>
+<h2>Student Attendance Based on State</h2>
 
 <div id="tabs-1">
 <canvas id="myChart"></canvas>

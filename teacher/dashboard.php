@@ -680,9 +680,7 @@ mysqli_close($conn);
                 <thead>
                     <tr>
                         <td>No</td>
-                        <td>Student ID</td>
-                        <td>First Name</td>
-                        <td>Last Name</td>
+                        <td>Name</td>
                         <td>Courses</td>
                     </tr>
                 </thead>
@@ -694,9 +692,7 @@ mysqli_close($conn);
                     ?>
                         <tr>
                             <td><?php echo $no; ?></td>
-                            <td><?php echo htmlspecialchars($student['id']); ?></td>
-                            <td><?php echo htmlspecialchars($student['firstname']); ?></td>
-                            <td><?php echo htmlspecialchars($student['lastname']); ?></td>
+                            <td><?php echo htmlspecialchars($student['firstname'] . ' ' .  $student['lastname']) ;?></td>
                             <td><?php echo htmlspecialchars($student['courses']); ?></td>
                         </tr>
                     <?php endforeach; ?>
@@ -712,15 +708,15 @@ mysqli_close($conn);
                 buttons: [
                     {
                         extend: 'csv',
-                        title: 'Student data'
+                        title: 'Student Name List'
                     },
                     {
                         extend: 'excel',
-                        title: 'Student data'
+                        title: 'Student Name List'
                     },
                     {
                         extend: 'pdf',
-                        title: 'Student data'
+                        title: 'Student Name List'
                     }
                 ]
             });
