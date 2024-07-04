@@ -119,6 +119,8 @@ $categoryCountQuery = $conn->query("SELECT COUNT(id) AS totalCategories FROM mdl
 $categoryCount = $categoryCountQuery->fetch_assoc();
 $totalCategories = $categoryCount['totalCategories'];
 
+
+
 if (!$categoriesQuery) {
     die("Query failed: " . $conn->error);
 }
@@ -148,6 +150,7 @@ while ($row = $categoriesQuery->fetch_assoc()) {
     $categoryId = $row['id'];
     $categoryName = $row['name'];
 
+
     $monthlyAttendanceData = [];
 
     foreach ($months as $month) {
@@ -156,10 +159,10 @@ while ($row = $categoriesQuery->fetch_assoc()) {
         foreach ($students as $student) {
             $studentId = $student['student_id'];
             $studentName = $student['student_name'];
-
+ 
             //query to fetch and calculate percentage of student attendance for that nadi
             $query = "SELECT
-                (SUM(CASE WHEN ast.acronym = 'P' THEN 1 ELSE 0 END) / COUNT(DISTINCT a.id)) * 100 AS attendance_percentage
+                (SUM(CASE WHEN ast.acronym = 'P' THEN 1 ELSE 0 END) / COUNT(DISTINCT a.id)) * 100 AS attendance_percentage , c.name as name, SUM(a.id) as session_id
             FROM
                 mdl_course_categories c
             LEFT JOIN
@@ -180,7 +183,7 @@ while ($row = $categoriesQuery->fetch_assoc()) {
                 mdl_user_info_data admin_nadi ON $adminid = admin_nadi.userid AND admin_nadi.fieldid = 14
             WHERE
                 c.id = $categoryId
-                AND c.id !=1
+                AND course.category != 0 
                 AND YEAR(FROM_UNIXTIME(a.sessdate)) = $currentYear
                 AND MONTH(FROM_UNIXTIME(a.sessdate)) = $month
                 AND u.id = $studentId
@@ -190,7 +193,8 @@ while ($row = $categoriesQuery->fetch_assoc()) {
 
             $result = $conn->query($query);
 
-            $attendancePercentage = 0;
+        
+            $attendancePercentage=0;
             if ($result) {
                 $data = $result->fetch_assoc();
                 if ($data) {
@@ -267,32 +271,49 @@ $conn->close();
         <hr>
         <?php endforeach; ?>
     </div>
+    <script>
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        <?php foreach ($categoryData as $categoryName => $monthlyData): ?>
+            <?php foreach ($monthlyData as $month => $attendanceData): ?>
+                var ctx = document.getElementById('attendanceChart-<?php echo htmlspecialchars($categoryName); ?>-<?php echo $month; ?>');
+                console.log('Canvas element:', ctx);
 
-    <h2>Students Details</h2>
-    <table id="example" class="table table-striped" style="width:100%">
-        <thead>
-            <tr>
-                <th style="text-align:center;">No.</th>
-                <th>Name</th>
-                <th>Email</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            // Loop through your student data and output rows
-            foreach ($students as $student) {
-                $no++;
-                echo "<tr>
-                        <td style='text-align:center;'>{$no}</td>
-                        <td>{$student['student_name']}</td>
-                        <td>{$student['email']}</td>
-                    </tr>";
-            }
-            ?>
-        </tbody>
-    </table>
+                if (ctx) {  // Check if canvas element exists
+                    var labels = <?php echo json_encode(array_column($attendanceData, 'student_name')); ?>;
+                    var data = <?php echo json_encode(array_column($attendanceData, 'attendance_percentage')); ?>;
+                    console.log('Labels:', labels);
+                    console.log('Data:', data);
 
-<script id="categoryData" type="application/json"><?php echo json_encode($categoryData); ?></script>
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Attendance Percentage',
+                                data: data,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                }
+            <?php endforeach; ?>
+        <?php endforeach; ?>
+    });
+</script>
+
+
+   
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
