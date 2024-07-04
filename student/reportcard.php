@@ -176,7 +176,6 @@ foreach ($courses as $course) {
         print_error('nostudents', 'error');
     }
 }
-mysqli_close($conn);
 
 
 ?>
@@ -234,7 +233,7 @@ mysqli_close($conn);
                             $status_class = 'btn-success';
                             $status_text = 'View';
                             $filename = $record->path;
-                            $actions = "<a class='dropdown-item' href='upload/download.php?id=$record->file'></a>";
+                            $actions = "class='dropdown-item' href='upload/download.php?id=$record->file'";
                         } else {
                             $status_class = 'btn-danger';
                             $status_text = 'Not Uploaded';
@@ -246,7 +245,7 @@ mysqli_close($conn);
                             <td><?php echo htmlspecialchars($student->firstname . ' ' . $student->lastname); ?></td>
                             <td><?php echo htmlspecialchars($student->nadi_name); ?></td>
                             <td hidden><?php echo htmlspecialchars($student->course_id); ?></td>
-                            <td><button type="button" class="btn <?php echo $status_class; ?>" disabled><?php echo $status_text; ?><?php echo $actions; ?></button></td>
+                            <td><a type="button" class="btn <?php echo $status_class; ?>" <?php echo $actions; ?>><?php echo $status_text; ?></a></td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
