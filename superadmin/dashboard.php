@@ -275,31 +275,38 @@ $conn->close();
 
     <h2>Attendance Record by States</h2>
     <div class="container mt-5">
-        <?php foreach ($categoryData as $categoryName => $stateData): ?>
+    <?php foreach ($categoryData as $categoryName => $stateData) { ?>
         <h2><?php echo htmlspecialchars($categoryName); ?></h2>
         <ul class="nav nav-tabs" role="tablist">
-            <?php foreach ($months as $index => $month): ?>
+            <?php
+            $monthCount = count($months);
+            for ($i = 0; $i < $monthCount; $i++):
+                $month = $months[$i];
+            ?>
             <li class="nav-item">
-                <a class="nav-link <?php echo $index === 0 ? 'active' : ''; ?>" data-toggle="tab"
-                    href="#tab-<?php echo htmlspecialchars($categoryName); ?>-<?php echo $month; ?>">
+                <a class="nav-link <?php echo $i === 0 ? 'active' : ''; ?>" data-toggle="tab"
+                    href="#tab-<?php echo str_replace(' ', '', $categoryName); ?>-<?php echo $month; ?>">
                     <?php echo date('F', mktime(0, 0, 0, $month, 1)); ?>
                 </a>
             </li>
-            <?php endforeach; ?>
+            <?php endfor; ?>
         </ul>
         <div class="tab-content">
-            <?php foreach ($months as $index => $month): ?>
-            <div id="tab-<?php echo htmlspecialchars($categoryName); ?>-<?php echo $month; ?>"
-                class="tab-pane fade <?php echo $index === 0 ? 'show active' : ''; ?>">
+            <?php for ($i = 0; $i < $monthCount; $i++):
+                $month = $months[$i];
+            ?>
+            <div id="tab-<?php echo str_replace(' ', '', $categoryName); ?>-<?php echo $month; ?>"
+                class="tab-pane fade <?php echo $i === 0 ? 'show active' : ''; ?>">
                 <div class="chart-container">
-                    <canvas id="myChart-<?php echo htmlspecialchars($categoryName); ?>-<?php echo $month; ?>"></canvas>
+                    <canvas id="myChart-<?php echo str_replace(' ', '', $categoryName); ?>-<?php echo $month; ?>"></canvas>
                 </div>
             </div>
-            <?php endforeach; ?>
+            <?php endfor; ?>
         </div>
         <hr>
-        <?php endforeach; ?>
-    </div>
+    <?php } ?>
+</div>
+
    
   
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -313,10 +320,11 @@ $conn->close();
     
     <script>
 
+
         document.addEventListener("DOMContentLoaded", function () {
             <?php foreach ($categoryData as $categoryName => $stateData): ?>
                 <?php foreach ($stateData as $month => $data): ?>
-                    new Chart(document.getElementById("myChart-<?php echo htmlspecialchars($categoryName); ?>-<?php echo $month; ?>"), {
+                    new Chart(document.getElementById("myChart-<?php echo str_replace(' ', '', $categoryName); ?>-<?php echo $month; ?>"), {
                         type: 'bar',
                         data: {
                             labels: <?php echo json_encode(array_keys($data)); ?>,

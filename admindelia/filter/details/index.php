@@ -32,10 +32,10 @@ require_once($CFG->dirroot.'/course/lib.php');
 
 $courseurl = core_course_category::user_top() ? new moodle_url('/index.php') : null;
 $PAGE->navbar->add("Home", $courseurl);
-$PAGE->navbar->add("Manage Filter Students", new moodle_url('manage-filter-student.php'));
-$PAGE->navbar->add('Add Student', new moodle_url('vod.php'));
+$PAGE->navbar->add("Manage Filter Students", new moodle_url('../manage-filter-student.php'));
+$PAGE->navbar->add('Detail Student', new moodle_url('vod.php'));
 
-$PAGE->set_heading('Add Student');
+$PAGE->set_heading('Detail Student');
 
 
 echo $OUTPUT->header();
@@ -57,6 +57,26 @@ global $CFG, $COURSE, $DB, $USER, $ROLE;
 
  //Sibling Information
  $sibling =  mysqli_query($con,"SELECT * FROM mdl_local_sibling_information WHERE userid = $icnumber");
+ 
+//UPSR
+$upsr =  mysqli_query($con,"SELECT * FROM mdl_local_upsr WHERE userid = $icnumber");
+
+//UASA
+$uasa =  mysqli_query($con,"SELECT * FROM mdl_local_uasa WHERE userid = $icnumber");
+
+//Form4
+$form4 =  mysqli_query($con,"SELECT * FROM mdl_local_form4_exam WHERE userid = $icnumber");
+
+ //PAJSK
+ $pajsk =  mysqli_query($con,"SELECT * FROM mdl_local_non_academic WHERE userid = $icnumber AND subject='PAJSK' ");
+ $data_pajsk = mysqli_fetch_assoc($pajsk);
+
+  //PSY
+  $psy =  mysqli_query($con,"SELECT * FROM mdl_local_non_academic WHERE userid = $icnumber AND subject='PSY' ");
+  $data_psy = mysqli_fetch_assoc($psy);
+
+  //Attendance
+$att =  mysqli_query($con,"SELECT * FROM mdl_local_attandance WHERE userid = $icnumber");
 ?>
 
 
@@ -75,7 +95,6 @@ global $CFG, $COURSE, $DB, $USER, $ROLE;
 </head> 
 <body>
     
-<form method="post" action="connection.php">
 <div class="accordion" id="accordionExample">
   <div class="">
     <div class="card-header" id="headingOne">
@@ -127,41 +146,37 @@ Sibling Information
     <!-- Collapse -->
     <div id="collapseLate" class="collapse" aria-labelledby="headingTwo" >
       <div class="card-body">
-  <div class="form-group">
-  <div id="sibling">
-    
-  <div id="siblingdel" class="form-row">
+  <div class="form-group">    
+  <div id="siblingdel">
 
   <!-- Looping Sibling -->
+   <?php
+   if ( mysqli_num_rows ( $sibling ) >= 1 ){
+
+     while ($rowsibling = $sibling->fetch_assoc()) {
+
+   ?>
+       <div class="form-row">
   <div class="form-group col-md-3">
   <label for="formGroupExampleInput">Name</label>
-  <input type="text" name="siblingname[]" class="form-control" id="formGroupExampleInput" ></div>
-    <div class="form-group col-md-2">
+  <input type="text" class="form-control" name="schoolname" id="formGroupExampleInput" value="<?php echo $rowsibling['sibling_name'];?>" disabled></div>
+  <div class="form-group col-md-2">
     <label for="formGroupExampleInput">Education</label>
-    <input type="text" name="siblingeducation[]" class="form-control" id="formGroupExampleInput" ></div>
+    <input type="text" name="siblingeducation[]" class="form-control" id="formGroupExampleInput" value="<?php echo $rowsibling['sibling_education'];?>" disabled ></div>
     <div class="form-group col-md-2">
         <label for="formGroupExampleInput">Age</label>
-        <input type="number" name="siblingage[]" class="form-control" id="formGroupExampleInput" ></div>
+        <input type="number" name="siblingage[]" class="form-control" id="formGroupExampleInput" value="<?php echo $rowsibling['sibling_age'];?>" disabled ></div>
+     </div>
+<?php
+     }}else{
+      echo  "<p class='lead'>Not Available</p>";
+     }
+?>
 
 </div>
-
-
-        
-
-  </div>
-       
+  </div>   
       </div>
     </div>
-    <div class="form-row">
-          <div class="form-group col-md-4">
-          &nbsp;&nbsp;&nbsp;
-          <button id="btnsibling" class="btn btn-primary" type="button">
-                  <i data-feather="plus" class="me-25"></i>
-                  <span>Add Input</span>
-                </button>             
-              </div>
-        </div>
-        <br>
   </div>
 
     <!-- ENDHERE -->
@@ -185,19 +200,40 @@ Academic/Non Academic
           
         </div>
         <br>
-  <div id="upsr"></div>
+  <div id="upsr">
+    <!-- Loop here UPSR -->
+    <?php
+   if ( mysqli_num_rows ( $upsr ) >= 1 ){
+
+     while ($rowupsr = $upsr->fetch_assoc()) {
+
+   ?>
+    <div class="form-row">
+<div class="form-group col-md-3 ">
+    <label for="formGroupExampleInput">Subject</label>
+    <input type="text" class="form-control" name="pnumber" id="formGroupExampleInput" value="<?php echo $rowupsr['subjectupsr'];?>" disabled >
+  </div>
+  <div class="form-group col-md-2 ">
+    <label for="formGroupExampleInput">Grade</label>
+    <input type="text" class="form-control" name="schoolname" id="formGroupExampleInput" value="<?php echo $rowupsr['markupsr'];?>" disabled>
+  </div>
+  <div class="form-group col-md-2 ">
+    <label for="formGroupExampleInput">Marks</label>
+    <input type="text" class="form-control" name="schoolname" id="formGroupExampleInput" value="<?php echo $rowupsr['gradeupsr'];?>" disabled >
+  </div>
+</div>
+<?php
+     }}else{
+      echo  "<p class='lead'>Not Available</p>";
+     }
+?>
+<!-- end here -->
+  </div>
        </div>
           </div>
           
-          <div class="form-row">
-          <div class="form-group col-md-4">
-          &nbsp;&nbsp;&nbsp;
-          <button id="btnupsr" class="btn btn-primary" type="button">
-                  <i data-feather="plus" class="me-25"></i>
-                  <span>Add Input</span>
-                </button>             
-              </div>
-        </div>
+          
+    
         <br>
 <!-- Form 3 UASA -->
 <div class="card-body">
@@ -207,19 +243,39 @@ Academic/Non Academic
           
         </div>
         <br>
-  <div id="form3"></div>
+  <div id="form3">
+        <!-- Loop here UASA -->
+        <?php
+   if ( mysqli_num_rows ( $uasa ) >= 1 ){
+
+     while ($rowuasa = $uasa->fetch_assoc()) {
+
+   ?>
+    <div class="form-row">
+<div class="form-group col-md-3 ">
+    <label for="formGroupExampleInput">Subject</label>
+    <input type="text" class="form-control" name="pnumber" id="formGroupExampleInput" value="<?php echo $rowuasa['subjectuasa'];?>" disabled >
+  </div>
+  <div class="form-group col-md-2 ">
+    <label for="formGroupExampleInput">Grade</label>
+    <input type="text" class="form-control" name="schoolname" id="formGroupExampleInput" value="<?php echo $rowuasa['markuasa'];?>" disabled>
+  </div>
+  <div class="form-group col-md-2 ">
+    <label for="formGroupExampleInput">Marks</label>
+    <input type="text" class="form-control" name="schoolname" id="formGroupExampleInput" value="<?php echo $rowuasa['gradeuasa'];?>" disabled >
+  </div>
+</div>
+<?php
+     }}else{
+      echo  "<p class='lead'>Not Available</p>";
+     }
+?>
+<!-- end here -->
+  </div>
        </div>
           </div>
           
-          <div class="form-row">
-          <div class="form-group col-md-4">
-          &nbsp;&nbsp;&nbsp;
-          <button id="btnform3" class="btn btn-primary" type="button">
-                  <i data-feather="plus" class="me-25"></i>
-                  <span>Add Input</span>
-                </button>             
-              </div>
-        </div>
+        
   <!-- End here -->
 <br>
   <!-- Form 4  -->
@@ -232,133 +288,34 @@ Academic/Non Academic
         <br>
   <div id="form4">
 
-    <!-- SUBJECT PERTAMA -->
-    <div id="form4del" class="form-row">
-  <div class="form-group col-md-3">
-    <label for="grade">Subject</label>
-    <select class="form-control" name="form4subject[]" id="grade" >
-      <option value="" selected hidden>Please Choose</option>
-      <option value="Malay Language">Malay Language</option>
-      <option value="Mathematics">Mathematics</option>
-      <option value="English">English</option>
-      <option value="History">History</option>
-    </select></div>
-    <div class="form-group col-md-2">
-      <label for="grade">Grade</label>
-      <select name="form4grade[]" class="form-control" id="grade">
-        <option value="" selected hidden >Please Choose</option>
-        <option value="A+">A+</option>
-        <option value="A">A</option>
-        <option value="A-">A-</option>
-        <option value="B+">B+</option>
-        <option value="B">B</option>
-        <option value="C+">C+</option>
-        <option value="C">C</option>
-        <option value="D">D</option>
-        <option value="E">E</option>
-        <option value="G">G</option>
-        <option value="TH">TH</option>
-      </select></div><div class="form-group col-md-2">
-        <label for="formGroupExampleInput">Marks</label>
-        <input type="number" name="form4marks[]" class="form-control" id="formGroupExampleInput" ></div>
-        </div>
+          <!-- Loop here Form4 -->
+          <?php
+   if ( mysqli_num_rows ( $form4 ) >= 1 ){
 
-        <!-- SUBJECT KEDUA -->
+     while ($rowform4 = $form4->fetch_assoc()) {
 
-        <div id="form4del" class="form-row">
-  <div class="form-group col-md-3">
-    <label for="grade">Subject</label>
-    <select class="form-control" name="form4subject[]" id="grade" >
-      <option value="" selected hidden>Please Choose</option>
-      <option value="Malay Language">Malay Language</option>
-      <option value="Mathematics">Mathematics</option>
-      <option value="English">English</option>
-      <option value="History">History</option>
-    </select></div>
-    <div class="form-group col-md-2">
-      <label for="grade">Grade</label>
-      <select name="form4grade[]" class="form-control" id="grade" >
-        <option value="" selected hidden>Please Choose</option>
-        <option value="A+">A+</option>
-        <option value="A">A</option>
-        <option value="A-">A-</option>
-        <option value="B+">B+</option>
-        <option value="B">B</option>
-        <option value="C+">C+</option>
-        <option value="C">C</option>
-        <option value="D">D</option>
-        <option value="E">E</option>
-        <option value="G">G</option>
-        <option value="TH">TH</option>
-      </select></div><div class="form-group col-md-2">
-        <label for="formGroupExampleInput">Marks</label>
-        <input type="number" name="form4marks[]" class="form-control" id="formGroupExampleInput"  ></div>
-     </div>
-
-            <!-- SUBJECT KETIGA -->
-
-            <div id="form4del" class="form-row">
-  <div class="form-group col-md-3">
-    <label for="grade">Subject</label>
-    <select class="form-control" name="form4subject[]" id="grade" >
-      <option value="" selected hidden>Please Choose</option>
-      <option value="Malay Language">Malay Language</option>
-      <option value="Mathematics">Mathematics</option>
-      <option value="English">English</option>
-      <option value="History">History</option>
-    </select></div>
-    <div class="form-group col-md-2">
-      <label for="grade">Grade</label>
-      <select name="form4grade[]" class="form-control" id="grade" >
-        <option value="" selected hidden>Please Choose</option>
-        <option value="A+">A+</option>
-        <option value="A">A</option>
-        <option value="A-">A-</option>
-        <option value="B+">B+</option>
-        <option value="B">B</option>
-        <option value="C+">C+</option>
-        <option value="C">C</option>
-        <option value="D">D</option>
-        <option value="E">E</option>
-        <option value="G">G</option>
-        <option value="TH">TH</option>
-      </select></div><div class="form-group col-md-2">
-        <label for="formGroupExampleInput">Marks</label>
-        <input type="number" name="form4marks[]" class="form-control" id="formGroupExampleInput" ></div>
-    </div>
-
-            <!-- SUBJECT KEEMPAT -->
-            <div id="form4del" class="form-row">
-  <div class="form-group col-md-3">
-    <label for="grade">Subject</label>
-    <select class="form-control" name="form4subject[]" id="grade" >
-      <option value="" selected hidden>Please Choose</option>
-      <option value="Malay Language">Malay Language</option>
-      <option value="Mathematics">Mathematics</option>
-      <option value="English">English</option>
-      <option value="History">History</option>
-    </select></div>
-    <div class="form-group col-md-2">
-      <label for="grade">Grade</label>
-      <select name="form4grade[]" class="form-control" id="grade" >
-        <option value="" selected hidden>Please Choose</option>
-        <option value="A+">A+</option>
-        <option value="A">A</option>
-        <option value="A-">A-</option>
-        <option value="B+">B+</option>
-        <option value="B">B</option>
-        <option value="C+">C+</option>
-        <option value="C">C</option>
-        <option value="D">D</option>
-        <option value="E">E</option>
-        <option value="G">G</option>
-        <option value="TH">TH</option>
-      </select></div><div class="form-group col-md-2">
-        <label for="formGroupExampleInput">Marks</label>
-        <input type="number" name="form4marks[]" class="form-control" id="formGroupExampleInput" ></div>
-       </div>
-
-          <!-- END HERE -->
+   ?>
+    <div class="form-row">
+<div class="form-group col-md-3 ">
+    <label for="formGroupExampleInput">Subject</label>
+    <input type="text" class="form-control" name="pnumber" id="formGroupExampleInput" value="<?php echo $rowform4['subjectexam'];?>" disabled >
+  </div>
+  <div class="form-group col-md-2 ">
+    <label for="formGroupExampleInput">Grade</label>
+    <input type="text" class="form-control" name="schoolname" id="formGroupExampleInput" value="<?php echo $rowform4['markexam'];?>" disabled>
+  </div>
+  <div class="form-group col-md-2 ">
+    <label for="formGroupExampleInput">Marks</label>
+    <input type="text" class="form-control" name="schoolname" id="formGroupExampleInput" value="<?php echo $rowform4['gradeexam'];?>" disabled >
+  </div>
+</div>
+<?php
+     }}else{
+      echo  "<p class='lead'>Not Available</p>";
+     }
+?>
+<!-- end here -->
+    
   </div>
        </div>
           </div>
@@ -379,7 +336,7 @@ Academic/Non Academic
         <input type="text" value="PAJSK" name="pajsk" hidden>
         <div class="form-group col-md-2">       
         <label for="formGroupExampleInput">Average Marks</label>
-        <input type="number" name="pajskgrade" class="form-control" min="0" max="100" onkeyup=enforceMinMax(this) id="formGroupExampleInput" >
+        <input type="text" name="pajskgrade" class="form-control" value="<?php echo $data_pajsk['mark'];?>" disabled >
 </div>
 </div>
 </div>   
@@ -398,8 +355,8 @@ Academic/Non Academic
         </div>
         <div class="form-group col-md-2">       
  <label for="formGroupExampleInput">Average Marks</label>
-        <input type="number" name="psygrade" class="form-control" min="0" max="100" onkeyup=enforceMinMax(this) id="formGroupExampleInput" >
-</div>
+ <input type="text" name="pajskgrade" class="form-control" value="<?php echo $data_psy['mark'];?>" disabled >
+ </div>
 </div>
 </div>   
        
@@ -435,9 +392,8 @@ Academic/Non Academic
   
 <br>
 <div class="d-flex flex-row-reverse">
-  <button type="submit" name="submit" class="btn btn-primary">Submit</button>
+  <a href="../manage-filter-student.php"><button type="submit" name="submit" class="btn btn-outline-primary">Back</button></a>
 </div>
-</form>
 
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

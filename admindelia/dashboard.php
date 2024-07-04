@@ -219,15 +219,22 @@ $conn->close();
 <head>
     <link rel="stylesheet" href="dashboard.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.bootstrap4.min.css">
     <style>
-       .chart-container {
-            position: static;
+        .chart-container {
+            position: relative;
             width: 90%;
             height: 400px;
+        }
+
+        #example th {
+            text-align: center;
+        }
+
+        #example td {
+            text-align: center;
         }
     </style>
 </head>
@@ -286,16 +293,81 @@ $conn->close();
     </table>
 
 <script id="categoryData" type="application/json"><?php echo json_encode($categoryData); ?></script>
-    <script src="chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.bootstrap4.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.bootstrap4.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.print.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+        <?php foreach ($categoryData as $categoryName => $monthlyData): ?>
+            <?php foreach ($monthlyData as $month => $attendanceData): ?>
+                var ctx = document.getElementById('attendanceChart-<?php echo htmlspecialchars($categoryName); ?>-<?php echo $month; ?>');
+                console.log('Canvas element:', ctx);
+
+                if (ctx) {  // Check if canvas element exists
+                    var labels = <?php echo json_encode(array_column($attendanceData, 'student_name')); ?>;
+                    var data = <?php echo json_encode(array_column($attendanceData, 'attendance_percentage')); ?>;
+                    console.log('Labels:', labels);
+                    console.log('Data:', data);
+
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Attendance Percentage',
+                                data: data,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                }
+            <?php endforeach; ?>
+        <?php endforeach; ?>
+    });
+</script>
+    <script>
+    $('#example').DataTable({
+        lengthMenu: [10, 25, 50, { label: 'All', value: -1 }],
+        layout: {
+            top2Start: { 
+                buttons: [{ 
+                        extend: 'csv',
+                        filename: 'Student report' 
+                    },
+                    {
+                        extend: 'excel',
+                        filename: 'Student report'
+                    },
+                    {
+                        extend: 'pdf',
+                        filename: 'Student report'
+                    }
+                ]
+            }
+        }
+    });
+
     
+</script>
+
    
   <?php echo $OUTPUT->footer();?>
 </body>

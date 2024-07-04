@@ -239,12 +239,15 @@ include 'connection.php';
 
     $('#example').DataTable({
         scrollX: true,
-        layout: {
-            topStart: {
+        lengthMenu: [10, 25, 50, { label: 'All', value: -1 }],
+
+        layout: {    
+            top2Start: {
                 buttons: [
                     {
                         extend: 'csv',
                         filename: 'Student report'
+                        
                     },
                     {
                         extend: 'excel',
@@ -256,6 +259,7 @@ include 'connection.php';
                     }
                 ]
             }
+            
         }
     });
 </script>

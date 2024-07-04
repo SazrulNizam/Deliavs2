@@ -142,18 +142,9 @@ Successfully to Filter Students</div>
           <td>" . $row["average_att"] . "</td>
           <td>" . $row["average_koko"] . "</td>
                
-          <td> 
-          <div class='dropdown'>
-  <button class='btn btn-secondary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
-  <i class='fas fa-ellipsis-v'></i>
-  </button>
-  <div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>
-    <a class='dropdown-item' href='details/index.php?id=". $row["id"]."'". ">Details</a>
-    <a class='dropdown-item' href='update/index.php?id=". $row["id"]."'". ">Update</a>
-    <div class='dropdown-divider'></div>
-    <a class='dropdown-item text-danger' href='delete.php?id=". $row["id"]."'". ">Delete</a>
-  </div>
-</div>
+         <td> 
+        <a href='details/index.php?id=". $row["icnumber"]."'><button type='button' class='btn btn-outline-primary'>Details</button></a>
+
                 </td></tr>";
             
            }
