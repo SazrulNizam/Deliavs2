@@ -42,7 +42,7 @@ $sql_students = "SELECT ka.id, ka.firstname, ka.lastname, c.id AS course_id, c.f
 
 $stmt = $conn->prepare($sql_students);
 if ($stmt === false) {
-    die("Query preparation failed: " . $conn->error);
+    die("Query preparation failed: " . $conn->error); 
 }
 $stmt->bind_param("s", $userRegister);
 $stmt->execute();
@@ -141,6 +141,10 @@ $conn->close();
         </div>
     <?php endforeach; ?>
 
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" />
     <script>
         $(document).ready(function() {
             <?php foreach ($students_by_category as $category_id => $students) : ?>
