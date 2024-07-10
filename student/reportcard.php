@@ -138,16 +138,7 @@ if (!$conn) {
 }
 
 // Fetch categories
-$sql_categories = "SELECT cc.id as id, cc.name as name
-FROM mdl_course_categories cc
-WHERE cc.id IN (
-    SELECT DISTINCT c.category
-    FROM mdl_user ka
-    JOIN mdl_user_enrolments ra ON ka.id = ra.userid
-    JOIN mdl_enrol en ON ra.enrolid = en.id
-    JOIN mdl_course c ON en.courseid = c.id
-    JOIN mdl_user_info_data role ON ka.id = role.userid AND role.fieldid = 6 AND role.data = 'Student'
-    WHERE ka.id = 8)";
+$sql_categories = "SELECT id, name FROM mdl_course_categories WHERE id != 0";
 $result_categories = mysqli_query($conn, $sql_categories);
 
 if (!$result_categories) {
@@ -214,21 +205,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])) {
 mysqli_close($conn);
 ?>
 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.flash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
     <style>
  
     .table-container {
@@ -238,9 +224,7 @@ mysqli_close($conn);
     </style>
 </head>
 <body>
-
-<h2 id="courseHeading"></h2>
-
+    
 <?php foreach ($categories as $category) : ?>
     <h3><?php echo htmlspecialchars($category['name']); ?></h3>
     <form method="post" id="courseForm-<?php echo $category['id']; ?>">
@@ -338,16 +322,10 @@ $(document).ready(function() {
                 $(this).hide();
             }
         });
-        if (courseId !== '') {
-            $('#example-' + categoryId + ' .action-column').css('display', 'table-cell');
-        } else {
-            $('#example-' + categoryId + ' .action-column').hide();
-        }
     }
 
-    // Initialize DataTables for each category's table
+
     $('.course-table').each(function() {
-        var categoryId = $(this).data('category-id');
         $(this).DataTable();
     });
 
