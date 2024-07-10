@@ -22,16 +22,16 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once("../config.php");
-require_once($CFG->dirroot.'/course/lib.php');
+require_once ("../config.php");
+require_once ($CFG->dirroot . '/course/lib.php');
 
-$q         = optional_param('q', '', PARAM_RAW);       // Global search words.
-$search    = optional_param('search', '', PARAM_RAW);  // search words
-$page      = optional_param('page', 0, PARAM_INT);     // which page to show
-$perpage   = optional_param('perpage', '', PARAM_RAW); // how many per page, may be integer or 'all'
+$q = optional_param('q', '', PARAM_RAW);       // Global search words.
+$search = optional_param('search', '', PARAM_RAW);  // search words
+$page = optional_param('page', 0, PARAM_INT);     // which page to show
+$perpage = optional_param('perpage', '', PARAM_RAW); // how many per page, may be integer or 'all'
 $blocklist = optional_param('blocklist', 0, PARAM_INT);
-$modulelist= optional_param('modulelist', '', PARAM_PLUGIN);
-$tagid     = optional_param('tagid', '', PARAM_INT);   // searches for courses tagged with this tag id
+$modulelist = optional_param('modulelist', '', PARAM_PLUGIN);
+$tagid = optional_param('tagid', '', PARAM_INT);   // searches for courses tagged with this tag id
 
 // Use global search.
 if ($q) {
@@ -55,7 +55,7 @@ foreach (array('search', 'blocklist', 'modulelist', 'tagid') as $param) {
     }
 }
 $urlparams = array();
-if ($perpage !== 'all' && !($perpage = (int)$perpage)) {
+if ($perpage !== 'all' && !($perpage = (int) $perpage)) {
     // default number of courses per page
     $perpage = $CFG->coursesperpage;
 } else {
@@ -106,7 +106,8 @@ if (empty($searchcriteria)) {
     $event->trigger();
 }
 
-$PAGE->set_heading('Report Card');
+$PAGE->set_heading('Student Report Card');
+$PAGE->set_title('Student Report Card');
 
 // $PAGE->requires->js(new \moodle_url('https://code.jquery.com/jquery-3.7.1.js'), true);
 // $PAGE->requires->js(new \moodle_url('https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js'), true);
@@ -122,69 +123,100 @@ $PAGE->set_heading('Report Card');
 // $PAGE->requires->js(new \moodle_url('script.js'));
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap4.css'));
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/buttons/3.0.1/css/buttons.bootstrap4.css'));
-echo $OUTPUT->header();?>
+echo $OUTPUT->header();
+global $CFG, $COURSE, $DB, $USER, $ROLE;
+include 'connection.php';
+
+?>
 <?php
+$student_id = $USER->id;
+// Database connection
+$conn = mysqli_connect("localhost", "root", "", "deliadata");
 
-// Ensure that Moodle global $USER is loaded
-require_once('../config.php');
-
-// Check if user is logged in
-if (!$USER->id) {
-    // User is not logged in, handle accordingly (e.g., redirect to login page)
-    redirect(new moodle_url('/login/index.php'));
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
 }
 
-// Fetch courses where the teacher is enrolled as a teacher
-$courses = enrol_get_all_users_courses($USER->id, true);
+// Fetch categories
+$sql_categories = "SELECT cc.id as id, cc.name as name
+FROM mdl_course_categories cc
+WHERE cc.id IN (
+    SELECT DISTINCT c.category
+    FROM mdl_user ka
+    JOIN mdl_user_enrolments ra ON ka.id = ra.userid
+    JOIN mdl_enrol en ON ra.enrolid = en.id
+    JOIN mdl_course c ON en.courseid = c.id
+    JOIN mdl_user_info_data role ON ka.id = role.userid AND role.fieldid = 6 AND role.data = 'Student'
+    WHERE ka.id = 8)";
+$result_categories = mysqli_query($conn, $sql_categories);
 
-if (empty($courses)) {
-    print_error('nocourses', 'error');
+if (!$result_categories) {
+    die("Query failed: " . mysqli_error($conn));
 }
 
-// Fetch categories for the fetched courses
-$category_ids = array_unique(array_column($courses, 'category'));
-$sql_categories = "
-    SELECT id, name
-    FROM {course_categories}
-    WHERE id IN (" . implode(',', $category_ids) . ")
-    ORDER BY name";
-
-$categories = $DB->get_records_sql($sql_categories);
+// Categories into an array
+$categories = [];
+while ($category = mysqli_fetch_assoc($result_categories)) {
+    $categories[] = $category;
+}
 
 if (empty($categories)) {
-    print_error('nocategories', 'error');
+    die("No categories found.");
 }
 
-// Fetch students enrolled in the courses where the teacher is a teacher
+// Fetch all courses
+$courses = [];
+$sql_courses = "SELECT id, fullname, category FROM mdl_course WHERE category != 0";
+$result_courses = mysqli_query($conn, $sql_courses);
+
+if (!$result_courses) {
+    die("Query failed: " . mysqli_error($conn));
+}
+
+while ($course = mysqli_fetch_assoc($result_courses)) {
+    $courses[] = $course;
+}
+
+// Fetch logged in student
 $students = [];
-foreach ($courses as $course) {
-    $sql_students = "
-        SELECT u.id, u.firstname, u.lastname, c.id AS course_id, c.fullname AS course_name, nadi.data AS nadi_name, c.category AS category_id
-        FROM {user} u
-        JOIN {user_enrolments} ue ON u.id = ue.userid
-        JOIN {enrol} e ON ue.enrolid = e.id
-        JOIN {course} c ON e.courseid = c.id
-        LEFT JOIN {user_info_data} nadi ON u.id = nadi.userid AND nadi.fieldid = (
-            SELECT id FROM {user_info_field} WHERE shortname = 'nadi_name'
-        )
-        WHERE c.id = :courseid AND e.status = 0 -- Filter for active enrollments
-        ORDER BY u.lastname, u.firstname";
+$sql_students = "
+SELECT ka.id, ka.firstname, ka.lastname, c.id AS course_id, c.fullname AS course_name, nadi.data AS nadi_name, c.category AS category_id
+FROM mdl_user ka
+JOIN mdl_user_enrolments ra ON ka.id = ra.userid
+JOIN mdl_enrol en ON ra.enrolid = en.id
+JOIN mdl_course c ON en.courseid = c.id
+JOIN mdl_user_info_data role ON ka.id = role.userid AND role.fieldid = 6 AND role.data = 'Student'
+LEFT JOIN mdl_user_info_data nadi ON ka.id = nadi.userid AND nadi.fieldid = 14
+WHERE ka.id = $student_id
+GROUP BY ka.id, ka.firstname, ka.lastname, c.id, c.fullname, nadi.data, c.category";
 
-    $students[$course->id] = $DB->get_records_sql($sql_students, ['courseid' => $course->id]);
+$result_students = mysqli_query($conn, $sql_students);
+if ($result_students === false) {
+    die("Query failed: " . mysqli_error($conn));
+}
 
-    if (empty($students[$course->id])) {
-        print_error('nostudents', 'error');
+while ($student = mysqli_fetch_assoc($result_students)) {
+    $students[] = $student;
+}
+
+// Check if a course is selected and filter students
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])) {
+    $courseId = $_POST['course_id'];
+
+    if (!empty($courseId)) {
+        $students = array_filter($students, function ($student) use ($courseId) {
+            return $student['course_id'] == $courseId;
+        });
     }
 }
 
-
+// Close the database connection
+mysqli_close($conn);
 ?>
 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student List</title>
-    <!-- Include DataTables CSS/JS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
@@ -198,66 +230,143 @@ foreach ($courses as $course) {
     <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
     <style>
+ 
+    .table-container {
+            margin-bottom: 20px;
+        }
+  
     </style>
 </head>
 <body>
 
-<h2 id="courseHeading">Student List TEst</h2>
+<h2 id="courseHeading"></h2>
 
 <?php foreach ($categories as $category) : ?>
-    <h3><?php echo htmlspecialchars($category->name); ?></h3>
-    <?php foreach ($courses as $course) : ?>
-        <?php if ($course->category == $category->id) : ?>
-            <h4><?php echo htmlspecialchars($course->fullname); ?></h4>
-            <div class="table-container">
-                <table id="example-<?php echo $course->id; ?>" class="table table-hover" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th hidden>Student ID</th>
-                            <th>Student Name</th>
-                            <th>Nadi Name</th>
-                            <th hidden>Course ID</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    $no = 0;
-                    foreach ($students[$course->id] as $student) :
-                        $no++;
-                        // Fetch the status for each student
-                        $record = $DB->get_record('local_reportcards', array('userid' => $student->id, 'courseid' => $student->course_id));
+    <h3><?php echo htmlspecialchars($category['name']); ?></h3>
+    <form method="post" id="courseForm-<?php echo $category['id']; ?>">
+        <select name="course_id" id="course-<?php echo $category['id']; ?>" class="form-control course-select" data-category-id="<?php echo $category['id']; ?>">
+            <option value="">All Courses</option>
+            <?php foreach ($courses as $course) :
+                if ($course['category'] == $category['id']) : ?>
+                    <option value="<?php echo $course['id']; ?>" <?php echo (isset($_POST['course_id']) && $_POST['course_id'] == $course['id']) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($course['fullname']); ?>
+                    </option>
+                <?php endif;
+            endforeach; ?>
+        </select>
+    </form>
+    <br>
+    <div class="table-container">
+        <table id="example-<?php echo $category['id']; ?>" class="table table-hover" style="width:100%">
+            <thead>
+                <tr>
+                    <td>No</td>
+                    <td hidden>Student ID</td>
+                    <td>Student Name</td>
+                    <td>Course</td>
+                    <td>Nadi Name</td>
+                    <td hidden>Course ID</td>
+                    <td>Status</td>
+                    
+                </tr>
+            </thead>
+            <tbody>
+            <tbody>
+    <?php
+    $no = 0;
+    foreach ($students as $student) :
+        if ($student['category_id'] == $category['id']) :
+            $no++;
+            // Fetch the status for each student
+            $record = $DB->get_record('local_reportcards', array('userid' => $student['id'], 'courseid' => $student['course_id']));
+            
 
-                        if ($record && $record->status === 'uploaded') {
-                            $status_class = 'btn-success';
-                            $status_text = 'View';
-                            $filename = $record->path;
-                            $actions = "class='dropdown-item' href='upload/download.php?id=$record->file'";
-                        } else {
-                            $status_class = 'btn-danger';
-                            $status_text = 'Not Uploaded';
-                        }
-                    ?>
-                        <tr>
-                            <td><?php echo $no; ?></td>
-                            <td hidden><?php echo htmlspecialchars($student->id); ?></td>
-                            <td><?php echo htmlspecialchars($student->firstname . ' ' . $student->lastname); ?></td>
-                            <td><?php echo htmlspecialchars($student->nadi_name); ?></td>
-                            <td hidden><?php echo htmlspecialchars($student->course_id); ?></td>
-                            <td><a type="button" class="btn <?php echo $status_class; ?>" <?php echo $actions; ?>><?php echo $status_text; ?></a></td>
-                        </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php endif; ?>
-    <?php endforeach; ?>
-<?php endforeach; ?>
+            if ($record && $record->status === 'uploaded') {
+                $status_class = 'btn-success';
+                $status_text = 'Uploaded';
+                $filename = $record->path;     
+                $actions = "class='dropdown-item' href='upload/download.php?id=$record->file'";
+            } 
+            
+            else {
+                $status_class = 'btn-danger';
+                $status_text = 'Not Uploaded';
+               $disable = 'disabled';
+            }
+    ?>
+            <tr>
+                <td><?php echo $no; ?></td>
+                <td hidden><?php echo htmlspecialchars($student['id']); ?></td>
+                <td><?php echo htmlspecialchars($student['firstname'] . ' ' . $student['lastname']); ?></td>
+                <td><?php echo htmlspecialchars($student['course_name']); ?></td>
+                <td><?php echo htmlspecialchars($student['nadi_name']); ?></td>
+                <td hidden><?php echo htmlspecialchars($student['course_id']); ?></td>
+                <td><a type="button" class="btn <?php echo $status_class; ?>" <?php if($record && $record->status === 'uploaded') {?><?php echo $actions; ?><?php } ?>><?php echo $status_text; ?></a></td>
+            </tr>
+    <?php
+        endif;
+    endforeach;
+    ?>
+</tbody>
 
+        </table>
+    </div>
+<?php endforeach; 
+
+
+?>
+
+<script>
+$(document).ready(function() {
+    var selectedCourses = {}; // Object to store selected courses for each category
+
+    // Event listener for course selection change
+    $('.course-select').change(function() {
+        var categoryId = $(this).data('category-id');
+        var courseId = $(this).val();
+        selectedCourses[categoryId] = courseId; // Store the selected course for this category
+        updateTableVisibility(categoryId, courseId); // Update the table rows visibility for the selected category
+    });
+
+    // Function to update table rows visibility based on selected course
+    function updateTableVisibility(categoryId, courseId) {
+        $('#example-' + categoryId + ' tbody tr').each(function() {
+            var courseTd = $(this).find('td:eq(5)'); 
+            if (courseTd.text() === courseId || courseId === '') {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+        if (courseId !== '') {
+            $('#example-' + categoryId + ' .action-column').css('display', 'table-cell');
+        } else {
+            $('#example-' + categoryId + ' .action-column').hide();
+        }
+    }
+
+    // Initialize DataTables for each category's table
+    $('.course-table').each(function() {
+        var categoryId = $(this).data('category-id');
+        $(this).DataTable();
+    });
+
+    // Show action columns if a specific course is already selected on page load
+    $('.course-select').each(function() {
+        var initialSelectedCourse = $(this).val();
+        var categoryId = $(this).data('category-id');
+        selectedCourses[categoryId] = initialSelectedCourse; // Store the selected course for this category
+        updateTableVisibility(categoryId, initialSelectedCourse);
+    });
+
+    // Restore selected courses when page loads or is refreshed
+    Object.keys(selectedCourses).forEach(function(categoryId) {
+        $('#course-' + categoryId).val(selectedCourses[categoryId]);
+    });
+});
+
+
+</script>
+<?php echo $OUTPUT->footer();?>
 </body>
 </html>
-
-<?php
-echo $OUTPUT->footer();
-?>
