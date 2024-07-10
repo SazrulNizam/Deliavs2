@@ -78,9 +78,9 @@ $strsearch = new lang_string("search");
 $strsearchresults = new lang_string("searchresults");
 $strnovalidcourses = new lang_string('novalidcourses');
 
-$courseurl = core_course_category::user_top() ? new moodle_url('/course/index.php') : null;
-$PAGE->navbar->add($strcourses, $courseurl);
-$PAGE->navbar->add($strsearch, new moodle_url('/course/newpage.php'));
+$courseurl = core_course_category::user_top() ? new moodle_url('/index.php') : null;
+$PAGE->navbar->add("Home", $courseurl);
+$PAGE->navbar->add("Student Report", new moodle_url('/course/newpage.php'));
 if (!empty($search)) {
     $PAGE->navbar->add(s($search));
 }
@@ -106,8 +106,8 @@ if (empty($searchcriteria)) {
     $event->trigger();
 }
 
-$PAGE->set_heading('Student Grade Report');
-$PAGE->set_title('Student Grade Report');
+$PAGE->set_heading('Student Report Card');
+$PAGE->set_title('Student Report Card');
 
 // $PAGE->requires->js(new \moodle_url('https://code.jquery.com/jquery-3.7.1.js'), true);
 // $PAGE->requires->js(new \moodle_url('https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js'), true);
@@ -233,6 +233,8 @@ mysqli_close($conn);
 <?php foreach ($categories as $category) : ?>
     <h3><?php echo htmlspecialchars($category['name']); ?></h3>
     <form method="post" id="courseForm-<?php echo $category['id']; ?>">
+    <div class="form-row">
+    <div class="form-group col-md-2 ">
         <select name="course_id" id="course-<?php echo $category['id']; ?>" class="form-control course-select" data-category-id="<?php echo $category['id']; ?>">
             <option value="">All Courses</option>
             <?php foreach ($courses as $course) :
@@ -243,6 +245,8 @@ mysqli_close($conn);
                 <?php endif;
             endforeach; ?>
         </select>
+        </div>
+        </div>
     </form>
     <br>
     <div class="table-container">
