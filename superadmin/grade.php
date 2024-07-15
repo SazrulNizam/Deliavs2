@@ -1,21 +1,4 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-/**
- * Displays external information about a course
- * @package    core_course
- * @copyright  1999 onwards Martin Dougiamas  http://dougiamas.com
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 require_once("../config.php");
 require_once($CFG->dirroot . '/course/lib.php');
 
@@ -92,6 +75,7 @@ if (empty($searchcriteria)) {
 }
 
 $PAGE->set_heading('Student Grade Report');
+$PAGE->set_title('Grade Report');
 
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap4.css'));
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/buttons/3.0.1/css/buttons.bootstrap4.css'));
@@ -105,7 +89,6 @@ include 'connection.php';
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Grade Report Test</title>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
@@ -127,105 +110,68 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$query = "SELECT 
-        u.id AS student_id,
-        CONCAT(u.firstname, ' ', u.lastname) AS student_name,
-        c.id AS course_id,
-        c.fullname AS course_name,
-        COALESCE(gg.total_grade, 0) AS total_grade,
-        nadi.data AS nadi_name,
-        state.data AS state_name
-    FROM 
-        mdl_user u
-    JOIN 
-        mdl_role_assignments ra ON u.id = ra.userid
-    JOIN 
-        mdl_role r ON ra.roleid = r.id
-    JOIN 
-        mdl_course c ON c.id IN (
-            SELECT 
-                DISTINCT courseid 
-            FROM 
-                mdl_grade_items
-)
-        LEFT JOIN (SELECT gg.userid, gi.courseid,
-        SUM(gg.finalgrade)/2 AS total_grade FROM mdl_grade_grades gg JOIN mdl_grade_items gi ON gg.itemid = gi.id
-        GROUP BY gg.userid, gi.courseid
-        ) gg ON u.id = gg.userid AND c.id = gg.courseid
-        LEFT JOIN
-        mdl_user_info_data nadi ON u.id = nadi.userid AND nadi.fieldid = 14
-        LEFT JOIN
-        mdl_user_info_data state ON u.id = state.userid AND state.fieldid = 1
-        WHERE
-        r.shortname = 'student'
-        ORDER BY
-        student_name, course_name";
+$query = "SELECT DISTINCT u.id AS student_id, CONCAT(u.firstname, ' ', u.lastname) AS student_name, c.id AS course_id, c.fullname AS course_name,
+    cc.name AS category_name, COALESCE(gg.total_grade, 0) AS total_grade, nadi.data AS nadi_name, state.data AS state_name FROM 
+    mdl_user u JOIN  mdl_role_assignments ra ON u.id = ra.userid JOIN mdl_role r ON ra.roleid = r.id JOIN 
+    mdl_user_enrolments ue ON u.id = ue.userid JOIN mdl_enrol e ON ue.enrolid = e.id JOIN 
+    mdl_course c ON e.courseid = c.id JOIN mdl_course_categories cc ON c.category = cc.id LEFT JOIN 
+    (SELECT gg.userid, gi.courseid, SUM(gg.finalgrade) / 2 AS total_grade 
+    FROM  mdl_grade_grades gg JOIN mdl_grade_items gi ON gg.itemid = gi.id
+    GROUP BY gg.userid, gi.courseid) gg ON u.id = gg.userid AND c.id = gg.courseid
+    LEFT JOIN mdl_user_info_data nadi ON u.id = nadi.userid AND nadi.fieldid = 14
+    LEFT JOIN mdl_user_info_data state ON u.id = state.userid AND state.fieldid = 1
+    WHERE r.shortname = 'student'
+    ORDER BY student_name, course_name";
 
-        $result = $conn->query($query);
+$result = $conn->query($query);
 
-        $students = [];
-        while ($row = $result->fetch_assoc()) {
-        $student_id = $row['student_id'];
-        if (!isset($students[$student_id])) {
+$students = [];
+while ($row = $result->fetch_assoc()) {
+    $student_id = $row['student_id'];
+    if (!isset($students[$student_id])) {
         $students[$student_id] = [
-        'student_name' => $row['student_name'],
-        'nadi_name' => $row['nadi_name'],
-        'state_name' => $row['state_name'],
-        'courses' => []
+            'student_name' => $row['student_name'],
+            'nadi_name' => $row['nadi_name'],
+            'state_name' => $row['state_name'],
+            'courses' => []
         ];
-        }
-        $students[$student_id]['courses'][] = [
+    }
+    $students[$student_id]['courses'][] = [
         'course_name' => $row['course_name'],
-        'total_grade' => round($row['total_grade'], 1)
-        ];
-        }
+        'total_grade' => round($row['total_grade'], 1),
+        'category_name' => $row['category_name']
+    ];
+}
 
-        $conn->close();
-        ?>
+$conn->close();
+?>
 
 <div class="table-container">
     <table id="studentTable" class="display">
         <thead>
             <tr>
                 <th></th>
-                <th>STUDENT NAME</th>
-                <th>STATE</th>
-                <th>NADI NAME</th>
+                <th>Student Name</th>
+                <th>State</th>
+                <th>NADI Name</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($students as $student_id => $student_data): ?>
             <tr data-student-id="<?php echo $student_id; ?>">
-                <td class="details-control">+</td>
+                <td class="details-control"></td>
                 <td><?php echo htmlspecialchars($student_data['student_name']); ?></td>
                 <td><?php echo htmlspecialchars($student_data['state_name']); ?></td>
                 <td><?php echo htmlspecialchars($student_data['nadi_name']); ?></td>
-            </tr>
-            <tr class="child-row" data-student-id="<?php echo $student_id; ?>" style="display: none;">
-                <td colspan="4">
-                    <table class="child-table" style="width: 100%;">
-                        <thead>
-                            <tr>
-                                <th>COURSE NAME</th>
-                                <th>GRADE</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($student_data['courses'] as $course): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($course['course_name']); ?></td>
-                                <td><?php echo htmlspecialchars($course['total_grade']); ?></td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </td>
             </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
 </div>
 
+<script>
+var studentData = <?php echo json_encode(array_values($students)); ?>;
+</script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
@@ -235,30 +181,166 @@ $query = "SELECT
 <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
 <script>
+// Formatting function for row details
+function format(d) {
+    var categories = d.courses.reduce((acc, course) => {
+        if (!acc[course.category_name]) {
+            acc[course.category_name] = [];
+        }
+        acc[course.category_name].push(course);
+        return acc;
+    }, {});
+
+    var categoryRows = Object.keys(categories).map(category => {
+        var courses = categories[category].map(course => 
+            '<tr><td>' + course.course_name + '</td><td>' + course.total_grade + '</td></tr>'
+        ).join('');
+        
+        return (
+            '<tr><td colspan="2"><strong>' + category + '</strong></td></tr>' +
+            courses
+        );
+    }).join('');
+
+    return (
+        '<table class="child-table" style="width: 100%;">' +
+            '<thead>' +
+                '<tr><th>Course</th><th>Grade</th></tr>' +
+            '</thead>' +
+            '<tbody>' + categoryRows + '</tbody>' +
+        '</table>'
+    );
+}
+
 $(document).ready(function() {
     var table = $('#studentTable').DataTable({
-        "paging": false,
-        "searching": false,
-        "info": false
+        data: studentData,
+        columns: [
+            {
+                className: 'dt-control',
+                orderable: false,
+                data: null,
+                defaultContent: ''
+            },
+            { data: 'student_name' },
+            { data: 'state_name' },
+            { data: 'nadi_name' }
+        ],
+        order: [[1, 'asc']],
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'copyHtml5',
+                text: 'Copy to clipboard',
+                exportOptions: {
+                    format: {
+                        body: function(data, row, column, node) {
+                            if ($(node).hasClass('dt-control')) {
+                                var rowData = table.row($(node).closest('tr')).data();
+                                return rowData.courses.map(function(course) {
+                                    return course.course_name + ': ' + course.total_grade;
+                                }).join('\n');
+                            }
+                            return data;
+                        }
+                    }
+                }
+            },
+            {
+                extend: 'csvHtml5',
+                text: 'Download CSV',
+                exportOptions: {
+                    format: {
+                        body: function(data, row, column, node) {
+                            if ($(node).hasClass('dt-control')) {
+                                var rowData = table.row($(node).closest('tr')).data();
+                                return rowData.courses.map(function(course) {
+                                    return course.course_name + ': ' + course.total_grade;
+                                }).join('\n');
+                            }
+                            return data;
+                        }
+                    }
+                }
+            },
+            {
+                extend: 'excelHtml5',
+                text: 'Download Excel',
+                exportOptions: {
+                    format: {
+                        body: function(data, row, column, node) {
+                            if ($(node).hasClass('dt-control')) {
+                                var rowData = table.row($(node).closest('tr')).data();
+                                return rowData.courses.map(function(course) {
+                                    return course.course_name + ': ' + course.total_grade;
+                                }).join('\r\n');
+                            }
+                            return data;
+                        }
+                    }
+                }
+            },
+            {
+                extend: 'pdfHtml5',
+                text: 'Download PDF',
+                exportOptions: {
+                    format: {
+                        body: function(data, row, column, node) {
+                            if ($(node).hasClass('dt-control')) {
+                                var rowData = table.row($(node).closest('tr')).data();
+                                return rowData.courses.map(function(course) {
+                                    return course.course_name + ': ' + course.total_grade;
+                                }).join('\r\n');
+                            }
+                            return data;
+                        }
+                    }
+                }
+            },
+            {
+                extend: 'print',
+                text: 'Print',
+                exportOptions: {
+                    format: {
+                        body: function(data, row, column, node) {
+                            if ($(node).hasClass('dt-control')) {
+                                var rowData = table.row($(node).closest('tr')).data();
+                                return rowData.courses.map(function(course) {
+                                    return course.course_name + ': ' + course.total_grade;
+                                }).join('\n');
+                            }
+                            return data;
+                        }
+                    }
+                }
+            }
+        ]
     });
 
-    // Toggle child rows on click
-    $('#studentTable tbody').on('click', 'td.details-control', function() {
+    $('#studentTable tbody').on('click', 'td.dt-control', function() {
         var tr = $(this).closest('tr');
         var row = table.row(tr);
-        var childRow = tr.next('tr.child-row');
 
-        if (childRow.is(':visible')) {
-            // This row is already open - close it
-            childRow.hide();
-            $(this).text('+');
+        if (row.child.isShown()) {
+            row.child.hide();
+            tr.removeClass('shown');
         } else {
-            // Open this row
-            childRow.show();
-            $(this).text('-');
+            row.child(format(row.data())).show();
+            tr.addClass('shown');
         }
     });
-});
 
+    table.buttons().container()
+        .appendTo('#studentTable_wrapper .col-md-6:eq(0)');
+});
 </script>
-<?php echo $OUTPUT->footer(); ?>
+
+</body>
+</html>
+
+<?php
+echo $OUTPUT->footer();
+?>
+
+</body>
+</html>
