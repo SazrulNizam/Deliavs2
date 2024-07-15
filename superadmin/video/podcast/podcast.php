@@ -73,7 +73,31 @@ $result = mysqli_query($con,$query);
  
 </head> 
 <body>
-    
+  <!-- Session for alert if success -->
+<?php
+if (($_SESSION['message']) == "success") {
+
+?>
+<div class="alert alert-success" role="alert">
+Successfully to add Podcast</div>
+<?php
+  unset($_SESSION['message']);
+}
+?>
+<!-- ENDHERE -->   
+
+  <!-- Session for alert if delete -->
+  <?php
+if (($_SESSION['message']) == "delete") {
+
+?>
+<div class="alert alert-danger" role="alert">
+Successfully to delete Podcast</div>
+<?php
+  unset($_SESSION['message']);
+}
+?>
+<!-- ENDHERE -->  
 
 <button type="button" class="btn btn-success float-right" onclick="location.href='index.php'" >Add Video <i class="fa-solid fa-plus"></i></button><br>
 <br>

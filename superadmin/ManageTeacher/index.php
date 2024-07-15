@@ -42,7 +42,8 @@ if ($mform->is_cancelled()) {
 
     $DB->insert_record('local_teachers',$data);
 
-    redirect('manage-teacher.php', 'Record have been added succesfully', null, \core\output\notification::NOTIFY_SUCCESS);
+    $_SESSION['message'] = 'success';
+    redirect('manage-teacher.php');
    
 
 

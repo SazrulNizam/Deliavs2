@@ -48,7 +48,9 @@ if ($mform->is_cancelled()) {
 
     $DB->insert_record('local_videos',$data);
 
-    redirect('notes.php', 'Record have been added succesfully', null, \core\output\notification::NOTIFY_SUCCESS);
+    $_SESSION['message'] = 'success';
+
+    redirect('notes.php');
  
 
 

@@ -123,6 +123,7 @@ $PAGE->set_title('Student Report Card');
 // $PAGE->requires->js(new \moodle_url('script.js'));
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap4.css'));
 $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/buttons/3.0.1/css/buttons.bootstrap4.css'));
+
 echo $OUTPUT->header();
 global $CFG, $COURSE, $DB, $USER, $ROLE;
 include 'connection.php';
@@ -217,6 +218,7 @@ mysqli_close($conn);
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
@@ -224,26 +226,31 @@ mysqli_close($conn);
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.flash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
+
+
+
+
     <style>
- 
-    .table-container {
-            margin-bottom: 20px;
+
+     
+             th {
+            text-align: center;
+        }
+
+         td {
+            text-align: center;
         }
   
     </style>
 </head>
 <body>
 
-<h2 id="courseHeading"></h2>
 
 <?php foreach ($categories as $category) : ?>
     <h3><?php echo htmlspecialchars($category['name']); ?></h3>
     <form method="post" id="courseForm-<?php echo $category['id']; ?>">
+    <div class="form-row">
+    <div class="form-group col-md-2 ">
         <select name="course_id" id="course-<?php echo $category['id']; ?>" class="form-control course-select" data-category-id="<?php echo $category['id']; ?>">
             <option value="">All Courses</option>
             <?php foreach ($courses as $course) :
@@ -254,23 +261,26 @@ mysqli_close($conn);
                 <?php endif;
             endforeach; ?>
         </select>
+        </div>
+        </div>
     </form>
-    <br>
+    
     <div class="table-container">
-        <table id="example-<?php echo $category['id']; ?>" class="table table-hover" style="width:100%">
+        <table id="example-<?php echo $category['id']; ?>" class="table table-striped" style="width:100%">
             <thead>
                 <tr>
-                    <td>No</td>
+                    <th style="text-align:center;">No</th>
                     <td hidden>Student ID</td>
-                    <td>Student Name</td>
-                    <td>Course</td>
-                    <td>Nadi Name</td>
+
+                    <th style="text-align:center;">Student Name</th>
+                    <th style="text-align:center;">Course</th>
+                    <th style="text-align:center;">Nadi Name</th>
                     <td hidden>Course ID</td>
-                    <td>Status</td>
+
+                    <th style="text-align:center;">Status</th>
                     
                 </tr>
             </thead>
-            <tbody>
             <tbody>
     <?php
     $no = 0;
@@ -297,10 +307,12 @@ mysqli_close($conn);
             <tr>
                 <td><?php echo $no; ?></td>
                 <td hidden><?php echo htmlspecialchars($student['id']); ?></td>
+
                 <td><?php echo htmlspecialchars($student['firstname'] . ' ' . $student['lastname']); ?></td>
                 <td><?php echo htmlspecialchars($student['course_name']); ?></td>
                 <td><?php echo htmlspecialchars($student['nadi_name']); ?></td>
                 <td hidden><?php echo htmlspecialchars($student['course_id']); ?></td>
+
                 <td><a type="button" class="btn <?php echo $status_class; ?>" <?php if($record && $record->status === 'uploaded') {?><?php echo $actions; ?><?php } ?>><?php echo $status_text; ?></a></td>
             </tr>
     <?php
@@ -310,11 +322,12 @@ mysqli_close($conn);
 </tbody>
 
         </table>
-    </div>
+</div>
+        <br><br>
 <?php endforeach; 
 
-
 ?>
+</body>
 
 <script>
 $(document).ready(function() {
@@ -366,7 +379,24 @@ $(document).ready(function() {
 });
 
 
+
+</script>
+
+
+
+
+<script>
+
+<?php foreach ($categories as $category) : ?>
+
+
+
+
+$('#example-<?php echo $category['id']; ?>').DataTable({
+       
+    });
+
+<?php endforeach; ?>
 </script>
 <?php echo $OUTPUT->footer();?>
-</body>
 </html>

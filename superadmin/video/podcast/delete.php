@@ -18,7 +18,8 @@ $delete = mysqli_query($con,"DELETE FROM mdl_local_videos WHERE id = $ids ");
 
 unlink($filepath);
 
-redirect('podcast.php', 'Record have been deleted', null, \core\output\notification::NOTIFY_ERROR);
+$_SESSION['message'] = 'delete';
+redirect('podcast.php');
 
 
 echo $OUTPUT->footer();

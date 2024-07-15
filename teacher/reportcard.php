@@ -162,7 +162,7 @@ while ($category = mysqli_fetch_assoc($result_categories)) {
 }
 
 if (empty($categories)) {
-    die("No categories found.");
+    echo "No categories found.";
 }
 
 // Fetch all courses

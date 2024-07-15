@@ -51,7 +51,9 @@ if ($mform->is_cancelled()) {
             $DB->insert_record('local_reportcards', $data);
         }
 
-        redirect('../reportcard.php', 'Record has been added successfully', null, \core\output\notification::NOTIFY_SUCCESS);
+        $_SESSION['message'] = 'success';
+
+        redirect('../reportcard.php');
     } else {
         echo "Failed to save the file.";
     }

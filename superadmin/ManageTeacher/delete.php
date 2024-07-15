@@ -13,8 +13,8 @@ $ids = $_GET["id"];
 
 $delete = mysqli_query($con,"DELETE FROM mdl_local_teachers WHERE id = $ids ");
 
-
-redirect('manage-teacher.php', 'Record have been deleted', null, \core\output\notification::NOTIFY_ERROR);
+$_SESSION['message'] = 'delete';
+redirect('manage-teacher.php');
 
 
 echo $OUTPUT->footer();

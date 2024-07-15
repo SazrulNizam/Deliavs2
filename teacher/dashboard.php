@@ -636,7 +636,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])) {
 }
 
 // Close the database connection
-mysqli_stmt_close($stmt_students);
 mysqli_close($conn);
 ?>
 

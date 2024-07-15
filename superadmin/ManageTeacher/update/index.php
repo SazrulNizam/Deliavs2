@@ -29,7 +29,8 @@ if ($mform->is_cancelled()) {
     $sql =  mysqli_query($con,"UPDATE mdl_local_teachers set nameofteacher= '" . $fromform->nameofteacher. "' WHERE id ='". $fromform->id."'");
 
 
-    redirect('../manage-teacher.php', 'Record have been added succesfully', null, \core\output\notification::NOTIFY_SUCCESS);
+    $_SESSION['message'] = 'update';
+    redirect('../manage-teacher.php');
    
 
 

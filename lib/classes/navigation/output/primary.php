@@ -189,14 +189,20 @@ class primary implements renderable, templatable {
                 $CFG->custommenuitems .= "
                 Dashboard | /admindelia/dashboard.php";
 
+
                 $CFG->custommenuitems .= "
-                Report | /admindelia/report.php";
+                Report 
+                -Participant Report | /admindelia/report.php
+
+                -Report Card | /admindelia/reportcard.php
+
+                -Grade Report | /admindelia/grade.php";
+
+
 
                 // $CFG->custommenuitems .= "
                 // Financial Report | /admindelia/financialreport.php";
 
-                $CFG->custommenuitems .= "
-                Report Card | /admindelia/reportcard.php";
 
                 $CFG->custommenuitems .= "
                 Calendar | /my/";
@@ -204,8 +210,6 @@ class primary implements renderable, templatable {
                 // $CFG->custommenuitems .= "
                 // Manage Package | /badges/index.php?type=1";
 
-                $CFG->custommenuitems .= "
-                Grade Report | /admindelia/grade.php";
 
                 $CFG->custommenuitems .= "
                 Student Filter | /admindelia/filter/manage-filter-student.php";

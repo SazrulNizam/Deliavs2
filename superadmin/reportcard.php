@@ -223,12 +223,34 @@ mysqli_close($conn);
     .table-container {
             margin-bottom: 20px;
         }
+
+         th {
+            text-align: center;
+        }
+
+         td {
+            text-align: center;
+        }
   
     </style>
 </head>
 <body>
 
 <h2 id="courseHeading"></h2>
+
+  <!-- Session for alert if success -->
+  <?php
+if (($_SESSION['message']) == "success") {
+
+?>
+<div class="alert alert-success" role="alert">
+Successfully to upload file</div>
+<?php
+  unset($_SESSION['message']);
+}
+?>
+<!-- ENDHERE -->  
+ 
 
 <?php foreach ($categories as $category) : ?>
     <h3><?php echo htmlspecialchars($category['name']); ?></h3>

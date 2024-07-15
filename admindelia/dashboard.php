@@ -252,7 +252,7 @@ $conn->close();
             <?php foreach ($months as $index => $month): ?>
             <li class="nav-item">
                 <a class="nav-link <?php echo $index === 0 ? 'active' : ''; ?>" data-toggle="tab"
-                    href="#tab-<?php echo htmlspecialchars($categoryName); ?>-<?php echo $month; ?>">
+                    href="#tab-<?php echo str_replace(' ', '', $categoryName); ?>-<?php echo $month; ?>">
                     <?php echo date('F', mktime(0, 0, 0, $month, 1)); ?>
                 </a>
             </li>
@@ -260,10 +260,10 @@ $conn->close();
         </ul>
         <div class="tab-content">
             <?php foreach ($months as $index => $month): ?>
-            <div id="tab-<?php echo htmlspecialchars($categoryName); ?>-<?php echo $month; ?>"
+            <div id="tab-<?php echo str_replace(' ', '', $categoryName); ?>-<?php echo $month; ?>"
                 class="tab-pane fade <?php echo $index === 0 ? 'show active' : ''; ?>">
                 <div class="chart-container">
-                    <canvas id="attendanceChart-<?php echo htmlspecialchars($categoryName); ?>-<?php echo $month; ?>"></canvas>
+                    <canvas id="attendanceChart-<?php echo str_replace(' ', '', $categoryName); ?>-<?php echo $month; ?>"></canvas>
                 </div>
             </div>
             <?php endforeach; ?>
@@ -276,7 +276,7 @@ $conn->close();
     document.addEventListener('DOMContentLoaded', function() {
         <?php foreach ($categoryData as $categoryName => $monthlyData): ?>
             <?php foreach ($monthlyData as $month => $attendanceData): ?>
-                var ctx = document.getElementById('attendanceChart-<?php echo htmlspecialchars($categoryName); ?>-<?php echo $month; ?>');
+                var ctx = document.getElementById('attendanceChart-<?php echo str_replace(' ', '', $categoryName); ?>-<?php echo $month; ?>');
                 console.log('Canvas element:', ctx);
 
                 if (ctx) {  // Check if canvas element exists
