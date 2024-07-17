@@ -172,6 +172,9 @@ class primary implements renderable, templatable {
                 Create User | /user/editadvanced.php?id=-1";
 
                 $CFG->custommenuitems .= "
+                Upload User | /admin/tool/uploaduser/index.php";
+
+                $CFG->custommenuitems .= "
                 Manage Teacher | /superadmin/ManageTeacher/manage-teacher.php";
 
                 // $CFG->custommenuitems .= "
