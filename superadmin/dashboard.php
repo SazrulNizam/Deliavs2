@@ -240,7 +240,7 @@ $conn->close();
     <div class="pb-4 pt-3">
         <div class="row">
             <div class="col-md-3">
-                <div class="card-counter primary">
+            <div class="card-counter primary" style="background-color: #32de84;">
                     <i class="fa fa-users"></i>
                     <span class="count-numbers"><?php echo $data['total']; ?></span>
                     <span class="count-name">Total Student</span>
@@ -254,17 +254,17 @@ $conn->close();
                     <span class="count-name">Total Teachers</span>
                 </div>
             </div>
-
+            
             <div class="col-md-3">
-                <div class="card-counter danger">
+                <div class="card-counter danger" style="background-color: #007FFF;">
                     <i class="fa fa-list"></i>
                     <span class="count-numbers"><?php echo $totalCategories; ?></span>
                     <span class="count-name">Total Category</span>
                 </div>
             </div>
-
+            
             <div class="col-md-3">
-                <div class="card-counter danger">
+                <div class="card-counter danger" style="background-color: #F0E68C;">
                     <i class="fa fa-book"></i>
                     <span class="count-numbers"><?php echo $allcourse['allcourse']; ?></span>
                     <span class="count-name">Total Sub-Course</span>

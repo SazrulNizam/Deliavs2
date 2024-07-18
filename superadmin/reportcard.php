@@ -244,10 +244,19 @@ if (($_SESSION['message']) == "success") {
 
 ?>
 <div class="alert alert-success" role="alert">
-Successfully to upload file</div>
+File successfully uploaded!</div>
 <?php
   unset($_SESSION['message']);
 }
+if (($_SESSION['message']) == "delete") {
+
+    ?>
+    <div class="alert alert-danger" role="alert">
+    File successfully deleted!</div>
+    <?php
+      unset($_SESSION['message']);
+    }
+
 ?>
 <!-- ENDHERE -->  
  

@@ -43,6 +43,10 @@ if ($action === 'view') {
                 // Update the database record
                 $DB->delete_records('local_reportcards', array('userid' => $student_id, 'courseid' => $course_id));
 
+                $_SESSION['message'] = 'delete';
+
+                redirect('../reportcard.php');
+
 
                 echo "<p>File has been deleted successfully.</p>";
             } else {
